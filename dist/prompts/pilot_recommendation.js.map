@@ -1,0 +1,1 @@
+{"version":3,"file":"pilot_recommendation.js","sourceRoot":"","sources":["../../src/prompts/pilot_recommendation.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,MAAM,CAAC,MAAM,2BAA2B,GAAG;IACzC,IAAI,EAAE,sBAAsB;IAC5B,WAAW,EACT,0FAA0F;IAC5F,SAAS,EAAE;QACT;YACE,IAAI,EAAE,YAAY;YAClB,WAAW,EAAE,oDAAoD;YACjE,QAAQ,EAAE,KAAK;SAChB;KACF;CACF,CAAC"}
