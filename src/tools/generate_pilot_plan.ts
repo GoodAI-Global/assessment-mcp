@@ -16,23 +16,23 @@ import type {
 
 export const GeneratePilotPlanInputSchema = z.object({
   selected_bottleneck: z.object({
-    name: z.string(),
-    description: z.string(),
-    estimated_annual_cost_usd: z.number(),
-    ai_solution_fit_score: z.number(),
-    recommended_ai_approach: z.string(),
+    name: z.string().min(1).max(200, "Name too long"),
+    description: z.string().min(1).max(2000, "Description too long"),
+    estimated_annual_cost_usd: z.number().min(0).max(1_000_000_000_000, "Cost unrealistic"),
+    ai_solution_fit_score: z.number().min(1).max(10),
+    recommended_ai_approach: z.string().min(1).max(500, "Approach description too long"),
     complexity: z.enum(["low", "medium", "high"]),
   }),
   constraints: z.object({
-    max_budget_usd: z.number().positive().optional(),
-    max_duration_weeks: z.number().int().positive().optional(),
+    max_budget_usd: z.number().positive().max(1_000_000_000, "Budget unrealistic").optional(),
+    max_duration_weeks: z.number().int().positive().max(520, "Duration unrealistic").optional(),
     required_stakeholder_approval: z.boolean().optional(),
-    technical_constraints: z.array(z.string()).optional(),
+    technical_constraints: z.array(z.string().max(500)).max(50, "Too many constraints").optional(),
   }),
   company_context: z.object({
-    company_name: z.string(),
+    company_name: z.string().min(1).max(200, "Company name too long"),
     industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
-    employee_count: z.number().int().positive(),
+    employee_count: z.number().int().positive().max(10_000_000, "Employee count unrealistic"),
   }),
 });
 

@@ -11,8 +11,8 @@
  * - generate_pilot_plan: Create implementation roadmaps
  * - calculate_roi: Project financial returns
  */
-import { createServer, callTool } from "./server.js";
-export { createServer, callTool };
+import { startServer, createServer, callTool } from "./server.js";
+export { createServer, callTool, startServer };
 export * from "./types/index.js";
 export { assessAIReadiness } from "./tools/assess_ai_readiness.js";
 export { identifyBottlenecks } from "./tools/identify_bottlenecks.js";

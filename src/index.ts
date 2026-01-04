@@ -12,10 +12,11 @@
  * - calculate_roi: Project financial returns
  */
 
+import { fileURLToPath } from "url";
 import { startServer, createServer, callTool } from "./server.js";
 
 // Export for programmatic use
-export { createServer, callTool };
+export { createServer, callTool, startServer };
 
 // Export types
 export * from "./types/index.js";
@@ -26,8 +27,13 @@ export { identifyBottlenecks } from "./tools/identify_bottlenecks.js";
 export { generatePilotPlan } from "./tools/generate_pilot_plan.js";
 export { calculateROI } from "./tools/calculate_roi.js";
 
-// Start server when run directly
-startServer().catch((error) => {
-  console.error("Failed to start server:", error);
-  process.exit(1);
-});
+// Start server only when run directly (not when imported as library)
+const currentFile = fileURLToPath(import.meta.url);
+const isDirectRun = process.argv[1] === currentFile;
+
+if (isDirectRun) {
+  startServer().catch((error) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  });
+}

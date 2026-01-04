@@ -8,7 +8,7 @@ import { getIndustryRecommendation, calculateTimeToValue, } from "../data/indust
 // Input Schema (Zod validation)
 // ============================================
 export const AssessAIReadinessInputSchema = z.object({
-    company_name: z.string().min(1, "Company name is required"),
+    company_name: z.string().min(1, "Company name is required").max(200, "Company name too long"),
     industry: z.enum([
         "manufacturing",
         "insurance",
@@ -16,19 +16,19 @@ export const AssessAIReadinessInputSchema = z.object({
         "healthcare",
         "general",
     ]),
-    employee_count: z.number().int().positive("Employee count must be positive"),
-    annual_revenue_usd: z.number().positive().optional(),
+    employee_count: z.number().int().positive("Employee count must be positive").max(10_000_000, "Employee count unrealistic"),
+    annual_revenue_usd: z.number().positive().max(1_000_000_000_000, "Revenue unrealistic").optional(),
     data_infrastructure: z.object({
         centralized_data: z.boolean(),
         data_quality_score: z.number().min(1).max(10).optional(),
         manual_data_entry_percent: z.number().min(0).max(100),
     }),
     current_systems: z.object({
-        erp: z.string().nullable(),
-        crm: z.string().nullable(),
-        legacy_systems_count: z.number().int().min(0),
+        erp: z.string().max(100, "ERP name too long").nullable(),
+        crm: z.string().max(100, "CRM name too long").nullable(),
+        legacy_systems_count: z.number().int().min(0).max(1000, "Legacy count unrealistic"),
     }),
-    previous_ai_attempts: z.array(z.string()).optional(),
+    previous_ai_attempts: z.array(z.string().max(500, "Attempt description too long")).max(50, "Too many attempts").optional(),
 });
 // ============================================
 // Scoring Functions

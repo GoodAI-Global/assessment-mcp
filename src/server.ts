@@ -39,8 +39,6 @@ import {
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
 
-import type { AssessAIReadinessInput } from "./types/index.js";
-
 // Server metadata
 const SERVER_NAME = "goodai-assessment";
 const SERVER_VERSION = "1.0.0";

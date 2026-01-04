@@ -8,23 +8,21 @@ import type {
   IdentifyBottlenecksInput,
   IdentifyBottlenecksOutput,
   Bottleneck,
-  Industry,
 } from "../types/index.js";
-import { INDUSTRY_BENCHMARKS } from "../data/industry_benchmarks.js";
 
 // ============================================
 // Input Schema (Zod validation)
 // ============================================
 
 export const IdentifyBottlenecksInputSchema = z.object({
-  process_description: z.string().min(10, "Process description must be at least 10 characters"),
+  process_description: z.string().min(10, "Process description must be at least 10 characters").max(5000, "Process description too long"),
   metrics: z.object({
-    cycle_time_hours: z.number().positive().optional(),
+    cycle_time_hours: z.number().positive().max(100_000, "Cycle time unrealistic").optional(),
     error_rate_percent: z.number().min(0).max(100).optional(),
-    manual_steps_count: z.number().int().min(0).optional(),
-    cost_per_unit_usd: z.number().positive().optional(),
+    manual_steps_count: z.number().int().min(0).max(10_000, "Step count unrealistic").optional(),
+    cost_per_unit_usd: z.number().positive().max(1_000_000_000, "Cost unrealistic").optional(),
   }),
-  pain_points: z.array(z.string()).min(1, "At least one pain point is required"),
+  pain_points: z.array(z.string().max(1000, "Pain point too long")).min(1, "At least one pain point is required").max(50, "Too many pain points"),
   industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
 });
 
@@ -35,7 +33,6 @@ export const IdentifyBottlenecksInputSchema = z.object({
 function analyzeBottlenecks(input: IdentifyBottlenecksInput): Bottleneck[] {
   const bottlenecks: Bottleneck[] = [];
   const { metrics, pain_points, industry, process_description } = input;
-  const benchmark = INDUSTRY_BENCHMARKS[industry];
   const processLower = process_description.toLowerCase();
 
   // Analyze based on metrics

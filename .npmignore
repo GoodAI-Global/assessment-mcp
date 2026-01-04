@@ -1,0 +1,25 @@
+# Source files (dist is published)
+src/
+
+# Tests
+test/
+test_server.js
+jest.config.cjs
+coverage/
+
+# Development configs
+tsconfig.json
+.gitignore
+
+# Documentation (keep README and LICENSE)
+ACCEPTANCE_TESTS.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
