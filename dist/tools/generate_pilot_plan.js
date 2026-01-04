@@ -30,7 +30,7 @@ export const GeneratePilotPlanInputSchema = z.object({
 // ============================================
 // Pilot Plan Generation Functions
 // ============================================
-function generateMilestones(complexity, durationWeeks, approach) {
+function generateMilestones(complexity, durationWeeks, _approach) {
     const milestones = [];
     // Week 1: Discovery (always)
     milestones.push({

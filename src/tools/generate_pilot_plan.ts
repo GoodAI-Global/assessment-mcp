@@ -43,7 +43,7 @@ export const GeneratePilotPlanInputSchema = z.object({
 function generateMilestones(
   complexity: "low" | "medium" | "high",
   durationWeeks: number,
-  approach: string
+  _approach: string
 ): PilotMilestone[] {
   const milestones: PilotMilestone[] = [];
 

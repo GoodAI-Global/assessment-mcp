@@ -8,7 +8,6 @@ import type {
   AssessAIReadinessInput,
   AssessAIReadinessOutput,
   DimensionScore,
-  Industry,
 } from "../types/index.js";
 import {
   getIndustryRecommendation,

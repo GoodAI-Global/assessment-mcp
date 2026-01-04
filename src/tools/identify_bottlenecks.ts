@@ -159,7 +159,9 @@ function analyzeBottlenecks(input: IdentifyBottlenecksInput): Bottleneck[] {
   // Remove duplicates by name
   const seen = new Set<string>();
   return bottlenecks.filter((b) => {
-    if (seen.has(b.name)) return false;
+    if (seen.has(b.name)) {
+      return false;
+    }
     seen.add(b.name);
     return true;
   });

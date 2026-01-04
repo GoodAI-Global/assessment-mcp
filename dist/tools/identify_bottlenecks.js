@@ -134,8 +134,9 @@ function analyzeBottlenecks(input) {
     // Remove duplicates by name
     const seen = new Set();
     return bottlenecks.filter((b) => {
-        if (seen.has(b.name))
+        if (seen.has(b.name)) {
             return false;
+        }
         seen.add(b.name);
         return true;
     });
