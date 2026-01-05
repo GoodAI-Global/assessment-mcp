@@ -11,6 +11,7 @@ import { generatePilotPlan, GeneratePilotPlanInputSchema, GENERATE_PILOT_PLAN_TO
 import { calculateROI, CalculateROIInputSchema, CALCULATE_ROI_TOOL, } from "./tools/calculate_roi.js";
 import { generateExecutiveSummary, GenerateExecutiveSummaryInputSchema, GENERATE_EXECUTIVE_SUMMARY_TOOL, } from "./tools/generate_executive_summary.js";
 import { assessDataQuality, AssessDataQualityInputSchema, ASSESS_DATA_QUALITY_TOOL, } from "./tools/assess_data_quality.js";
+import { prioritizeUseCases, PrioritizeUseCasesInputSchema, PRIORITIZE_USE_CASES_TOOL, } from "./tools/prioritize_use_cases.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -34,6 +35,9 @@ const TOOL_REGISTRY = {
     },
     assess_data_quality: {
         execute: (input) => assessDataQuality(AssessDataQualityInputSchema.parse(input)),
+    },
+    prioritize_use_cases: {
+        execute: (input) => prioritizeUseCases(PrioritizeUseCasesInputSchema.parse(input)),
     },
 };
 /**
@@ -100,6 +104,7 @@ export function createServer() {
                 CALCULATE_ROI_TOOL,
                 GENERATE_EXECUTIVE_SUMMARY_TOOL,
                 ASSESS_DATA_QUALITY_TOOL,
+                PRIORITIZE_USE_CASES_TOOL,
             ],
         };
     });
