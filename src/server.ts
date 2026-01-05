@@ -60,6 +60,11 @@ import {
   QUALIFY_LEAD_TOOL,
 } from "./tools/qualify_lead.js";
 import {
+  estimateDealSize,
+  EstimateDealSizeInputSchema,
+  ESTIMATE_DEAL_SIZE_TOOL,
+} from "./tools/estimate_deal_size.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -106,6 +111,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   qualify_lead: {
     execute: (input) => qualifyLead(QualifyLeadInputSchema.parse(input)),
+  },
+  estimate_deal_size: {
+    execute: (input) => estimateDealSize(EstimateDealSizeInputSchema.parse(input)),
   },
 };
 
@@ -210,6 +218,7 @@ export function createServer(): Server {
         PRIORITIZE_USE_CASES_TOOL,
         COMPARE_SCENARIOS_TOOL,
         QUALIFY_LEAD_TOOL,
+        ESTIMATE_DEAL_SIZE_TOOL,
       ],
     };
   });
