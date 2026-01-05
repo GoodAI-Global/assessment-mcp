@@ -55,6 +55,11 @@ import {
   COMPARE_SCENARIOS_TOOL,
 } from "./tools/compare_scenarios.js";
 import {
+  qualifyLead,
+  QualifyLeadInputSchema,
+  QUALIFY_LEAD_TOOL,
+} from "./tools/qualify_lead.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -98,6 +103,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   compare_scenarios: {
     execute: (input) => compareScenarios(CompareScenariosInputSchema.parse(input)),
+  },
+  qualify_lead: {
+    execute: (input) => qualifyLead(QualifyLeadInputSchema.parse(input)),
   },
 };
 
@@ -201,6 +209,7 @@ export function createServer(): Server {
         ASSESS_DATA_QUALITY_TOOL,
         PRIORITIZE_USE_CASES_TOOL,
         COMPARE_SCENARIOS_TOOL,
+        QUALIFY_LEAD_TOOL,
       ],
     };
   });

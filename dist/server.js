@@ -13,6 +13,7 @@ import { generateExecutiveSummary, GenerateExecutiveSummaryInputSchema, GENERATE
 import { assessDataQuality, AssessDataQualityInputSchema, ASSESS_DATA_QUALITY_TOOL, } from "./tools/assess_data_quality.js";
 import { prioritizeUseCases, PrioritizeUseCasesInputSchema, PRIORITIZE_USE_CASES_TOOL, } from "./tools/prioritize_use_cases.js";
 import { compareScenarios, CompareScenariosInputSchema, COMPARE_SCENARIOS_TOOL, } from "./tools/compare_scenarios.js";
+import { qualifyLead, QualifyLeadInputSchema, QUALIFY_LEAD_TOOL, } from "./tools/qualify_lead.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -42,6 +43,9 @@ const TOOL_REGISTRY = {
     },
     compare_scenarios: {
         execute: (input) => compareScenarios(CompareScenariosInputSchema.parse(input)),
+    },
+    qualify_lead: {
+        execute: (input) => qualifyLead(QualifyLeadInputSchema.parse(input)),
     },
 };
 /**
@@ -110,6 +114,7 @@ export function createServer() {
                 ASSESS_DATA_QUALITY_TOOL,
                 PRIORITIZE_USE_CASES_TOOL,
                 COMPARE_SCENARIOS_TOOL,
+                QUALIFY_LEAD_TOOL,
             ],
         };
     });
