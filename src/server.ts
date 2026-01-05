@@ -70,6 +70,11 @@ import {
   GENERATE_SOW_TOOL,
 } from "./tools/generate_sow.js";
 import {
+  assessImplementationRisk,
+  AssessImplementationRiskInputSchema,
+  ASSESS_IMPLEMENTATION_RISK_TOOL,
+} from "./tools/assess_implementation_risk.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -122,6 +127,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   generate_sow: {
     execute: (input) => generateSOW(GenerateSOWInputSchema.parse(input)),
+  },
+  assess_implementation_risk: {
+    execute: (input) => assessImplementationRisk(AssessImplementationRiskInputSchema.parse(input)),
   },
 };
 
@@ -228,6 +236,7 @@ export function createServer(): Server {
         QUALIFY_LEAD_TOOL,
         ESTIMATE_DEAL_SIZE_TOOL,
         GENERATE_SOW_TOOL,
+        ASSESS_IMPLEMENTATION_RISK_TOOL,
       ],
     };
   });
