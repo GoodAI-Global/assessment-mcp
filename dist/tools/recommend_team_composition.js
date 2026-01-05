@@ -696,8 +696,7 @@ function identifyStaffingRisks(team, skillCoverage, input) {
     }
     return risks;
 }
-function generateAlternatives(team, _input) {
-    const totalCost = team.reduce((sum, t) => sum + t.monthly_cost_usd, 0);
+function generateAlternatives(_team, _input) {
     return [
         {
             name: "Lean Team",
@@ -783,7 +782,7 @@ function generateRecommendations(skillCoverage, input) {
 // Main Export Function
 // ============================================
 export function recommendTeamComposition(input) {
-    const { project_name, client_name, engagement_type, duration_weeks, complexity, client_context, preferences, constraints, } = input;
+    const { project_name, client_name, engagement_type, duration_weeks, complexity, preferences, constraints, } = input;
     // Build base team
     const baseTeam = getBaseTeamForEngagement(engagement_type, complexity, duration_weeks);
     // Add specialized roles

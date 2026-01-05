@@ -80,6 +80,11 @@ import {
   RECOMMEND_TEAM_COMPOSITION_TOOL,
 } from "./tools/recommend_team_composition.js";
 import {
+  measureAdoption,
+  MeasureAdoptionInputSchema,
+  MEASURE_ADOPTION_TOOL,
+} from "./tools/measure_adoption.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -138,6 +143,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   recommend_team_composition: {
     execute: (input) => recommendTeamComposition(RecommendTeamCompositionInputSchema.parse(input)),
+  },
+  measure_adoption: {
+    execute: (input) => measureAdoption(MeasureAdoptionInputSchema.parse(input)),
   },
 };
 
@@ -246,6 +254,7 @@ export function createServer(): Server {
         GENERATE_SOW_TOOL,
         ASSESS_IMPLEMENTATION_RISK_TOOL,
         RECOMMEND_TEAM_COMPOSITION_TOOL,
+        MEASURE_ADOPTION_TOOL,
       ],
     };
   });

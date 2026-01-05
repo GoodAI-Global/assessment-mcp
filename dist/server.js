@@ -18,6 +18,7 @@ import { estimateDealSize, EstimateDealSizeInputSchema, ESTIMATE_DEAL_SIZE_TOOL,
 import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL, } from "./tools/generate_sow.js";
 import { assessImplementationRisk, AssessImplementationRiskInputSchema, ASSESS_IMPLEMENTATION_RISK_TOOL, } from "./tools/assess_implementation_risk.js";
 import { recommendTeamComposition, RecommendTeamCompositionInputSchema, RECOMMEND_TEAM_COMPOSITION_TOOL, } from "./tools/recommend_team_composition.js";
+import { measureAdoption, MeasureAdoptionInputSchema, MEASURE_ADOPTION_TOOL, } from "./tools/measure_adoption.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -62,6 +63,9 @@ const TOOL_REGISTRY = {
     },
     recommend_team_composition: {
         execute: (input) => recommendTeamComposition(RecommendTeamCompositionInputSchema.parse(input)),
+    },
+    measure_adoption: {
+        execute: (input) => measureAdoption(MeasureAdoptionInputSchema.parse(input)),
     },
 };
 /**
@@ -135,6 +139,7 @@ export function createServer() {
                 GENERATE_SOW_TOOL,
                 ASSESS_IMPLEMENTATION_RISK_TOOL,
                 RECOMMEND_TEAM_COMPOSITION_TOOL,
+                MEASURE_ADOPTION_TOOL,
             ],
         };
     });
