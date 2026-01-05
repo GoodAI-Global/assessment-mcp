@@ -125,16 +125,21 @@ const INDUSTRY_MULTIPLIERS = {
 };
 /** Company size multipliers based on employee count */
 function getCompanySizeMultiplier(employeeCount) {
-    if (employeeCount >= 10000)
+    if (employeeCount >= 10000) {
         return 2.0;
-    if (employeeCount >= 5000)
+    }
+    if (employeeCount >= 5000) {
         return 1.7;
-    if (employeeCount >= 1000)
+    }
+    if (employeeCount >= 1000) {
         return 1.4;
-    if (employeeCount >= 500)
+    }
+    if (employeeCount >= 500) {
         return 1.2;
-    if (employeeCount >= 100)
+    }
+    if (employeeCount >= 100) {
         return 1.0;
+    }
     return 0.8;
 }
 /** Calculate complexity adjustment */
@@ -445,7 +450,7 @@ function calculateMarketRates(totalValue, industry, competitiveSituation) {
     };
 }
 /** Calculate expansion potential */
-function calculateExpansionPotential(totalValue, engagementType, employeeCount, industry) {
+function calculateExpansionPotential(totalValue, engagementType, employeeCount, _industry) {
     const expansionMultipliers = {
         assessment: { y1: 3.0, y2: 2.0, y3: 1.5 },
         pilot: { y1: 2.5, y2: 2.0, y3: 1.5 },
@@ -524,7 +529,7 @@ function generateDealRisks(input) {
     return risks.slice(0, 5);
 }
 /** Generate negotiation guidance */
-function generateNegotiationGuidance(totalValue, input) {
+function generateNegotiationGuidance(totalValue, _input) {
     // Walk away at minimum viable margin
     const walkAway = Math.round(totalValue * 0.75);
     const target = totalValue;
@@ -563,7 +568,7 @@ function generateNegotiationGuidance(totalValue, input) {
     };
 }
 /** Generate recommendations */
-function generateRecommendations(input, estimate, positioning) {
+function generateRecommendations(input, estimate, _positioning) {
     const recommendations = [];
     // Based on competitive situation
     if (input.competitive_situation === "sole_source") {
@@ -603,7 +608,7 @@ export function estimateDealSize(input) {
     const basePricing = BASE_PRICING[engagement_type];
     const industryMultiplier = INDUSTRY_MULTIPLIERS[industry] || 1.0;
     const sizeMultiplier = getCompanySizeMultiplier(employee_count);
-    let baseValue = Math.round(basePricing.base * industryMultiplier * sizeMultiplier);
+    const baseValue = Math.round(basePricing.base * industryMultiplier * sizeMultiplier);
     // Calculate adjustments
     const { adjustment: complexityAdjustment, factors: complexityFactors } = calculateComplexityAdjustment(baseValue, complexity_factors);
     const scopeAdjustment = calculateScopeAdjustment(baseValue, scope_dimensions, engagement_type);

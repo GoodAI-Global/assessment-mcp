@@ -15,6 +15,7 @@ import { prioritizeUseCases, PrioritizeUseCasesInputSchema, PRIORITIZE_USE_CASES
 import { compareScenarios, CompareScenariosInputSchema, COMPARE_SCENARIOS_TOOL, } from "./tools/compare_scenarios.js";
 import { qualifyLead, QualifyLeadInputSchema, QUALIFY_LEAD_TOOL, } from "./tools/qualify_lead.js";
 import { estimateDealSize, EstimateDealSizeInputSchema, ESTIMATE_DEAL_SIZE_TOOL, } from "./tools/estimate_deal_size.js";
+import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL, } from "./tools/generate_sow.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -50,6 +51,9 @@ const TOOL_REGISTRY = {
     },
     estimate_deal_size: {
         execute: (input) => estimateDealSize(EstimateDealSizeInputSchema.parse(input)),
+    },
+    generate_sow: {
+        execute: (input) => generateSOW(GenerateSOWInputSchema.parse(input)),
     },
 };
 /**
@@ -120,6 +124,7 @@ export function createServer() {
                 COMPARE_SCENARIOS_TOOL,
                 QUALIFY_LEAD_TOOL,
                 ESTIMATE_DEAL_SIZE_TOOL,
+                GENERATE_SOW_TOOL,
             ],
         };
     });
