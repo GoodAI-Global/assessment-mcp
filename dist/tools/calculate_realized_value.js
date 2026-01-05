@@ -178,7 +178,7 @@ function calculateValueBreakdown(actual, hourlyRate = 75) {
         },
     };
 }
-function calculateProjectionComparison(projected, breakdown, monthsSinceGoLive) {
+function calculateProjectionComparison(projected, breakdown, _monthsSinceGoLive) {
     // Calculate actual annualized values
     const actualAnnualizedSavings = breakdown.cost_savings.annualized_total_usd +
         breakdown.productivity_gains.productivity_value_usd;

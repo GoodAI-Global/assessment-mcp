@@ -20,6 +20,7 @@ import { assessImplementationRisk, AssessImplementationRiskInputSchema, ASSESS_I
 import { recommendTeamComposition, RecommendTeamCompositionInputSchema, RECOMMEND_TEAM_COMPOSITION_TOOL, } from "./tools/recommend_team_composition.js";
 import { measureAdoption, MeasureAdoptionInputSchema, MEASURE_ADOPTION_TOOL, } from "./tools/measure_adoption.js";
 import { calculateRealizedValue, CalculateRealizedValueInputSchema, CALCULATE_REALIZED_VALUE_TOOL, } from "./tools/calculate_realized_value.js";
+import { predictChurnRisk, PredictChurnRiskInputSchema, PREDICT_CHURN_RISK_TOOL, } from "./tools/predict_churn_risk.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -70,6 +71,9 @@ const TOOL_REGISTRY = {
     },
     calculate_realized_value: {
         execute: (input) => calculateRealizedValue(CalculateRealizedValueInputSchema.parse(input)),
+    },
+    predict_churn_risk: {
+        execute: (input) => predictChurnRisk(PredictChurnRiskInputSchema.parse(input)),
     },
 };
 /**
@@ -145,6 +149,7 @@ export function createServer() {
                 RECOMMEND_TEAM_COMPOSITION_TOOL,
                 MEASURE_ADOPTION_TOOL,
                 CALCULATE_REALIZED_VALUE_TOOL,
+                PREDICT_CHURN_RISK_TOOL,
             ],
         };
     });
