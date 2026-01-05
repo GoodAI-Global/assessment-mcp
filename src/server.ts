@@ -38,15 +38,111 @@ import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
+import {
+  createAuditTrail,
+  logger,
+  getConfig,
+  type AuditTrail,
+} from "./lib/index.js";
 
 // Server metadata
 const SERVER_NAME = "goodai-assessment";
 const SERVER_VERSION = "1.0.0";
 
+/** Tool registry for cleaner execution */
+interface ToolHandler {
+  execute: (input: unknown) => unknown;
+}
+
+const TOOL_REGISTRY: Record<string, ToolHandler> = {
+  assess_ai_readiness: {
+    execute: (input) => assessAIReadiness(AssessAIReadinessInputSchema.parse(input)),
+  },
+  identify_bottlenecks: {
+    execute: (input) => identifyBottlenecks(IdentifyBottlenecksInputSchema.parse(input)),
+  },
+  generate_pilot_plan: {
+    execute: (input) => generatePilotPlan(GeneratePilotPlanInputSchema.parse(input)),
+  },
+  calculate_roi: {
+    execute: (input) => calculateROI(CalculateROIInputSchema.parse(input)),
+  },
+};
+
+/**
+ * Execute a tool with audit logging
+ */
+function executeToolWithAudit(
+  name: string,
+  args: unknown,
+  audit: AuditTrail
+): unknown {
+  const handler = TOOL_REGISTRY[name];
+
+  if (!handler) {
+    audit.recordSecurityViolation("unknown_tool_access", { toolName: name });
+    throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
+  }
+
+  const auditId = audit.recordToolInvocation(name, args);
+  const startTime = Date.now();
+
+  try {
+    const result = handler.execute(args);
+    const durationMs = Date.now() - startTime;
+
+    audit.recordToolSuccess(auditId, name, result, durationMs);
+
+    return result;
+  } catch (error) {
+    const durationMs = Date.now() - startTime;
+
+    // Handle Zod validation errors
+    if (error && typeof error === "object" && "issues" in error) {
+      const zodError = error as {
+        issues: Array<{ path: (string | number)[]; message: string }>;
+      };
+      const messages = zodError.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join("; ");
+
+      audit.recordValidationError(
+        name,
+        zodError.issues.map((i) => `${i.path.join(".")}: ${i.message}`),
+        args
+      );
+
+      throw new McpError(ErrorCode.InvalidParams, `Validation error: ${messages}`);
+    }
+
+    // Handle other errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    audit.recordToolError(
+      auditId,
+      name,
+      { code: "EXECUTION_ERROR", message: errorMessage },
+      durationMs
+    );
+
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Error executing ${name}: ${errorMessage}`
+    );
+  }
+}
+
 /**
  * Create and configure the MCP server
  */
 export function createServer(): Server {
+  const config = getConfig();
+
+  logger.info("Creating MCP server", {
+    serverName: SERVER_NAME,
+    version: SERVER_VERSION,
+    environment: config.environment,
+  });
+
   const server = new Server(
     {
       name: SERVER_NAME,
@@ -62,6 +158,7 @@ export function createServer(): Server {
 
   // Register tool listing handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
+    logger.debug("Listing available tools");
     return {
       tools: [
         ASSESS_AI_READINESS_TOOL,
@@ -72,96 +169,48 @@ export function createServer(): Server {
     };
   });
 
-  // Register tool call handler
+  // Register tool call handler with audit logging
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+    const audit = createAuditTrail();
+
+    logger.debug("Tool call received", {
+      toolName: name,
+      correlationId: audit.getCorrelationId(),
+    });
 
     try {
-      switch (name) {
-        case "assess_ai_readiness": {
-          const validatedInput = AssessAIReadinessInputSchema.parse(args);
-          const result = assessAIReadiness(validatedInput);
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
+      const result = executeToolWithAudit(name, args, audit);
 
-        case "identify_bottlenecks": {
-          const validatedInput = IdentifyBottlenecksInputSchema.parse(args);
-          const result = identifyBottlenecks(validatedInput);
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case "generate_pilot_plan": {
-          const validatedInput = GeneratePilotPlanInputSchema.parse(args);
-          const result = generatePilotPlan(validatedInput);
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case "calculate_roi": {
-          const validatedInput = CalculateROIInputSchema.parse(args);
-          const result = calculateROI(validatedInput);
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        default:
-          throw new McpError(
-            ErrorCode.MethodNotFound,
-            `Unknown tool: ${name}`
-          );
-      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2),
+          },
+        ],
+      };
     } catch (error) {
       if (error instanceof McpError) {
         throw error;
       }
 
-      // Handle Zod validation errors
-      if (error && typeof error === "object" && "issues" in error) {
-        const zodError = error as { issues: Array<{ path: (string | number)[]; message: string }> };
-        const messages = zodError.issues
-          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-          .join("; ");
-        throw new McpError(
-          ErrorCode.InvalidParams,
-          `Validation error: ${messages}`
-        );
-      }
+      logger.error(
+        "Unexpected error in tool execution",
+        error instanceof Error ? error : new Error(String(error)),
+        { toolName: name }
+      );
 
       throw new McpError(
         ErrorCode.InternalError,
-        `Error executing ${name}: ${error instanceof Error ? error.message : String(error)}`
+        `Unexpected error: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   });
 
   // Register prompt listing handler
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
+    logger.debug("Listing available prompts");
     return {
       prompts: [ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT],
     };
@@ -170,6 +219,8 @@ export function createServer(): Server {
   // Register prompt get handler
   server.setRequestHandler(GetPromptRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+
+    logger.debug("Prompt requested", { promptName: name });
 
     switch (name) {
       case "enterprise_assessment": {
@@ -224,10 +275,8 @@ Provide a complete implementation roadmap with success metrics.`,
       }
 
       default:
-        throw new McpError(
-          ErrorCode.MethodNotFound,
-          `Unknown prompt: ${name}`
-        );
+        logger.warn("Unknown prompt requested", { promptName: name });
+        throw new McpError(ErrorCode.MethodNotFound, `Unknown prompt: ${name}`);
     }
   });
 
@@ -238,13 +287,20 @@ Provide a complete implementation roadmap with success metrics.`,
  * Start the server with stdio transport
  */
 export async function startServer(): Promise<void> {
+  const config = getConfig();
+
+  logger.info("Starting Good AI Assessment MCP Server", {
+    version: SERVER_VERSION,
+    environment: config.environment,
+    auditEnabled: config.audit.enabled,
+  });
+
   const server = createServer();
   const transport = new StdioServerTransport();
 
   await server.connect(transport);
 
-  // Log to stderr to avoid interfering with stdio transport
-  console.error(`Good AI Assessment MCP Server v${SERVER_VERSION} started`);
+  logger.info("Server connected and ready");
 }
 
 /**
@@ -254,24 +310,6 @@ export function callTool(
   toolName: string,
   args: Record<string, unknown>
 ): unknown {
-  switch (toolName) {
-    case "assess_ai_readiness": {
-      const validatedInput = AssessAIReadinessInputSchema.parse(args);
-      return assessAIReadiness(validatedInput);
-    }
-    case "identify_bottlenecks": {
-      const validatedInput = IdentifyBottlenecksInputSchema.parse(args);
-      return identifyBottlenecks(validatedInput);
-    }
-    case "generate_pilot_plan": {
-      const validatedInput = GeneratePilotPlanInputSchema.parse(args);
-      return generatePilotPlan(validatedInput);
-    }
-    case "calculate_roi": {
-      const validatedInput = CalculateROIInputSchema.parse(args);
-      return calculateROI(validatedInput);
-    }
-    default:
-      throw new Error(`Unknown tool: ${toolName}`);
-  }
+  const audit = createAuditTrail();
+  return executeToolWithAudit(toolName, args, audit);
 }
