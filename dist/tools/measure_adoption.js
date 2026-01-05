@@ -119,72 +119,93 @@ function calculateDaysSinceGoLive(goLiveDate, endDate) {
     return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 }
 function calculateAdoptionRate(activeUsers, targetUsers) {
-    if (targetUsers === 0)
+    if (targetUsers === 0) {
         return 0;
+    }
     return Math.round((activeUsers / targetUsers) * 100 * 10) / 10;
 }
 function determineAdoptionStage(adoptionRate, daysSinceGoLive, velocity) {
-    if (velocity === "stalled" && adoptionRate < 30)
+    if (velocity === "stalled" && adoptionRate < 30) {
         return "declining";
-    if (daysSinceGoLive < 30)
+    }
+    if (daysSinceGoLive < 30) {
         return "initial";
-    if (adoptionRate < 30)
+    }
+    if (adoptionRate < 30) {
         return "initial";
-    if (adoptionRate < 60)
+    }
+    if (adoptionRate < 60) {
         return "growing";
-    if (adoptionRate < 85)
+    }
+    if (adoptionRate < 85) {
         return "mainstream";
+    }
     return "mature";
 }
 function determineAdoptionVelocity(currentRate, previousRate, daysSinceGoLive) {
     if (previousRate === undefined) {
         // Estimate based on days since go-live and current rate
         const expectedRate = Math.min(100, daysSinceGoLive * 2);
-        if (currentRate > expectedRate * 1.2)
+        if (currentRate > expectedRate * 1.2) {
             return "accelerating";
-        if (currentRate < expectedRate * 0.5)
+        }
+        if (currentRate < expectedRate * 0.5) {
             return "stalled";
+        }
         return "steady";
     }
     const change = currentRate - previousRate;
-    if (change > 10)
+    if (change > 10) {
         return "accelerating";
-    if (change > 0)
+    }
+    if (change > 0) {
         return "steady";
-    if (change > -5)
+    }
+    if (change > -5) {
         return "slowing";
+    }
     return "stalled";
 }
 function determineAdoptionHealth(adoptionRate, satisfactionScore, supportTickets, targetUsers) {
     let healthScore = 0;
     // Adoption rate contribution
-    if (adoptionRate >= 70)
+    if (adoptionRate >= 70) {
         healthScore += 3;
-    else if (adoptionRate >= 40)
+    }
+    else if (adoptionRate >= 40) {
         healthScore += 2;
-    else if (adoptionRate >= 20)
+    }
+    else if (adoptionRate >= 20) {
         healthScore += 1;
+    }
     // Satisfaction contribution
     if (satisfactionScore !== undefined) {
-        if (satisfactionScore >= 7)
+        if (satisfactionScore >= 7) {
             healthScore += 2;
-        else if (satisfactionScore >= 5)
+        }
+        else if (satisfactionScore >= 5) {
             healthScore += 1;
-        else
+        }
+        else {
             healthScore -= 1;
+        }
     }
     // Support burden contribution
     if (supportTickets !== undefined) {
         const ticketsPerUser = supportTickets / Math.max(1, targetUsers * (adoptionRate / 100));
-        if (ticketsPerUser < 0.1)
+        if (ticketsPerUser < 0.1) {
             healthScore += 1;
-        else if (ticketsPerUser > 0.5)
+        }
+        else if (ticketsPerUser > 0.5) {
             healthScore -= 1;
+        }
     }
-    if (healthScore >= 4)
+    if (healthScore >= 4) {
         return "healthy";
-    if (healthScore >= 2)
+    }
+    if (healthScore >= 2) {
         return "at_risk";
+    }
     return "critical";
 }
 function calculateEngagementScore(input) {
@@ -199,12 +220,15 @@ function calculateEngagementScore(input) {
     }
     // Session duration
     if (usage_metrics.avg_session_duration_minutes !== undefined) {
-        if (usage_metrics.avg_session_duration_minutes >= 15)
+        if (usage_metrics.avg_session_duration_minutes >= 15) {
             score += 20;
-        else if (usage_metrics.avg_session_duration_minutes >= 5)
+        }
+        else if (usage_metrics.avg_session_duration_minutes >= 5) {
             score += 10;
-        else
+        }
+        else {
             score += 5;
+        }
         factors++;
     }
     // Feature utilization
@@ -232,12 +256,15 @@ function calculateEngagementScore(input) {
     return factors > 0 ? Math.min(100, Math.round(score / factors * 2)) : 50;
 }
 function determineEngagementLevel(score) {
-    if (score >= 75)
+    if (score >= 75) {
         return "highly_engaged";
-    if (score >= 50)
+    }
+    if (score >= 50) {
         return "engaged";
-    if (score >= 25)
+    }
+    if (score >= 25) {
         return "passive";
+    }
     return "disengaged";
 }
 function calculateUserSegments(input) {
@@ -258,89 +285,116 @@ function calculateUserSegments(input) {
     };
 }
 function determineNPSCategory(nps) {
-    if (nps === undefined)
+    if (nps === undefined) {
         return "unknown";
-    if (nps >= 50)
+    }
+    if (nps >= 50) {
         return "promoter";
-    if (nps >= 0)
+    }
+    if (nps >= 0) {
         return "passive";
+    }
     return "detractor";
 }
 function determineSupportBurden(ticketsPerWeek, activeUsers) {
-    if (ticketsPerWeek === undefined)
+    if (ticketsPerWeek === undefined) {
         return "moderate";
+    }
     const ticketsPerUser = ticketsPerWeek / Math.max(1, activeUsers);
-    if (ticketsPerUser < 0.05)
+    if (ticketsPerUser < 0.05) {
         return "low";
-    if (ticketsPerUser < 0.2)
+    }
+    if (ticketsPerUser < 0.2) {
         return "moderate";
+    }
     return "high";
 }
 function determineProficiencyLevel(input) {
     const { behavioral_metrics, engagement_indicators } = input;
     let proficiencyScore = 0;
     if (behavioral_metrics?.error_rate_percent !== undefined) {
-        if (behavioral_metrics.error_rate_percent < 5)
+        if (behavioral_metrics.error_rate_percent < 5) {
             proficiencyScore += 3;
-        else if (behavioral_metrics.error_rate_percent < 15)
+        }
+        else if (behavioral_metrics.error_rate_percent < 15) {
             proficiencyScore += 2;
-        else
+        }
+        else {
             proficiencyScore += 1;
+        }
     }
     if (behavioral_metrics?.workflow_completion_rate !== undefined) {
-        if (behavioral_metrics.workflow_completion_rate >= 90)
+        if (behavioral_metrics.workflow_completion_rate >= 90) {
             proficiencyScore += 3;
-        else if (behavioral_metrics.workflow_completion_rate >= 70)
+        }
+        else if (behavioral_metrics.workflow_completion_rate >= 70) {
             proficiencyScore += 2;
-        else
+        }
+        else {
             proficiencyScore += 1;
+        }
     }
     if (engagement_indicators?.training_completion_percent !== undefined) {
-        if (engagement_indicators.training_completion_percent >= 90)
+        if (engagement_indicators.training_completion_percent >= 90) {
             proficiencyScore += 2;
-        else if (engagement_indicators.training_completion_percent >= 60)
+        }
+        else if (engagement_indicators.training_completion_percent >= 60) {
             proficiencyScore += 1;
+        }
     }
-    if (proficiencyScore >= 7)
+    if (proficiencyScore >= 7) {
         return "expert";
-    if (proficiencyScore >= 5)
+    }
+    if (proficiencyScore >= 5) {
         return "proficient";
-    if (proficiencyScore >= 3)
+    }
+    if (proficiencyScore >= 3) {
         return "learning";
+    }
     return "novice";
 }
 function determineWorkflowEfficiency(input) {
     const { behavioral_metrics } = input;
-    if (!behavioral_metrics)
+    if (!behavioral_metrics) {
         return "adequate";
+    }
     let efficiencyScore = 0;
     if (behavioral_metrics.workflow_completion_rate !== undefined) {
-        if (behavioral_metrics.workflow_completion_rate >= 85)
+        if (behavioral_metrics.workflow_completion_rate >= 85) {
             efficiencyScore += 2;
-        else if (behavioral_metrics.workflow_completion_rate >= 60)
+        }
+        else if (behavioral_metrics.workflow_completion_rate >= 60) {
             efficiencyScore += 1;
+        }
     }
     if (behavioral_metrics.process_adherence_percent !== undefined) {
-        if (behavioral_metrics.process_adherence_percent >= 90)
+        if (behavioral_metrics.process_adherence_percent >= 90) {
             efficiencyScore += 2;
-        else if (behavioral_metrics.process_adherence_percent >= 70)
+        }
+        else if (behavioral_metrics.process_adherence_percent >= 70) {
             efficiencyScore += 1;
+        }
     }
-    if (efficiencyScore >= 3)
+    if (efficiencyScore >= 3) {
         return "optimized";
-    if (efficiencyScore >= 1)
+    }
+    if (efficiencyScore >= 1) {
         return "adequate";
+    }
     return "needs_improvement";
 }
 function determineAITrustIndicator(input) {
     const { behavioral_metrics } = input;
-    if (!behavioral_metrics?.ai_recommendation_acceptance_rate)
+    if (!behavioral_metrics?.ai_recommendation_acceptance_rate) {
         return "unknown";
+    }
     const acceptanceRate = behavioral_metrics.ai_recommendation_acceptance_rate;
-    if (acceptanceRate >= 70)
+    if (acceptanceRate >= 70) {
         return "high";
-    if (acceptanceRate >= 40)
+    }
+    if (acceptanceRate >= 40) {
         return "medium";
+    }
     return "low";
 }
 function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
@@ -417,34 +471,46 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
     const highRisks = risks.filter((r) => r.severity === "high").length;
     const mediumRisks = risks.filter((r) => r.severity === "medium").length;
     let riskLevel;
-    if (highRisks >= 2)
+    if (highRisks >= 2) {
         riskLevel = "critical";
-    else if (highRisks >= 1)
+    }
+    else if (highRisks >= 1) {
         riskLevel = "high";
-    else if (mediumRisks >= 2)
+    }
+    else if (mediumRisks >= 2) {
         riskLevel = "medium";
-    else
+    }
+    else {
         riskLevel = "low";
+    }
     // Churn risk
     let churnRisk;
-    if (riskLevel === "critical")
+    if (riskLevel === "critical") {
         churnRisk = "high";
-    else if (riskLevel === "high")
+    }
+    else if (riskLevel === "high") {
         churnRisk = "elevated";
-    else if (riskLevel === "medium")
+    }
+    else if (riskLevel === "medium") {
         churnRisk = "moderate";
-    else
+    }
+    else {
         churnRisk = "low";
+    }
     // Intervention urgency
     let interventionUrgency;
-    if (riskLevel === "critical")
+    if (riskLevel === "critical") {
         interventionUrgency = "urgent";
-    else if (riskLevel === "high")
+    }
+    else if (riskLevel === "high") {
         interventionUrgency = "action_needed";
-    else if (riskLevel === "medium")
+    }
+    else if (riskLevel === "medium") {
         interventionUrgency = "monitor";
-    else
+    }
+    else {
         interventionUrgency = "none";
+    }
     return {
         risk_level: riskLevel,
         risk_factors: risks,
@@ -452,7 +518,7 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
         intervention_urgency: interventionUrgency,
     };
 }
-function generateRecommendations(input, adoptionRate, engagementScore, risks) {
+function generateRecommendations(input, adoptionRate, engagementScore, _risks) {
     const immediateActions = [];
     const engagementStrategies = [];
     const trainingRecs = [];
@@ -552,20 +618,27 @@ function generateSuccessIndicators(adoptionRate, engagementScore, daysSinceGoLiv
     const upcoming = [];
     const valueIndicators = [];
     // Achieved milestones
-    if (adoptionRate >= 10)
+    if (adoptionRate >= 10) {
         achieved.push("Initial adoption threshold (10%) achieved");
-    if (adoptionRate >= 25)
+    }
+    if (adoptionRate >= 25) {
         achieved.push("Early majority adoption (25%) achieved");
-    if (adoptionRate >= 50)
+    }
+    if (adoptionRate >= 50) {
         achieved.push("Majority adoption (50%) achieved");
-    if (adoptionRate >= 75)
+    }
+    if (adoptionRate >= 75) {
         achieved.push("Broad adoption (75%) achieved");
-    if (engagementScore >= 50)
+    }
+    if (engagementScore >= 50) {
         achieved.push("Healthy engagement level established");
-    if (daysSinceGoLive >= 30)
+    }
+    if (daysSinceGoLive >= 30) {
         achieved.push("First month post go-live completed");
-    if (daysSinceGoLive >= 90)
+    }
+    if (daysSinceGoLive >= 90) {
         achieved.push("First quarter post go-live completed");
+    }
     // Upcoming milestones
     if (adoptionRate < 50) {
         upcoming.push({
@@ -587,10 +660,12 @@ function generateSuccessIndicators(adoptionRate, engagementScore, daysSinceGoLiv
         likelihood: daysSinceGoLive >= 60 ? "on_track" : "at_risk",
     });
     // Value realization indicators
-    if (adoptionRate >= 30)
+    if (adoptionRate >= 30) {
         valueIndicators.push("Sufficient user base for measurable impact");
-    if (engagementScore >= 50)
+    }
+    if (engagementScore >= 50) {
         valueIndicators.push("Users actively engaging with solution capabilities");
+    }
     if (adoptionRate >= 50 && engagementScore >= 50) {
         valueIndicators.push("Strong foundation for ROI measurement");
         valueIndicators.push("Ready for expanded use case deployment");
@@ -608,12 +683,15 @@ function generateTrendAnalysis(input, adoptionRate, velocity) {
     const { benchmarks } = input;
     // Determine trajectory
     let trajectory;
-    if (velocity === "accelerating")
+    if (velocity === "accelerating") {
         trajectory = "positive";
-    else if (velocity === "steady")
+    }
+    else if (velocity === "steady") {
         trajectory = "neutral";
-    else
+    }
+    else {
         trajectory = "negative";
+    }
     // Calculate 30-day projection
     let projectedRate;
     let confidence;
@@ -690,12 +768,15 @@ export function measureAdoption(input) {
     const onTrack = vsTarget >= 80;
     let vsIndustry = "unknown";
     if (benchmarks?.industry_avg_adoption_rate !== undefined) {
-        if (adoptionRate > benchmarks.industry_avg_adoption_rate * 1.1)
+        if (adoptionRate > benchmarks.industry_avg_adoption_rate * 1.1) {
             vsIndustry = "above";
-        else if (adoptionRate >= benchmarks.industry_avg_adoption_rate * 0.9)
+        }
+        else if (adoptionRate >= benchmarks.industry_avg_adoption_rate * 0.9) {
             vsIndustry = "at";
-        else
+        }
+        else {
             vsIndustry = "below";
+        }
     }
     // Adoption change vs previous
     let adoptionChange = null;
@@ -703,12 +784,15 @@ export function measureAdoption(input) {
     if (benchmarks?.previous_period_active_users !== undefined) {
         const previousRate = calculateAdoptionRate(benchmarks.previous_period_active_users, deployment_info.total_target_users);
         adoptionChange = Math.round((adoptionRate - previousRate) * 10) / 10;
-        if (adoptionChange > 5)
+        if (adoptionChange > 5) {
             engagementChange = "improved";
-        else if (adoptionChange >= -2)
+        }
+        else if (adoptionChange >= -2) {
             engagementChange = "stable";
-        else
+        }
+        else {
             engagementChange = "declined";
+        }
     }
     // Identify risks
     const adoptionRisks = identifyAdoptionRisks(input, adoptionRate, engagementScore);
@@ -725,12 +809,15 @@ export function measureAdoption(input) {
     // Satisfaction indicator
     let satisfactionIndicator = "unknown";
     if (engagement_indicators?.user_satisfaction_score !== undefined) {
-        if (engagement_indicators.user_satisfaction_score >= 7)
+        if (engagement_indicators.user_satisfaction_score >= 7) {
             satisfactionIndicator = "positive";
-        else if (engagement_indicators.user_satisfaction_score >= 5)
+        }
+        else if (engagement_indicators.user_satisfaction_score >= 5) {
             satisfactionIndicator = "neutral";
-        else
+        }
+        else {
             satisfactionIndicator = "negative";
+        }
     }
     return {
         project_name,

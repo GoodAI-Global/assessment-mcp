@@ -19,6 +19,7 @@ import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL, } from "./tools
 import { assessImplementationRisk, AssessImplementationRiskInputSchema, ASSESS_IMPLEMENTATION_RISK_TOOL, } from "./tools/assess_implementation_risk.js";
 import { recommendTeamComposition, RecommendTeamCompositionInputSchema, RECOMMEND_TEAM_COMPOSITION_TOOL, } from "./tools/recommend_team_composition.js";
 import { measureAdoption, MeasureAdoptionInputSchema, MEASURE_ADOPTION_TOOL, } from "./tools/measure_adoption.js";
+import { calculateRealizedValue, CalculateRealizedValueInputSchema, CALCULATE_REALIZED_VALUE_TOOL, } from "./tools/calculate_realized_value.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -66,6 +67,9 @@ const TOOL_REGISTRY = {
     },
     measure_adoption: {
         execute: (input) => measureAdoption(MeasureAdoptionInputSchema.parse(input)),
+    },
+    calculate_realized_value: {
+        execute: (input) => calculateRealizedValue(CalculateRealizedValueInputSchema.parse(input)),
     },
 };
 /**
@@ -140,6 +144,7 @@ export function createServer() {
                 ASSESS_IMPLEMENTATION_RISK_TOOL,
                 RECOMMEND_TEAM_COMPOSITION_TOOL,
                 MEASURE_ADOPTION_TOOL,
+                CALCULATE_REALIZED_VALUE_TOOL,
             ],
         };
     });

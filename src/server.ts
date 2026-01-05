@@ -85,6 +85,11 @@ import {
   MEASURE_ADOPTION_TOOL,
 } from "./tools/measure_adoption.js";
 import {
+  calculateRealizedValue,
+  CalculateRealizedValueInputSchema,
+  CALCULATE_REALIZED_VALUE_TOOL,
+} from "./tools/calculate_realized_value.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -146,6 +151,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   measure_adoption: {
     execute: (input) => measureAdoption(MeasureAdoptionInputSchema.parse(input)),
+  },
+  calculate_realized_value: {
+    execute: (input) => calculateRealizedValue(CalculateRealizedValueInputSchema.parse(input)),
   },
 };
 
@@ -255,6 +263,7 @@ export function createServer(): Server {
         ASSESS_IMPLEMENTATION_RISK_TOOL,
         RECOMMEND_TEAM_COMPOSITION_TOOL,
         MEASURE_ADOPTION_TOOL,
+        CALCULATE_REALIZED_VALUE_TOOL,
       ],
     };
   });
