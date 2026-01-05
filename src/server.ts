@@ -50,6 +50,11 @@ import {
   PRIORITIZE_USE_CASES_TOOL,
 } from "./tools/prioritize_use_cases.js";
 import {
+  compareScenarios,
+  CompareScenariosInputSchema,
+  COMPARE_SCENARIOS_TOOL,
+} from "./tools/compare_scenarios.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -90,6 +95,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   prioritize_use_cases: {
     execute: (input) => prioritizeUseCases(PrioritizeUseCasesInputSchema.parse(input)),
+  },
+  compare_scenarios: {
+    execute: (input) => compareScenarios(CompareScenariosInputSchema.parse(input)),
   },
 };
 
@@ -192,6 +200,7 @@ export function createServer(): Server {
         GENERATE_EXECUTIVE_SUMMARY_TOOL,
         ASSESS_DATA_QUALITY_TOOL,
         PRIORITIZE_USE_CASES_TOOL,
+        COMPARE_SCENARIOS_TOOL,
       ],
     };
   });
