@@ -10,6 +10,7 @@ import { identifyBottlenecks, IdentifyBottlenecksInputSchema, IDENTIFY_BOTTLENEC
 import { generatePilotPlan, GeneratePilotPlanInputSchema, GENERATE_PILOT_PLAN_TOOL, } from "./tools/generate_pilot_plan.js";
 import { calculateROI, CalculateROIInputSchema, CALCULATE_ROI_TOOL, } from "./tools/calculate_roi.js";
 import { generateExecutiveSummary, GenerateExecutiveSummaryInputSchema, GENERATE_EXECUTIVE_SUMMARY_TOOL, } from "./tools/generate_executive_summary.js";
+import { assessDataQuality, AssessDataQualityInputSchema, ASSESS_DATA_QUALITY_TOOL, } from "./tools/assess_data_quality.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -30,6 +31,9 @@ const TOOL_REGISTRY = {
     },
     generate_executive_summary: {
         execute: (input) => generateExecutiveSummary(GenerateExecutiveSummaryInputSchema.parse(input)),
+    },
+    assess_data_quality: {
+        execute: (input) => assessDataQuality(AssessDataQualityInputSchema.parse(input)),
     },
 };
 /**
@@ -95,6 +99,7 @@ export function createServer() {
                 GENERATE_PILOT_PLAN_TOOL,
                 CALCULATE_ROI_TOOL,
                 GENERATE_EXECUTIVE_SUMMARY_TOOL,
+                ASSESS_DATA_QUALITY_TOOL,
             ],
         };
     });

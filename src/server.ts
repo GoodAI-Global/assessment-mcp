@@ -40,6 +40,11 @@ import {
   GENERATE_EXECUTIVE_SUMMARY_TOOL,
 } from "./tools/generate_executive_summary.js";
 import {
+  assessDataQuality,
+  AssessDataQualityInputSchema,
+  ASSESS_DATA_QUALITY_TOOL,
+} from "./tools/assess_data_quality.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -74,6 +79,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   generate_executive_summary: {
     execute: (input) => generateExecutiveSummary(GenerateExecutiveSummaryInputSchema.parse(input)),
+  },
+  assess_data_quality: {
+    execute: (input) => assessDataQuality(AssessDataQualityInputSchema.parse(input)),
   },
 };
 
@@ -174,6 +182,7 @@ export function createServer(): Server {
         GENERATE_PILOT_PLAN_TOOL,
         CALCULATE_ROI_TOOL,
         GENERATE_EXECUTIVE_SUMMARY_TOOL,
+        ASSESS_DATA_QUALITY_TOOL,
       ],
     };
   });
