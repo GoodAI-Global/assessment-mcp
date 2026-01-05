@@ -35,6 +35,11 @@ import {
   CALCULATE_ROI_TOOL,
 } from "./tools/calculate_roi.js";
 import {
+  generateExecutiveSummary,
+  GenerateExecutiveSummaryInputSchema,
+  GENERATE_EXECUTIVE_SUMMARY_TOOL,
+} from "./tools/generate_executive_summary.js";
+import {
   ENTERPRISE_ASSESSMENT_PROMPT,
   PILOT_RECOMMENDATION_PROMPT,
 } from "./prompts/index.js";
@@ -66,6 +71,9 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
   },
   calculate_roi: {
     execute: (input) => calculateROI(CalculateROIInputSchema.parse(input)),
+  },
+  generate_executive_summary: {
+    execute: (input) => generateExecutiveSummary(GenerateExecutiveSummaryInputSchema.parse(input)),
   },
 };
 
@@ -165,6 +173,7 @@ export function createServer(): Server {
         IDENTIFY_BOTTLENECKS_TOOL,
         GENERATE_PILOT_PLAN_TOOL,
         CALCULATE_ROI_TOOL,
+        GENERATE_EXECUTIVE_SUMMARY_TOOL,
       ],
     };
   });

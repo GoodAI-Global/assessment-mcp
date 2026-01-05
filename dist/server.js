@@ -9,6 +9,7 @@ import { assessAIReadiness, AssessAIReadinessInputSchema, ASSESS_AI_READINESS_TO
 import { identifyBottlenecks, IdentifyBottlenecksInputSchema, IDENTIFY_BOTTLENECKS_TOOL, } from "./tools/identify_bottlenecks.js";
 import { generatePilotPlan, GeneratePilotPlanInputSchema, GENERATE_PILOT_PLAN_TOOL, } from "./tools/generate_pilot_plan.js";
 import { calculateROI, CalculateROIInputSchema, CALCULATE_ROI_TOOL, } from "./tools/calculate_roi.js";
+import { generateExecutiveSummary, GenerateExecutiveSummaryInputSchema, GENERATE_EXECUTIVE_SUMMARY_TOOL, } from "./tools/generate_executive_summary.js";
 import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
 import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
 // Server metadata
@@ -26,6 +27,9 @@ const TOOL_REGISTRY = {
     },
     calculate_roi: {
         execute: (input) => calculateROI(CalculateROIInputSchema.parse(input)),
+    },
+    generate_executive_summary: {
+        execute: (input) => generateExecutiveSummary(GenerateExecutiveSummaryInputSchema.parse(input)),
     },
 };
 /**
@@ -90,6 +94,7 @@ export function createServer() {
                 IDENTIFY_BOTTLENECKS_TOOL,
                 GENERATE_PILOT_PLAN_TOOL,
                 CALCULATE_ROI_TOOL,
+                GENERATE_EXECUTIVE_SUMMARY_TOOL,
             ],
         };
     });
