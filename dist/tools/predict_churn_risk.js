@@ -510,7 +510,7 @@ function identifyRiskFactors(input) {
     // Sort by impact score
     return factors.sort((a, b) => b.impact_score - a.impact_score);
 }
-function identifyWarningSignals(input, churnScore) {
+function identifyWarningSignals(input, _churnScore) {
     const signals = [];
     const today = new Date().toISOString().split("T")[0];
     const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health } = input;
@@ -589,7 +589,7 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
     const valueActions = [];
     const execActions = [];
     const savePlays = [];
-    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health, account_info } = input;
+    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health } = input;
     // High priority actions based on risk
     if (churnScore >= 60) {
         priorityActions.push({

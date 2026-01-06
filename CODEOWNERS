@@ -1,0 +1,23 @@
+# Code Owners for Good AI Assessment MCP Server
+# These owners will be requested for review on PRs
+
+# Default owners for everything
+* @goodai/core-team
+
+# Tool implementations
+/src/tools/ @goodai/core-team
+
+# Server configuration
+/src/server.ts @goodai/core-team
+
+# CI/CD and infrastructure
+/.github/ @goodai/devops
+/Makefile @goodai/devops
+
+# Documentation
+/*.md @goodai/docs-team
+/docs/ @goodai/docs-team
+
+# Security-sensitive files
+/SECURITY.md @goodai/security
+/src/lib/audit.ts @goodai/security
