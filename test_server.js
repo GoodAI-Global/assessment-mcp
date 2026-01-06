@@ -99,25 +99,25 @@ function validateBusinessLogic(output) {
   const warnings = [];
 
   // Check that high manual entry produces CV recommendation
-  if (!output.dimensions.data_readiness.findings.some((f) =>
-    f.toLowerCase().includes("computer vision")
-  )) {
-    warnings.push(
-      "Expected 'Computer Vision' finding for high manual entry (85%)"
-    );
+  if (
+    !output.dimensions.data_readiness.findings.some((f) =>
+      f.toLowerCase().includes("computer vision")
+    )
+  ) {
+    warnings.push("Expected 'Computer Vision' finding for high manual entry (85%)");
   }
 
   // Check that no centralized data is flagged
-  if (!output.dimensions.data_readiness.findings.some((f) =>
-    f.toLowerCase().includes("centralized")
-  )) {
+  if (
+    !output.dimensions.data_readiness.findings.some((f) => f.toLowerCase().includes("centralized"))
+  ) {
     warnings.push("Expected finding about missing centralized data");
   }
 
   // Check that low legacy count is recognized as strength
-  if (!output.dimensions.technical_capability.findings.some((f) =>
-    f.toLowerCase().includes("legacy")
-  )) {
+  if (
+    !output.dimensions.technical_capability.findings.some((f) => f.toLowerCase().includes("legacy"))
+  ) {
     warnings.push("Expected finding about low legacy complexity");
   }
 

@@ -1,5 +1,11 @@
 # Good AI Assessment MCP Server
 
+[![CI](https://github.com/GoodAI-Global/assessment-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/GoodAI-Global/assessment-mcp/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/%40goodai%2Fassessment-mcp.svg)](https://badge.fury.io/js/%40goodai%2Fassessment-mcp)
+[![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+
 > **"Leverage, not lore"** — Tools that deliver immediate value
 
 An MCP (Model Context Protocol) server providing enterprise AI assessment tools for Claude Desktop. Evaluates AI readiness, identifies bottlenecks, plans pilots, calculates ROI, and supports the full consulting lifecycle.

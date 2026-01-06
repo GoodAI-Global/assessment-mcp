@@ -80,7 +80,13 @@ describe("recommend_team_composition tool", () => {
     complexity: {
       technical_complexity: "high",
       integration_scope: "enterprise_wide",
-      ai_components: ["ml_models", "nlp", "predictive_analytics", "generative_ai", "data_engineering"],
+      ai_components: [
+        "ml_models",
+        "nlp",
+        "predictive_analytics",
+        "generative_ai",
+        "data_engineering",
+      ],
       custom_development_required: true,
       data_complexity: "high",
     },
@@ -243,7 +249,9 @@ describe("recommend_team_composition tool", () => {
       expect(result.summary.total_fte).toBeGreaterThan(0);
       expect(result.summary.estimated_monthly_cost_usd).toBeGreaterThan(0);
       expect(result.summary.blended_rate_usd_per_hour).toBeGreaterThan(0);
-      expect(["senior_heavy", "balanced", "junior_heavy"]).toContain(result.summary.team_experience_level);
+      expect(["senior_heavy", "balanced", "junior_heavy"]).toContain(
+        result.summary.team_experience_level
+      );
       expect(result.summary.key_staffing_rationale.length).toBeGreaterThan(0);
     });
 
@@ -359,7 +367,11 @@ describe("recommend_team_composition tool", () => {
       const result = recommendTeamComposition(managedServiceInput);
       // Managed services are leaner but sustained
       expect(result.recommended_team.length).toBeGreaterThanOrEqual(3);
-      expect(result.recommended_team.some((m) => m.role.includes("DevOps") || m.role.includes("Engineer"))).toBe(true);
+      expect(
+        result.recommended_team.some(
+          (m) => m.role.includes("DevOps") || m.role.includes("Engineer")
+        )
+      ).toBe(true);
     });
 
     it("should have appropriate phases for assessment", () => {
@@ -417,12 +429,16 @@ describe("recommend_team_composition tool", () => {
       const enterpriseResult = recommendTeamComposition(enterpriseWide);
       const singleResult = recommendTeamComposition(singleSystem);
 
-      expect(enterpriseResult.summary.total_fte).toBeGreaterThanOrEqual(singleResult.summary.total_fte);
+      expect(enterpriseResult.summary.total_fte).toBeGreaterThanOrEqual(
+        singleResult.summary.total_fte
+      );
     });
 
     it("should include AI/ML Lead for ML projects", () => {
       const result = recommendTeamComposition(baseInput); // has ml_models
-      expect(result.recommended_team.some((m) => m.role.includes("ML") || m.role.includes("AI"))).toBe(true);
+      expect(
+        result.recommended_team.some((m) => m.role.includes("ML") || m.role.includes("AI"))
+      ).toBe(true);
     });
 
     it("should include Data Engineer for data-intensive projects", () => {
@@ -466,7 +482,10 @@ describe("recommend_team_composition tool", () => {
     it("should add change manager for significant change needs", () => {
       const significantChange = {
         ...implementationInput,
-        client_context: { ...implementationInput.client_context, change_management_needs: "significant" as const },
+        client_context: {
+          ...implementationInput.client_context,
+          change_management_needs: "significant" as const,
+        },
       };
       const result = recommendTeamComposition(significantChange);
       expect(result.recommended_team.some((m) => m.role === "Change Manager")).toBe(true);
@@ -489,12 +508,18 @@ describe("recommend_team_composition tool", () => {
     it("should provide recommendations for limited client capability", () => {
       const limitedCapability = {
         ...baseInput,
-        client_context: { ...baseInput.client_context, client_technical_capability: "limited" as const },
+        client_context: {
+          ...baseInput.client_context,
+          client_technical_capability: "limited" as const,
+        },
       };
       const result = recommendTeamComposition(limitedCapability);
-      expect(result.recommendations.client_resource_recommendations.some(
-        (r) => r.toLowerCase().includes("knowledge transfer") || r.toLowerCase().includes("upskilling")
-      )).toBe(true);
+      expect(
+        result.recommendations.client_resource_recommendations.some(
+          (r) =>
+            r.toLowerCase().includes("knowledge transfer") || r.toLowerCase().includes("upskilling")
+        )
+      ).toBe(true);
     });
   });
 
@@ -505,7 +530,11 @@ describe("recommend_team_composition tool", () => {
   describe("Industry Variations", () => {
     it("should add healthcare-specific resources", () => {
       const result = recommendTeamComposition(healthcareInput);
-      expect(result.recommended_team.some((m) => m.role === "Industry SME" || m.role === "Data Privacy Specialist")).toBe(true);
+      expect(
+        result.recommended_team.some(
+          (m) => m.role === "Industry SME" || m.role === "Data Privacy Specialist"
+        )
+      ).toBe(true);
     });
 
     it("should add insurance-specific resources", () => {
@@ -566,7 +595,8 @@ describe("recommend_team_composition tool", () => {
       const result = recommendTeamComposition(baseInput);
       result.recommended_team.forEach((member) => {
         // Monthly cost should be approximately rate * hours * weeks/month
-        const expectedMonthly = member.billable_rate_usd_per_hour * member.fte_allocation * 40 * 4.33;
+        const expectedMonthly =
+          member.billable_rate_usd_per_hour * member.fte_allocation * 40 * 4.33;
         expect(member.monthly_cost_usd).toBeCloseTo(expectedMonthly, -1); // Within 10
       });
     });
@@ -604,7 +634,8 @@ describe("recommend_team_composition tool", () => {
       const result = recommendTeamComposition(baseInput);
       // Has ml_models, so should have ML-related skills
       const hasMLSkill = result.skill_coverage.required_skills.some(
-        (s) => s.skill.toLowerCase().includes("machine learning") || s.skill.toLowerCase().includes("ml")
+        (s) =>
+          s.skill.toLowerCase().includes("machine learning") || s.skill.toLowerCase().includes("ml")
       );
       expect(hasMLSkill).toBe(true);
     });
@@ -644,8 +675,12 @@ describe("recommend_team_composition tool", () => {
     it("should define decision authority", () => {
       const result = recommendTeamComposition(baseInput);
       expect(result.team_dynamics.decision_authority.length).toBeGreaterThan(0);
-      expect(result.team_dynamics.decision_authority.some((d) => d.area === "Strategic direction")).toBe(true);
-      expect(result.team_dynamics.decision_authority.some((d) => d.area === "Technical decisions")).toBe(true);
+      expect(
+        result.team_dynamics.decision_authority.some((d) => d.area === "Strategic direction")
+      ).toBe(true);
+      expect(
+        result.team_dynamics.decision_authority.some((d) => d.area === "Technical decisions")
+      ).toBe(true);
     });
 
     it("should have enhanced communication for transformation", () => {
@@ -662,8 +697,8 @@ describe("recommend_team_composition tool", () => {
     it("should identify single point of failure risks", () => {
       const result = recommendTeamComposition(baseInput);
       // Small team likely has critical single points
-      const hasSinglePointRisk = result.staffing_risks.some(
-        (r) => r.risk.toLowerCase().includes("single point")
+      const hasSinglePointRisk = result.staffing_risks.some((r) =>
+        r.risk.toLowerCase().includes("single point")
       );
       expect(hasSinglePointRisk).toBe(true);
     });
@@ -675,7 +710,9 @@ describe("recommend_team_composition tool", () => {
       };
       const result = recommendTeamComposition(constrained);
       if (result.skill_coverage.skill_gaps.some((g) => g.gap_severity === "critical")) {
-        expect(result.staffing_risks.some((r) => r.risk.toLowerCase().includes("skill gap"))).toBe(true);
+        expect(result.staffing_risks.some((r) => r.risk.toLowerCase().includes("skill gap"))).toBe(
+          true
+        );
       }
     });
 
@@ -705,13 +742,17 @@ describe("recommend_team_composition tool", () => {
 
     it("should include accelerated team option", () => {
       const result = recommendTeamComposition(baseInput);
-      expect(result.alternative_configurations.some((a) => a.name === "Accelerated Team")).toBe(true);
+      expect(result.alternative_configurations.some((a) => a.name === "Accelerated Team")).toBe(
+        true
+      );
     });
 
     it("should have cost differences that make sense", () => {
       const result = recommendTeamComposition(baseInput);
       const leanOption = result.alternative_configurations.find((a) => a.name === "Lean Team");
-      const acceleratedOption = result.alternative_configurations.find((a) => a.name === "Accelerated Team");
+      const acceleratedOption = result.alternative_configurations.find(
+        (a) => a.name === "Accelerated Team"
+      );
       expect(leanOption?.cost_difference_percent).toBeLessThan(0);
       expect(acceleratedOption?.cost_difference_percent).toBeGreaterThan(0);
     });
@@ -774,7 +815,9 @@ describe("recommend_team_composition tool", () => {
       const assessmentResult = recommendTeamComposition(assessmentInput);
       const implementationResult = recommendTeamComposition(implementationInput);
 
-      expect(assessmentResult.summary.total_team_size).not.toBe(implementationResult.summary.total_team_size);
+      expect(assessmentResult.summary.total_team_size).not.toBe(
+        implementationResult.summary.total_team_size
+      );
     });
   });
 

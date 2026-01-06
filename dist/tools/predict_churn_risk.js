@@ -8,13 +8,7 @@ import { z } from "zod";
 // ============================================
 export const PredictChurnRiskInputSchema = z.object({
     client_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     // Account details
     account_info: z.object({
         contract_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format"),
@@ -28,7 +22,9 @@ export const PredictChurnRiskInputSchema = z.object({
     // Engagement metrics
     engagement_metrics: z.object({
         monthly_active_user_percent: z.number().min(0).max(100).optional(),
-        login_frequency_trend: z.enum(["increasing", "stable", "decreasing", "significantly_decreasing"]).optional(),
+        login_frequency_trend: z
+            .enum(["increasing", "stable", "decreasing", "significantly_decreasing"])
+            .optional(),
         feature_utilization_percent: z.number().min(0).max(100).optional(),
         support_ticket_volume: z.enum(["low", "moderate", "high", "very_high"]).optional(),
         support_sentiment: z.enum(["positive", "neutral", "negative", "very_negative"]).optional(),
@@ -39,7 +35,9 @@ export const PredictChurnRiskInputSchema = z.object({
     satisfaction_indicators: z.object({
         nps_score: z.number().min(-100).max(100).optional(),
         csat_score: z.number().min(0).max(10).optional(),
-        recent_survey_response: z.enum(["very_satisfied", "satisfied", "neutral", "dissatisfied", "very_dissatisfied"]).optional(),
+        recent_survey_response: z
+            .enum(["very_satisfied", "satisfied", "neutral", "dissatisfied", "very_dissatisfied"])
+            .optional(),
         complaint_count_last_90_days: z.number().min(0).optional(),
         escalation_count_last_90_days: z.number().min(0).optional(),
         reference_willingness: z.boolean().optional(),
@@ -47,7 +45,9 @@ export const PredictChurnRiskInputSchema = z.object({
     // Value realization
     value_metrics: z.object({
         roi_achieved_percent: z.number().optional(),
-        value_vs_expectation: z.enum(["exceeding", "meeting", "below", "significantly_below"]).optional(),
+        value_vs_expectation: z
+            .enum(["exceeding", "meeting", "below", "significantly_below"])
+            .optional(),
         business_case_status: z.enum(["validated", "tracking", "at_risk", "failed"]).optional(),
         expansion_discussions: z.boolean().optional(),
         budget_changes: z.enum(["increased", "stable", "reduced", "significantly_reduced"]).optional(),
@@ -62,21 +62,25 @@ export const PredictChurnRiskInputSchema = z.object({
         payment_issues: z.boolean().optional(),
     }),
     // Recent events
-    recent_events: z.object({
+    recent_events: z
+        .object({
         major_incidents: z.number().min(0).default(0),
         service_disruptions: z.number().min(0).default(0),
         missed_slas: z.number().min(0).default(0),
         successful_projects: z.number().min(0).default(0),
         expansion_wins: z.number().min(0).default(0),
-    }).optional(),
+    })
+        .optional(),
     // External factors
-    external_factors: z.object({
+    external_factors: z
+        .object({
         client_financial_health: z.enum(["strong", "stable", "challenged", "distressed"]).optional(),
         industry_disruption: z.boolean().optional(),
         leadership_changes: z.boolean().optional(),
         m_and_a_activity: z.boolean().optional(),
         strategic_shift: z.boolean().optional(),
-    }).optional(),
+    })
+        .optional(),
 });
 // ============================================
 // Tool Definition
@@ -335,10 +339,7 @@ function calculateRelationshipScore(health) {
 }
 function calculateOverallChurnScore(engagementScore, satisfactionScore, valueScore, relationshipScore, externalFactors, recentEvents) {
     // Weighted average (inverted - lower scores = higher churn risk)
-    const healthScore = engagementScore * 0.25 +
-        satisfactionScore * 0.25 +
-        valueScore * 0.30 +
-        relationshipScore * 0.20;
+    const healthScore = engagementScore * 0.25 + satisfactionScore * 0.25 + valueScore * 0.3 + relationshipScore * 0.2;
     // Churn score is inverted health score
     let churnScore = 100 - healthScore;
     // External factor adjustments
@@ -402,9 +403,10 @@ function determineUrgency(churnScore, daysUntilEnd) {
 }
 function identifyRiskFactors(input) {
     const factors = [];
-    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health, external_factors } = input;
+    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health, external_factors, } = input;
     // Engagement factors
-    if (engagement_metrics.monthly_active_user_percent !== undefined && engagement_metrics.monthly_active_user_percent < 40) {
+    if (engagement_metrics.monthly_active_user_percent !== undefined &&
+        engagement_metrics.monthly_active_user_percent < 40) {
         factors.push({
             category: "Engagement",
             factor: "Low user adoption",
@@ -432,7 +434,8 @@ function identifyRiskFactors(input) {
             evidence: `NPS score of ${satisfaction_indicators.nps_score}`,
         });
     }
-    if (satisfaction_indicators.escalation_count_last_90_days !== undefined && satisfaction_indicators.escalation_count_last_90_days > 0) {
+    if (satisfaction_indicators.escalation_count_last_90_days !== undefined &&
+        satisfaction_indicators.escalation_count_last_90_days > 0) {
         factors.push({
             category: "Satisfaction",
             factor: "Recent escalations",
@@ -442,7 +445,8 @@ function identifyRiskFactors(input) {
         });
     }
     // Value factors
-    if (value_metrics.value_vs_expectation === "significantly_below" || value_metrics.value_vs_expectation === "below") {
+    if (value_metrics.value_vs_expectation === "significantly_below" ||
+        value_metrics.value_vs_expectation === "below") {
         factors.push({
             category: "Value",
             factor: "Underdelivering on value",
@@ -451,7 +455,8 @@ function identifyRiskFactors(input) {
             evidence: `Value delivery ${value_metrics.value_vs_expectation} expectations`,
         });
     }
-    if (value_metrics.budget_changes === "significantly_reduced" || value_metrics.budget_changes === "reduced") {
+    if (value_metrics.budget_changes === "significantly_reduced" ||
+        value_metrics.budget_changes === "reduced") {
         factors.push({
             category: "Value",
             factor: "Budget reduction",
@@ -461,7 +466,8 @@ function identifyRiskFactors(input) {
         });
     }
     // Relationship factors
-    if (relationship_health.executive_sponsor_status === "departed" || relationship_health.executive_sponsor_status === "disengaged") {
+    if (relationship_health.executive_sponsor_status === "departed" ||
+        relationship_health.executive_sponsor_status === "disengaged") {
         factors.push({
             category: "Relationship",
             factor: "Executive sponsor issue",
@@ -470,7 +476,8 @@ function identifyRiskFactors(input) {
             evidence: `Executive sponsor ${relationship_health.executive_sponsor_status}`,
         });
     }
-    if (relationship_health.competitor_mentions !== undefined && relationship_health.competitor_mentions > 0) {
+    if (relationship_health.competitor_mentions !== undefined &&
+        relationship_health.competitor_mentions > 0) {
         factors.push({
             category: "Relationship",
             factor: "Competitor evaluation",
@@ -489,7 +496,8 @@ function identifyRiskFactors(input) {
         });
     }
     // External factors
-    if (external_factors?.client_financial_health === "distressed" || external_factors?.client_financial_health === "challenged") {
+    if (external_factors?.client_financial_health === "distressed" ||
+        external_factors?.client_financial_health === "challenged") {
         factors.push({
             category: "External",
             factor: "Client financial health",
@@ -523,7 +531,8 @@ function identifyWarningSignals(input, _churnScore) {
             recommended_response: "Immediately identify and engage new sponsor candidate",
         });
     }
-    if (satisfaction_indicators.escalation_count_last_90_days !== undefined && satisfaction_indicators.escalation_count_last_90_days >= 3) {
+    if (satisfaction_indicators.escalation_count_last_90_days !== undefined &&
+        satisfaction_indicators.escalation_count_last_90_days >= 3) {
         signals.push({
             signal: "Multiple escalations in recent period",
             severity: "critical",
@@ -548,7 +557,8 @@ function identifyWarningSignals(input, _churnScore) {
             recommended_response: "Engage users to understand barriers and re-activate",
         });
     }
-    if (relationship_health.competitor_mentions !== undefined && relationship_health.competitor_mentions > 0) {
+    if (relationship_health.competitor_mentions !== undefined &&
+        relationship_health.competitor_mentions > 0) {
         signals.push({
             signal: "Competitor evaluation detected",
             severity: "warning",
@@ -573,7 +583,8 @@ function identifyWarningSignals(input, _churnScore) {
             recommended_response: "Schedule executive business review",
         });
     }
-    if (relationship_health.champion_count !== undefined && relationship_health.champion_count === 0) {
+    if (relationship_health.champion_count !== undefined &&
+        relationship_health.champion_count === 0) {
         signals.push({
             signal: "No identified champions",
             severity: "caution",
@@ -602,7 +613,8 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
         savePlays.push("Executive escalation for relationship repair");
     }
     // Engagement actions
-    if (engagement_metrics.monthly_active_user_percent !== undefined && engagement_metrics.monthly_active_user_percent < 50) {
+    if (engagement_metrics.monthly_active_user_percent !== undefined &&
+        engagement_metrics.monthly_active_user_percent < 50) {
         priorityActions.push({
             action: "Launch adoption acceleration program",
             owner: "Customer Success Manager",
@@ -611,7 +623,8 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
         });
     }
     // Satisfaction actions
-    if (satisfaction_indicators.escalation_count_last_90_days !== undefined && satisfaction_indicators.escalation_count_last_90_days > 0) {
+    if (satisfaction_indicators.escalation_count_last_90_days !== undefined &&
+        satisfaction_indicators.escalation_count_last_90_days > 0) {
         priorityActions.push({
             action: "Address outstanding escalation themes",
             owner: "Support Lead + CSM",
@@ -620,7 +633,8 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
         });
     }
     // Value actions
-    if (value_metrics.value_vs_expectation === "below" || value_metrics.value_vs_expectation === "significantly_below") {
+    if (value_metrics.value_vs_expectation === "below" ||
+        value_metrics.value_vs_expectation === "significantly_below") {
         valueActions.push("Conduct value realization workshop");
         valueActions.push("Document and quantify achieved benefits");
         valueActions.push("Identify quick wins to demonstrate additional value");
@@ -635,7 +649,8 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
         valueActions.push("Proactively share value metrics and success stories");
     }
     // Relationship actions
-    if (relationship_health.executive_sponsor_status === "departed" || relationship_health.executive_sponsor_status === "disengaged") {
+    if (relationship_health.executive_sponsor_status === "departed" ||
+        relationship_health.executive_sponsor_status === "disengaged") {
         relationshipActions.push("Identify new executive sponsor candidate");
         relationshipActions.push("Engage multiple stakeholders to broaden support");
         execActions.push("Request executive introduction from existing contacts");
@@ -645,7 +660,8 @@ function generateRetentionStrategy(input, churnScore, daysUntilEnd) {
         relationshipActions.push("Recognize and reward existing champions");
     }
     // Executive engagement
-    if (engagement_metrics.executive_engagement === "none" || engagement_metrics.executive_engagement === "rare") {
+    if (engagement_metrics.executive_engagement === "none" ||
+        engagement_metrics.executive_engagement === "rare") {
         execActions.push("Schedule executive business review");
         execActions.push("Invite client executives to thought leadership events");
     }
@@ -729,7 +745,8 @@ function generateScenarios(churnScore, input) {
 function assessCompetitiveThreat(input, industry) {
     const { relationship_health, engagement_metrics, value_metrics } = input;
     let threatLevel = "low";
-    if (relationship_health.competitor_mentions !== undefined && relationship_health.competitor_mentions > 0) {
+    if (relationship_health.competitor_mentions !== undefined &&
+        relationship_health.competitor_mentions > 0) {
         threatLevel = relationship_health.competitor_mentions >= 3 ? "high" : "moderate";
     }
     if (value_metrics.value_vs_expectation === "significantly_below") {
@@ -746,13 +763,16 @@ function assessCompetitiveThreat(input, industry) {
         general: ["Industry leaders", "Specialized vendors", "Cloud platforms"],
     };
     const vulnerabilities = [];
-    if (engagement_metrics.monthly_active_user_percent !== undefined && engagement_metrics.monthly_active_user_percent < 50) {
+    if (engagement_metrics.monthly_active_user_percent !== undefined &&
+        engagement_metrics.monthly_active_user_percent < 50) {
         vulnerabilities.push("Low adoption makes switching easier");
     }
-    if (engagement_metrics.feature_utilization_percent !== undefined && engagement_metrics.feature_utilization_percent < 40) {
+    if (engagement_metrics.feature_utilization_percent !== undefined &&
+        engagement_metrics.feature_utilization_percent < 40) {
         vulnerabilities.push("Not leveraging differentiating features");
     }
-    if (value_metrics.value_vs_expectation === "below" || value_metrics.value_vs_expectation === "significantly_below") {
+    if (value_metrics.value_vs_expectation === "below" ||
+        value_metrics.value_vs_expectation === "significantly_below") {
         vulnerabilities.push("Value proposition under question");
     }
     return {
@@ -771,7 +791,7 @@ function identifySuccessIndicators(input) {
     const positive = [];
     const momentum = [];
     const quickWins = [];
-    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health, recent_events } = input;
+    const { engagement_metrics, satisfaction_indicators, value_metrics, relationship_health, recent_events, } = input;
     // Positive signals
     if (satisfaction_indicators.reference_willingness) {
         positive.push("Client willing to be a reference");
@@ -795,11 +815,13 @@ function identifySuccessIndicators(input) {
     if (recent_events?.expansion_wins && recent_events.expansion_wins > 0) {
         momentum.push(`${recent_events.expansion_wins} expansion win(s) achieved`);
     }
-    if (value_metrics.roi_achieved_percent !== undefined && value_metrics.roi_achieved_percent > 100) {
+    if (value_metrics.roi_achieved_percent !== undefined &&
+        value_metrics.roi_achieved_percent > 100) {
         momentum.push("ROI exceeding expectations");
     }
     // Quick wins
-    if (engagement_metrics.feature_utilization_percent !== undefined && engagement_metrics.feature_utilization_percent < 60) {
+    if (engagement_metrics.feature_utilization_percent !== undefined &&
+        engagement_metrics.feature_utilization_percent < 60) {
         quickWins.push("Enable underutilized features for additional value");
     }
     if (relationship_health.champion_count !== undefined && relationship_health.champion_count > 0) {
@@ -867,9 +889,13 @@ export function predictChurnRisk(input) {
         next_90_days: daysUntilEnd <= 90
             ? "Renewal period - execute retention strategy"
             : "Build momentum toward successful renewal",
-        renewal_readiness: churnScore >= 60 ? "critical"
-            : churnScore >= 40 ? "at_risk"
-                : churnScore >= 20 ? "needs_work" : "ready",
+        renewal_readiness: churnScore >= 60
+            ? "critical"
+            : churnScore >= 40
+                ? "at_risk"
+                : churnScore >= 20
+                    ? "needs_work"
+                    : "ready",
     };
     // Revenue impact
     const arrAtRisk = account_info.contract_value_annual_usd * (churnScore / 100);
@@ -921,7 +947,8 @@ export function predictChurnRisk(input) {
             current_arr_usd: account_info.contract_value_annual_usd,
             at_risk_arr_usd: Math.round(arrAtRisk),
             expansion_potential_usd: Math.round(expansionPotential),
-            expected_outcome_arr_usd: Math.round(account_info.contract_value_annual_usd * (renewalProbability / 100) + expansionPotential * 0.3),
+            expected_outcome_arr_usd: Math.round(account_info.contract_value_annual_usd * (renewalProbability / 100) +
+                expansionPotential * 0.3),
             revenue_confidence: churnScore <= 30 ? "high" : churnScore <= 50 ? "medium" : "low",
         },
         success_indicators: successIndicators,

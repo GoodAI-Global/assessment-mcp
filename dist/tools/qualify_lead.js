@@ -8,29 +8,13 @@ import { z } from "zod";
 // ============================================
 export const QualifyLeadInputSchema = z.object({
     company_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     employee_count: z.number().min(1).max(1000000),
     annual_revenue_usd: z.number().min(0).max(100000000000).optional(),
     pain_points: z.array(z.string().max(500)).min(1).max(10),
     current_technology_maturity: z.enum(["low", "medium", "high"]).optional(),
-    decision_timeline: z.enum([
-        "immediate",
-        "this_quarter",
-        "this_year",
-        "exploring",
-    ]).optional(),
-    budget_indication: z.enum([
-        "undefined",
-        "limited",
-        "moderate",
-        "significant",
-    ]).optional(),
+    decision_timeline: z.enum(["immediate", "this_quarter", "this_year", "exploring"]).optional(),
+    budget_indication: z.enum(["undefined", "limited", "moderate", "significant"]).optional(),
     champion_identified: z.boolean().optional(),
     executive_sponsor: z.boolean().optional(),
     previous_ai_experience: z.enum(["none", "failed", "limited", "successful"]).optional(),

@@ -10,18 +10,14 @@ export const MeasureAdoptionInputSchema = z.object({
     project_name: z.string().min(1).max(200),
     client_name: z.string().min(1).max(200),
     solution_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     // Deployment details
     deployment_info: z.object({
         go_live_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format"),
         total_target_users: z.number().min(1).max(100000),
-        deployment_type: z.enum(["pilot", "phased_rollout", "big_bang", "department_specific"]).default("phased_rollout"),
+        deployment_type: z
+            .enum(["pilot", "phased_rollout", "big_bang", "department_specific"])
+            .default("phased_rollout"),
         current_phase: z.string().optional(),
     }),
     // Usage metrics
@@ -35,7 +31,8 @@ export const MeasureAdoptionInputSchema = z.object({
         total_features_available: z.number().min(1).optional(),
     }),
     // Engagement indicators
-    engagement_indicators: z.object({
+    engagement_indicators: z
+        .object({
         user_satisfaction_score: z.number().min(0).max(10).optional(),
         nps_score: z.number().min(-100).max(100).optional(),
         support_tickets_per_week: z.number().min(0).optional(),
@@ -43,31 +40,38 @@ export const MeasureAdoptionInputSchema = z.object({
         voluntary_usage_percent: z.number().min(0).max(100).optional(),
         power_users_count: z.number().min(0).optional(),
         feedback_submissions: z.number().min(0).optional(),
-    }).optional(),
+    })
+        .optional(),
     // Behavioral metrics
-    behavioral_metrics: z.object({
+    behavioral_metrics: z
+        .object({
         tasks_completed_per_user: z.number().min(0).optional(),
         error_rate_percent: z.number().min(0).max(100).optional(),
         time_to_proficiency_days: z.number().min(0).optional(),
         process_adherence_percent: z.number().min(0).max(100).optional(),
         workflow_completion_rate: z.number().min(0).max(100).optional(),
         ai_recommendation_acceptance_rate: z.number().min(0).max(100).optional(),
-    }).optional(),
+    })
+        .optional(),
     // Change management context
-    change_context: z.object({
+    change_context: z
+        .object({
         change_champions_count: z.number().min(0).optional(),
         resistance_incidents: z.number().min(0).optional(),
         training_sessions_conducted: z.number().min(0).optional(),
         communication_touchpoints: z.number().min(0).optional(),
         executive_engagement_level: z.enum(["high", "medium", "low"]).optional(),
-    }).optional(),
+    })
+        .optional(),
     // Comparison data
-    benchmarks: z.object({
+    benchmarks: z
+        .object({
         industry_avg_adoption_rate: z.number().min(0).max(100).optional(),
         previous_period_active_users: z.number().min(0).optional(),
         target_adoption_rate: z.number().min(0).max(100).optional(),
         target_satisfaction_score: z.number().min(0).max(10).optional(),
-    }).optional(),
+    })
+        .optional(),
     // Assessment period
     assessment_period: z.object({
         start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format"),
@@ -90,7 +94,10 @@ export const MEASURE_ADOPTION_TOOL = {
                 type: "string",
                 enum: ["manufacturing", "insurance", "aquaculture", "healthcare", "general"],
             },
-            deployment_info: { type: "object", description: "Deployment details including go-live date and target users" },
+            deployment_info: {
+                type: "object",
+                description: "Deployment details including go-live date and target users",
+            },
             usage_metrics: { type: "object", description: "Current usage metrics" },
             engagement_indicators: { type: "object", description: "User engagement indicators" },
             behavioral_metrics: { type: "object", description: "Behavioral usage metrics" },
@@ -232,7 +239,8 @@ function calculateEngagementScore(input) {
         factors++;
     }
     // Feature utilization
-    if (usage_metrics.features_used_count !== undefined && usage_metrics.total_features_available !== undefined) {
+    if (usage_metrics.features_used_count !== undefined &&
+        usage_metrics.total_features_available !== undefined) {
         const utilization = usage_metrics.features_used_count / usage_metrics.total_features_available;
         score += utilization * 20;
         factors++;
@@ -253,7 +261,7 @@ function calculateEngagementScore(input) {
         factors++;
     }
     // Normalize to 0-100
-    return factors > 0 ? Math.min(100, Math.round(score / factors * 2)) : 50;
+    return factors > 0 ? Math.min(100, Math.round((score / factors) * 2)) : 50;
 }
 function determineEngagementLevel(score) {
     if (score >= 75) {
@@ -421,7 +429,8 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
     }
     // High support burden
     if (engagement_indicators?.support_tickets_per_week !== undefined) {
-        const ticketsPerUser = engagement_indicators.support_tickets_per_week / Math.max(1, usage_metrics.active_users_count);
+        const ticketsPerUser = engagement_indicators.support_tickets_per_week /
+            Math.max(1, usage_metrics.active_users_count);
         if (ticketsPerUser > 0.3) {
             risks.push({
                 factor: "High support ticket volume per user",
@@ -432,7 +441,8 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
         }
     }
     // Low satisfaction
-    if (engagement_indicators?.user_satisfaction_score !== undefined && engagement_indicators.user_satisfaction_score < 5) {
+    if (engagement_indicators?.user_satisfaction_score !== undefined &&
+        engagement_indicators.user_satisfaction_score < 5) {
         risks.push({
             factor: "User satisfaction below acceptable threshold",
             severity: "high",
@@ -441,7 +451,8 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
         });
     }
     // Low training completion
-    if (engagement_indicators?.training_completion_percent !== undefined && engagement_indicators.training_completion_percent < 50) {
+    if (engagement_indicators?.training_completion_percent !== undefined &&
+        engagement_indicators.training_completion_percent < 50) {
         risks.push({
             factor: "Low training completion rate",
             severity: "medium",
@@ -450,7 +461,8 @@ function identifyAdoptionRisks(input, adoptionRate, engagementScore) {
         });
     }
     // Resistance incidents
-    if (change_context?.resistance_incidents !== undefined && change_context.resistance_incidents > 5) {
+    if (change_context?.resistance_incidents !== undefined &&
+        change_context.resistance_incidents > 5) {
         risks.push({
             factor: "Elevated change resistance incidents",
             severity: "medium",
@@ -553,7 +565,8 @@ function generateRecommendations(input, adoptionRate, engagementScore, _risks) {
         });
     }
     // Based on satisfaction
-    if (engagement_indicators?.user_satisfaction_score !== undefined && engagement_indicators.user_satisfaction_score < 6) {
+    if (engagement_indicators?.user_satisfaction_score !== undefined &&
+        engagement_indicators.user_satisfaction_score < 6) {
         immediateActions.push({
             action: "Conduct user experience review and quick fixes",
             priority: "high",
@@ -562,7 +575,8 @@ function generateRecommendations(input, adoptionRate, engagementScore, _risks) {
         });
     }
     // Based on training
-    if (engagement_indicators?.training_completion_percent !== undefined && engagement_indicators.training_completion_percent < 60) {
+    if (engagement_indicators?.training_completion_percent !== undefined &&
+        engagement_indicators.training_completion_percent < 60) {
         trainingRecs.push("Launch micro-learning modules for just-in-time training");
         trainingRecs.push("Create role-specific training paths");
         trainingRecs.push("Implement training completion incentives");
@@ -572,7 +586,8 @@ function generateRecommendations(input, adoptionRate, engagementScore, _risks) {
         trainingRecs.push("Create best practice sharing sessions");
     }
     // Based on change context
-    if (change_context?.change_champions_count !== undefined && change_context.change_champions_count < 5) {
+    if (change_context?.change_champions_count !== undefined &&
+        change_context.change_champions_count < 5) {
         immediateActions.push({
             action: "Recruit and enable additional change champions",
             priority: "medium",
@@ -724,7 +739,9 @@ function generateTrendAnalysis(input, adoptionRate, velocity) {
             projected_adoption_rate: Math.round(projectedRate),
             confidence,
         },
-        inflection_points: inflectionPoints.length > 0 ? inflectionPoints : ["No significant inflection points identified"],
+        inflection_points: inflectionPoints.length > 0
+            ? inflectionPoints
+            : ["No significant inflection points identified"],
         seasonality_notes: "Consider business cycles, holidays, and industry-specific patterns when interpreting trends",
     };
 }
@@ -861,7 +878,7 @@ export function measureAdoption(input) {
             depth_of_use: {
                 avg_session_duration_minutes: usage_metrics.avg_session_duration_minutes || 10,
                 sessions_per_user_per_week: usage_metrics.weekly_active_users > 0
-                    ? Math.round((usage_metrics.daily_sessions_avg * 7) / usage_metrics.weekly_active_users * 10) / 10
+                    ? Math.round(((usage_metrics.daily_sessions_avg * 7) / usage_metrics.weekly_active_users) * 10) / 10
                     : 0,
                 tasks_per_session: input.behavioral_metrics?.tasks_completed_per_user || 5,
                 depth_score: Math.round(engagementScore * 0.8),
@@ -885,7 +902,11 @@ export function measureAdoption(input) {
             nps_score: engagement_indicators?.nps_score ?? null,
             nps_category: npsCategory,
             support_burden: supportBurden,
-            sentiment_trend: engagementChange === "improved" ? "improving" : engagementChange === "declined" ? "declining" : "stable",
+            sentiment_trend: engagementChange === "improved"
+                ? "improving"
+                : engagementChange === "declined"
+                    ? "declining"
+                    : "stable",
             top_satisfaction_drivers: ["Ease of use", "Time savings", "Reliability"],
             top_dissatisfaction_drivers: supportBurden === "high"
                 ? ["Response time", "Bug frequency", "Missing features"]
@@ -905,13 +926,21 @@ export function measureAdoption(input) {
             vs_target: {
                 adoption_rate_vs_target: vsTarget,
                 satisfaction_vs_target: benchmarks?.target_satisfaction_score && engagement_indicators?.user_satisfaction_score
-                    ? Math.round((engagement_indicators.user_satisfaction_score / benchmarks.target_satisfaction_score) * 100)
+                    ? Math.round((engagement_indicators.user_satisfaction_score /
+                        benchmarks.target_satisfaction_score) *
+                        100)
                     : null,
                 on_track: onTrack,
             },
             vs_industry: {
                 adoption_vs_industry_avg: vsIndustry,
-                percentile_estimate: vsIndustry === "above" ? 75 : vsIndustry === "at" ? 50 : vsIndustry === "below" ? 25 : null,
+                percentile_estimate: vsIndustry === "above"
+                    ? 75
+                    : vsIndustry === "at"
+                        ? 50
+                        : vsIndustry === "below"
+                            ? 25
+                            : null,
             },
             vs_previous_period: {
                 adoption_change_percent: adoptionChange,

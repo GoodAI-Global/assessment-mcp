@@ -7,14 +7,20 @@ import { z } from "zod";
 // Input Schema (Zod validation)
 // ============================================
 export const IdentifyBottlenecksInputSchema = z.object({
-    process_description: z.string().min(10, "Process description must be at least 10 characters").max(5000, "Process description too long"),
+    process_description: z
+        .string()
+        .min(10, "Process description must be at least 10 characters")
+        .max(5000, "Process description too long"),
     metrics: z.object({
         cycle_time_hours: z.number().positive().max(100_000, "Cycle time unrealistic").optional(),
         error_rate_percent: z.number().min(0).max(100).optional(),
         manual_steps_count: z.number().int().min(0).max(10_000, "Step count unrealistic").optional(),
         cost_per_unit_usd: z.number().positive().max(1_000_000_000, "Cost unrealistic").optional(),
     }),
-    pain_points: z.array(z.string().max(1000, "Pain point too long")).min(1, "At least one pain point is required").max(50, "Too many pain points"),
+    pain_points: z
+        .array(z.string().max(1000, "Pain point too long"))
+        .min(1, "At least one pain point is required")
+        .max(50, "Too many pain points"),
     industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
 });
 // ============================================
@@ -106,7 +112,8 @@ function analyzeBottlenecks(input) {
     }
     // Industry-specific bottleneck detection
     if (industry === "aquaculture") {
-        if (processLower.includes("feed") || pain_points.some(p => p.toLowerCase().includes("feed"))) {
+        if (processLower.includes("feed") ||
+            pain_points.some((p) => p.toLowerCase().includes("feed"))) {
             bottlenecks.push({
                 name: "Feed Optimization",
                 description: "Suboptimal feed timing and quantity leading to waste and reduced growth rates.",
@@ -118,7 +125,8 @@ function analyzeBottlenecks(input) {
         }
     }
     if (industry === "insurance") {
-        if (processLower.includes("claim") || pain_points.some(p => p.toLowerCase().includes("claim"))) {
+        if (processLower.includes("claim") ||
+            pain_points.some((p) => p.toLowerCase().includes("claim"))) {
             bottlenecks.push({
                 name: "Claims Processing Delays",
                 description: "Manual claims review creates backlogs and customer dissatisfaction.",

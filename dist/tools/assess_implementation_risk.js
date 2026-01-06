@@ -9,13 +9,7 @@ import { z } from "zod";
 export const AssessImplementationRiskInputSchema = z.object({
     project_name: z.string().min(1).max(200),
     company_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     // Project characteristics
     project_type: z.enum([
         "assessment",
@@ -33,12 +27,9 @@ export const AssessImplementationRiskInputSchema = z.object({
         data_quality_rating: z.number().min(0).max(10).default(5),
         legacy_system_involvement: z.boolean().default(false),
         custom_development_required: z.boolean().default(false),
-        ai_model_type: z.enum([
-            "off_the_shelf",
-            "fine_tuned",
-            "custom_trained",
-            "novel_research",
-        ]).default("off_the_shelf"),
+        ai_model_type: z
+            .enum(["off_the_shelf", "fine_tuned", "custom_trained", "novel_research"])
+            .default("off_the_shelf"),
     }),
     // Organizational factors
     organizational_factors: z.object({
@@ -49,25 +40,34 @@ export const AssessImplementationRiskInputSchema = z.object({
         cross_functional_alignment: z.enum(["strong", "moderate", "weak"]).default("moderate"),
     }),
     // External factors
-    external_factors: z.object({
+    external_factors: z
+        .object({
         regulatory_requirements: z.enum(["none", "standard", "strict", "critical"]).default("none"),
         vendor_dependencies: z.number().min(0).max(20).default(0),
         market_pressure: z.enum(["low", "medium", "high"]).default("medium"),
         economic_uncertainty: z.enum(["low", "medium", "high"]).default("medium"),
-    }).optional(),
+    })
+        .optional(),
     // Team factors
-    team_factors: z.object({
-        team_experience_level: z.enum(["expert", "experienced", "mixed", "junior"]).default("experienced"),
+    team_factors: z
+        .object({
+        team_experience_level: z
+            .enum(["expert", "experienced", "mixed", "junior"])
+            .default("experienced"),
         team_stability: z.enum(["stable", "moderate_turnover", "high_turnover"]).default("stable"),
         skill_gaps_identified: z.array(z.string()).max(10).default([]),
         remote_team_percentage: z.number().min(0).max(100).default(0),
-    }).optional(),
+    })
+        .optional(),
     // Known issues
-    known_issues: z.array(z.object({
+    known_issues: z
+        .array(z.object({
         issue: z.string().max(500),
         severity: z.enum(["low", "medium", "high", "critical"]),
         status: z.enum(["open", "in_progress", "mitigated"]),
-    })).max(20).optional(),
+    }))
+        .max(20)
+        .optional(),
 });
 // ============================================
 // Tool Definition
@@ -123,7 +123,7 @@ function getRiskLevel(score) {
     }
     return "low";
 }
-function calculateTechnicalRisk(factors, projectType, durationWeeks) {
+function calculateTechnicalRisk(factors, _projectType, durationWeeks) {
     const riskFactors = [];
     let totalScore = 0;
     // Technology maturity
@@ -331,10 +331,26 @@ function calculateExternalRisk(factors, industry) {
     totalScore += economicScore;
     // Industry-specific risks
     const industryRisks = {
-        healthcare: { factor: "Healthcare Compliance", impact: 2, description: "HIPAA and patient data requirements add complexity" },
-        insurance: { factor: "Insurance Regulations", impact: 2, description: "Regulatory oversight requires careful compliance" },
-        manufacturing: { factor: "Operational Continuity", impact: 1, description: "Production impacts require careful scheduling" },
-        aquaculture: { factor: "Environmental Factors", impact: 1, description: "Environmental conditions may affect implementation" },
+        healthcare: {
+            factor: "Healthcare Compliance",
+            impact: 2,
+            description: "HIPAA and patient data requirements add complexity",
+        },
+        insurance: {
+            factor: "Insurance Regulations",
+            impact: 2,
+            description: "Regulatory oversight requires careful compliance",
+        },
+        manufacturing: {
+            factor: "Operational Continuity",
+            impact: 1,
+            description: "Production impacts require careful scheduling",
+        },
+        aquaculture: {
+            factor: "Environmental Factors",
+            impact: 1,
+            description: "Environmental conditions may affect implementation",
+        },
         general: { factor: "General Market", impact: 0, description: "" },
     };
     const industryRisk = industryRisks[industry];
@@ -458,7 +474,13 @@ function generateIdentifiedRisks(categories, _input) {
     for (const { category, data } of categoryMappings) {
         for (const factor of data.factors) {
             const probability = factor.impact >= 3 ? "high" : factor.impact >= 2 ? "medium" : "low";
-            const impact = factor.impact >= 4 ? "critical" : factor.impact >= 3 ? "high" : factor.impact >= 2 ? "medium" : "low";
+            const impact = factor.impact >= 4
+                ? "critical"
+                : factor.impact >= 3
+                    ? "high"
+                    : factor.impact >= 2
+                        ? "medium"
+                        : "low";
             risks.push({
                 id: `RISK-${String(riskId).padStart(3, "0")}`,
                 category,
@@ -505,7 +527,7 @@ function generateMitigation(factor, category) {
         "Critical Issues": "Immediate escalation, dedicated resolution team, daily progress tracking",
         "High Severity Issues": "Priority resolution, escalation path, impact monitoring",
     };
-    return mitigations[factor] || `Develop specific mitigation plan for ${factor} in ${category} category`;
+    return (mitigations[factor] || `Develop specific mitigation plan for ${factor} in ${category} category`);
 }
 function generateContingency(factor, _category) {
     const contingencies = {
@@ -547,15 +569,39 @@ function getOwnerRecommendation(category) {
 }
 function getEarlyWarnings(factor) {
     const warnings = {
-        "Technology Maturity": ["Unexpected technical blockers", "Vendor support delays", "Documentation gaps"],
-        "Integration Complexity": ["Integration testing failures", "Unexpected data format issues", "Performance degradation"],
-        "Data Quality": ["Model accuracy below targets", "Missing data fields", "Inconsistent data formats"],
-        "Executive Sponsorship": ["Delayed approvals", "Reduced meeting attendance", "Budget questions"],
-        "Change Readiness": ["User resistance signals", "Training attendance drops", "Negative feedback themes"],
-        "Team Experience": ["Quality issues in deliverables", "Missed deadlines", "Excessive questions"],
+        "Technology Maturity": [
+            "Unexpected technical blockers",
+            "Vendor support delays",
+            "Documentation gaps",
+        ],
+        "Integration Complexity": [
+            "Integration testing failures",
+            "Unexpected data format issues",
+            "Performance degradation",
+        ],
+        "Data Quality": [
+            "Model accuracy below targets",
+            "Missing data fields",
+            "Inconsistent data formats",
+        ],
+        "Executive Sponsorship": [
+            "Delayed approvals",
+            "Reduced meeting attendance",
+            "Budget questions",
+        ],
+        "Change Readiness": [
+            "User resistance signals",
+            "Training attendance drops",
+            "Negative feedback themes",
+        ],
+        "Team Experience": [
+            "Quality issues in deliverables",
+            "Missed deadlines",
+            "Excessive questions",
+        ],
         "Team Stability": ["Departure announcements", "Reduced engagement", "Knowledge gaps emerging"],
     };
-    return warnings[factor] || ["Deviation from plan", "Stakeholder concerns raised", "KPI targets missed"];
+    return (warnings[factor] || ["Deviation from plan", "Stakeholder concerns raised", "KPI targets missed"]);
 }
 function generateRiskHeatmap(risks) {
     return {
@@ -566,10 +612,12 @@ function generateRiskHeatmap(risks) {
             .filter((r) => r.probability === "high" && (r.impact === "low" || r.impact === "medium"))
             .map((r) => r.title),
         low_probability_high_impact: risks
-            .filter((r) => (r.probability === "low" || r.probability === "medium") && (r.impact === "high" || r.impact === "critical"))
+            .filter((r) => (r.probability === "low" || r.probability === "medium") &&
+            (r.impact === "high" || r.impact === "critical"))
             .map((r) => r.title),
         low_probability_low_impact: risks
-            .filter((r) => (r.probability === "low" || r.probability === "medium") && (r.impact === "low" || r.impact === "medium"))
+            .filter((r) => (r.probability === "low" || r.probability === "medium") &&
+            (r.impact === "low" || r.impact === "medium"))
             .map((r) => r.title),
     };
 }
@@ -646,28 +694,31 @@ function generateScenarios(overallScore, risks) {
         },
     };
 }
-function generateRecommendations(overallScore, overallLevel, categories, risks) {
+function generateRecommendations(overallScore, _overallLevel, categories, risks) {
     let proceedRec;
     let rationale;
     if (overallScore <= 3) {
         proceedRec = "proceed";
-        rationale = "Risk profile is manageable with standard project governance. No significant blockers identified.";
+        rationale =
+            "Risk profile is manageable with standard project governance. No significant blockers identified.";
     }
     else if (overallScore <= 5) {
         proceedRec = "proceed_with_caution";
-        rationale = "Moderate risks require active management. Proceed with enhanced monitoring and mitigation plans in place.";
+        rationale =
+            "Moderate risks require active management. Proceed with enhanced monitoring and mitigation plans in place.";
     }
     else if (overallScore <= 7) {
         proceedRec = "reassess";
-        rationale = "Significant risks identified that may impact project success. Recommend addressing key risks before proceeding.";
+        rationale =
+            "Significant risks identified that may impact project success. Recommend addressing key risks before proceeding.";
     }
     else {
         proceedRec = "do_not_proceed";
-        rationale = "Critical risk level indicates high probability of project failure. Recommend fundamental reassessment.";
+        rationale =
+            "Critical risk level indicates high probability of project failure. Recommend fundamental reassessment.";
     }
     const highRisks = risks.filter((r) => r.risk_score >= 3);
-    const criticalCategory = Object.entries(categories)
-        .sort(([, a], [, b]) => b.score - a.score)[0];
+    const criticalCategory = Object.entries(categories).sort(([, a], [, b]) => b.score - a.score)[0];
     return {
         proceed_recommendation: proceedRec,
         rationale,

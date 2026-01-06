@@ -76,9 +76,7 @@ describe("estimateDealSize", () => {
       expect(result.estimate.value_range).toHaveProperty("low_usd");
       expect(result.estimate.value_range).toHaveProperty("mid_usd");
       expect(result.estimate.value_range).toHaveProperty("high_usd");
-      expect(result.estimate.value_range.low_usd).toBeLessThan(
-        result.estimate.value_range.mid_usd
-      );
+      expect(result.estimate.value_range.low_usd).toBeLessThan(result.estimate.value_range.mid_usd);
       expect(result.estimate.value_range.mid_usd).toBeLessThan(
         result.estimate.value_range.high_usd
       );
@@ -87,12 +85,8 @@ describe("estimateDealSize", () => {
 
   describe("engagement type pricing", () => {
     it("should increase price for larger engagement types", () => {
-      const assessment = estimateDealSize(
-        createValidInput({ engagement_type: "assessment" })
-      );
-      const pilot = estimateDealSize(
-        createValidInput({ engagement_type: "pilot" })
-      );
+      const assessment = estimateDealSize(createValidInput({ engagement_type: "assessment" }));
+      const pilot = estimateDealSize(createValidInput({ engagement_type: "pilot" }));
       const implementation = estimateDealSize(
         createValidInput({ engagement_type: "implementation" })
       );
@@ -112,9 +106,7 @@ describe("estimateDealSize", () => {
     });
 
     it("should handle managed_service engagement type", () => {
-      const result = estimateDealSize(
-        createValidInput({ engagement_type: "managed_service" })
-      );
+      const result = estimateDealSize(createValidInput({ engagement_type: "managed_service" }));
 
       expect(result.estimate.total_estimated_value_usd).toBeGreaterThan(0);
       expect(result.deal_structure.payment_structure).toContain("recurring");
@@ -123,53 +115,29 @@ describe("estimateDealSize", () => {
 
   describe("company size scaling", () => {
     it("should increase price for larger companies", () => {
-      const small = estimateDealSize(
-        createValidInput({ employee_count: 100 })
-      );
-      const medium = estimateDealSize(
-        createValidInput({ employee_count: 500 })
-      );
-      const large = estimateDealSize(
-        createValidInput({ employee_count: 5000 })
-      );
-      const enterprise = estimateDealSize(
-        createValidInput({ employee_count: 10000 })
-      );
+      const small = estimateDealSize(createValidInput({ employee_count: 100 }));
+      const medium = estimateDealSize(createValidInput({ employee_count: 500 }));
+      const large = estimateDealSize(createValidInput({ employee_count: 5000 }));
+      const enterprise = estimateDealSize(createValidInput({ employee_count: 10000 }));
 
-      expect(small.estimate.base_value_usd).toBeLessThan(
-        medium.estimate.base_value_usd
-      );
-      expect(medium.estimate.base_value_usd).toBeLessThan(
-        large.estimate.base_value_usd
-      );
-      expect(large.estimate.base_value_usd).toBeLessThan(
-        enterprise.estimate.base_value_usd
-      );
+      expect(small.estimate.base_value_usd).toBeLessThan(medium.estimate.base_value_usd);
+      expect(medium.estimate.base_value_usd).toBeLessThan(large.estimate.base_value_usd);
+      expect(large.estimate.base_value_usd).toBeLessThan(enterprise.estimate.base_value_usd);
     });
   });
 
   describe("industry multipliers", () => {
     it("should apply industry premiums", () => {
-      const general = estimateDealSize(
-        createValidInput({ industry: "general" })
-      );
-      const healthcare = estimateDealSize(
-        createValidInput({ industry: "healthcare" })
-      );
+      const general = estimateDealSize(createValidInput({ industry: "general" }));
+      const healthcare = estimateDealSize(createValidInput({ industry: "healthcare" }));
 
-      expect(healthcare.estimate.base_value_usd).toBeGreaterThan(
-        general.estimate.base_value_usd
-      );
+      expect(healthcare.estimate.base_value_usd).toBeGreaterThan(general.estimate.base_value_usd);
     });
 
     it("should document industry premium in pricing factors", () => {
-      const result = estimateDealSize(
-        createValidInput({ industry: "insurance" })
-      );
+      const result = estimateDealSize(createValidInput({ industry: "insurance" }));
 
-      const industryFactor = result.pricing_factors.find(
-        (f) => f.factor === "Industry Premium"
-      );
+      const industryFactor = result.pricing_factors.find((f) => f.factor === "Industry Premium");
       expect(industryFactor).toBeDefined();
       expect(industryFactor?.impact).toBe("increases");
     });
@@ -348,9 +316,7 @@ describe("estimateDealSize", () => {
 
   describe("timeline adjustments", () => {
     it("should increase price for accelerated timeline", () => {
-      const standard = estimateDealSize(
-        createValidInput({ timeline_preference: "standard" })
-      );
+      const standard = estimateDealSize(createValidInput({ timeline_preference: "standard" }));
       const accelerated = estimateDealSize(
         createValidInput({ timeline_preference: "accelerated" })
       );
@@ -361,12 +327,8 @@ describe("estimateDealSize", () => {
     });
 
     it("should decrease price for extended timeline", () => {
-      const standard = estimateDealSize(
-        createValidInput({ timeline_preference: "standard" })
-      );
-      const extended = estimateDealSize(
-        createValidInput({ timeline_preference: "extended" })
-      );
+      const standard = estimateDealSize(createValidInput({ timeline_preference: "standard" }));
+      const extended = estimateDealSize(createValidInput({ timeline_preference: "extended" }));
 
       expect(extended.estimate.timeline_adjustment_usd).toBeLessThan(
         standard.estimate.timeline_adjustment_usd
@@ -471,9 +433,7 @@ describe("estimateDealSize", () => {
     });
 
     it("should recommend premium position for sole source", () => {
-      const result = estimateDealSize(
-        createValidInput({ competitive_situation: "sole_source" })
-      );
+      const result = estimateDealSize(createValidInput({ competitive_situation: "sole_source" }));
 
       expect(result.competitive_positioning.recommended_position).toBe("premium");
     });
@@ -511,9 +471,7 @@ describe("estimateDealSize", () => {
     });
 
     it("should show higher expansion for assessment than transformation", () => {
-      const assessment = estimateDealSize(
-        createValidInput({ engagement_type: "assessment" })
-      );
+      const assessment = estimateDealSize(createValidInput({ engagement_type: "assessment" }));
       const transformation = estimateDealSize(
         createValidInput({ engagement_type: "transformation" })
       );
@@ -561,8 +519,8 @@ describe("estimateDealSize", () => {
         })
       );
 
-      const legacyRisk = result.deal_risks.find((r) =>
-        r.risk.toLowerCase().includes("legacy") || r.risk.toLowerCase().includes("scope")
+      const legacyRisk = result.deal_risks.find(
+        (r) => r.risk.toLowerCase().includes("legacy") || r.risk.toLowerCase().includes("scope")
       );
       expect(legacyRisk).toBeDefined();
     });
@@ -674,12 +632,8 @@ describe("estimateDealSize", () => {
     });
 
     it("should include relationship-specific recommendations", () => {
-      const newClient = estimateDealSize(
-        createValidInput({ existing_relationship: false })
-      );
-      const existingClient = estimateDealSize(
-        createValidInput({ existing_relationship: true })
-      );
+      const newClient = estimateDealSize(createValidInput({ existing_relationship: false }));
+      const existingClient = estimateDealSize(createValidInput({ existing_relationship: true }));
 
       const newRecommendations = newClient.recommendations.join(" ").toLowerCase();
       const existingRecommendations = existingClient.recommendations.join(" ").toLowerCase();

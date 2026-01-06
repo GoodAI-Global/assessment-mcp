@@ -17,7 +17,9 @@ describe("generatePilotPlan", () => {
     ...overrides,
   });
 
-  const createValidInput = (overrides: Partial<GeneratePilotPlanInput> = {}): GeneratePilotPlanInput => ({
+  const createValidInput = (
+    overrides: Partial<GeneratePilotPlanInput> = {}
+  ): GeneratePilotPlanInput => ({
     selected_bottleneck: createBottleneck(),
     constraints: {
       max_budget_usd: 50000,
@@ -190,9 +192,7 @@ describe("generatePilotPlan", () => {
     it("should include universal metrics", () => {
       const result = generatePilotPlan(createValidInput());
 
-      const hasAdoption = result.success_metrics.some((m) =>
-        m.toLowerCase().includes("adoption")
-      );
+      const hasAdoption = result.success_metrics.some((m) => m.toLowerCase().includes("adoption"));
       expect(hasAdoption).toBe(true);
     });
 
@@ -240,9 +240,7 @@ describe("generatePilotPlan", () => {
       const lowResult = generatePilotPlan(lowInput);
       const highResult = generatePilotPlan(highInput);
 
-      expect(highResult.risk_mitigation.length).toBeGreaterThan(
-        lowResult.risk_mitigation.length
-      );
+      expect(highResult.risk_mitigation.length).toBeGreaterThan(lowResult.risk_mitigation.length);
     });
   });
 

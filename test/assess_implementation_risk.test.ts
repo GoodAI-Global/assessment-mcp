@@ -79,9 +79,7 @@ describe("assessImplementationRisk", () => {
       expect(["low", "medium", "high", "critical"]).toContain(
         result.risk_summary.overall_risk_level
       );
-      expect(["improving", "stable", "deteriorating"]).toContain(
-        result.risk_summary.risk_trend
-      );
+      expect(["improving", "stable", "deteriorating"]).toContain(result.risk_summary.risk_trend);
       expect(result.risk_summary.key_risk_drivers.length).toBeGreaterThan(0);
     });
   });
@@ -212,9 +210,7 @@ describe("assessImplementationRisk", () => {
     });
 
     it("should increase risk for transformation projects", () => {
-      const pilot = assessImplementationRisk(
-        createValidInput({ project_type: "pilot" })
-      );
+      const pilot = assessImplementationRisk(createValidInput({ project_type: "pilot" }));
       const transformation = assessImplementationRisk(
         createValidInput({ project_type: "transformation" })
       );
@@ -254,12 +250,12 @@ describe("assessImplementationRisk", () => {
     });
 
     it("should include industry-specific risks", () => {
-      const healthcare = assessImplementationRisk(
-        createValidInput({ industry: "healthcare" })
-      );
+      const healthcare = assessImplementationRisk(createValidInput({ industry: "healthcare" }));
 
       const hasComplianceRisk = healthcare.risk_categories.external_risk.factors.some(
-        (f) => f.factor.toLowerCase().includes("compliance") || f.factor.toLowerCase().includes("healthcare")
+        (f) =>
+          f.factor.toLowerCase().includes("compliance") ||
+          f.factor.toLowerCase().includes("healthcare")
       );
       expect(hasComplianceRisk).toBe(true);
     });

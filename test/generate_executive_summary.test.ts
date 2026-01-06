@@ -64,9 +64,7 @@ describe("generateExecutiveSummary", () => {
     });
 
     it("should include company name in header", () => {
-      const result = generateExecutiveSummary(
-        createValidInput({ company_name: "TestCorp Inc." })
-      );
+      const result = generateExecutiveSummary(createValidInput({ company_name: "TestCorp Inc." }));
 
       expect(result.header.company).toBe("TestCorp Inc.");
     });
@@ -80,9 +78,7 @@ describe("generateExecutiveSummary", () => {
     });
 
     it("should use provided assessment date", () => {
-      const result = generateExecutiveSummary(
-        createValidInput({ assessment_date: "2024-01-15" })
-      );
+      const result = generateExecutiveSummary(createValidInput({ assessment_date: "2024-01-15" }));
 
       expect(result.header.date).toBe("2024-01-15");
     });
@@ -345,9 +341,7 @@ describe("generateExecutiveSummary", () => {
       });
       const result = generateExecutiveSummary(input);
 
-      const hasDataRisk = result.risk_summary.some((r) =>
-        r.risk.toLowerCase().includes("data")
-      );
+      const hasDataRisk = result.risk_summary.some((r) => r.risk.toLowerCase().includes("data"));
       expect(hasDataRisk).toBe(true);
     });
 

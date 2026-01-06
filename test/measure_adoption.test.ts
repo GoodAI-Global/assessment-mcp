@@ -143,9 +143,7 @@ describe("measure_adoption tool", () => {
     });
 
     it("should reject empty project name", () => {
-      expect(() =>
-        MeasureAdoptionInputSchema.parse({ ...baseInput, project_name: "" })
-      ).toThrow();
+      expect(() => MeasureAdoptionInputSchema.parse({ ...baseInput, project_name: "" })).toThrow();
     });
 
     it("should reject invalid industry", () => {
@@ -193,9 +191,7 @@ describe("measure_adoption tool", () => {
     it("should accept all valid industries", () => {
       const industries = ["manufacturing", "insurance", "aquaculture", "healthcare", "general"];
       industries.forEach((industry) => {
-        expect(() =>
-          MeasureAdoptionInputSchema.parse({ ...baseInput, industry })
-        ).not.toThrow();
+        expect(() => MeasureAdoptionInputSchema.parse({ ...baseInput, industry })).not.toThrow();
       });
     });
 
@@ -241,8 +237,12 @@ describe("measure_adoption tool", () => {
       expect(result.adoption_summary).toBeDefined();
       expect(result.adoption_summary.overall_adoption_score).toBeGreaterThanOrEqual(0);
       expect(result.adoption_summary.overall_adoption_score).toBeLessThanOrEqual(100);
-      expect(["initial", "growing", "mainstream", "mature", "declining"]).toContain(result.adoption_summary.adoption_stage);
-      expect(["accelerating", "steady", "slowing", "stalled"]).toContain(result.adoption_summary.adoption_velocity);
+      expect(["initial", "growing", "mainstream", "mature", "declining"]).toContain(
+        result.adoption_summary.adoption_stage
+      );
+      expect(["accelerating", "steady", "slowing", "stalled"]).toContain(
+        result.adoption_summary.adoption_velocity
+      );
       expect(["healthy", "at_risk", "critical"]).toContain(result.adoption_summary.adoption_health);
     });
 
@@ -251,7 +251,9 @@ describe("measure_adoption tool", () => {
       expect(snapshot.adoption_rate_percent).toBeDefined();
       expect(snapshot.active_user_rate_percent).toBeDefined();
       expect(snapshot.engagement_score).toBeDefined();
-      expect(["positive", "neutral", "negative", "unknown"]).toContain(snapshot.satisfaction_indicator);
+      expect(["positive", "neutral", "negative", "unknown"]).toContain(
+        snapshot.satisfaction_indicator
+      );
     });
 
     it("should include adoption metrics", () => {
@@ -264,20 +266,28 @@ describe("measure_adoption tool", () => {
     it("should include engagement analysis", () => {
       expect(result.engagement_analysis).toBeDefined();
       expect(result.engagement_analysis.engagement_score).toBeGreaterThanOrEqual(0);
-      expect(["highly_engaged", "engaged", "passive", "disengaged"]).toContain(result.engagement_analysis.engagement_level);
+      expect(["highly_engaged", "engaged", "passive", "disengaged"]).toContain(
+        result.engagement_analysis.engagement_level
+      );
       expect(result.engagement_analysis.user_segments).toBeDefined();
     });
 
     it("should include satisfaction metrics", () => {
       expect(result.satisfaction_metrics).toBeDefined();
-      expect(["promoter", "passive", "detractor", "unknown"]).toContain(result.satisfaction_metrics.nps_category);
+      expect(["promoter", "passive", "detractor", "unknown"]).toContain(
+        result.satisfaction_metrics.nps_category
+      );
       expect(["low", "moderate", "high"]).toContain(result.satisfaction_metrics.support_burden);
     });
 
     it("should include behavioral insights", () => {
       expect(result.behavioral_insights).toBeDefined();
-      expect(["expert", "proficient", "learning", "novice"]).toContain(result.behavioral_insights.proficiency_level);
-      expect(["optimized", "adequate", "needs_improvement"]).toContain(result.behavioral_insights.workflow_efficiency);
+      expect(["expert", "proficient", "learning", "novice"]).toContain(
+        result.behavioral_insights.proficiency_level
+      );
+      expect(["optimized", "adequate", "needs_improvement"]).toContain(
+        result.behavioral_insights.workflow_efficiency
+      );
     });
 
     it("should include benchmark comparison", () => {
@@ -291,7 +301,9 @@ describe("measure_adoption tool", () => {
       expect(result.adoption_risks).toBeDefined();
       expect(["low", "medium", "high", "critical"]).toContain(result.adoption_risks.risk_level);
       expect(result.adoption_risks.risk_factors).toBeDefined();
-      expect(["low", "moderate", "elevated", "high"]).toContain(result.adoption_risks.churn_risk_indicator);
+      expect(["low", "moderate", "elevated", "high"]).toContain(
+        result.adoption_risks.churn_risk_indicator
+      );
     });
 
     it("should include recommendations", () => {
@@ -311,7 +323,9 @@ describe("measure_adoption tool", () => {
 
     it("should include trend analysis", () => {
       expect(result.trend_analysis).toBeDefined();
-      expect(["positive", "neutral", "negative"]).toContain(result.trend_analysis.adoption_trajectory);
+      expect(["positive", "neutral", "negative"]).toContain(
+        result.trend_analysis.adoption_trajectory
+      );
       expect(result.trend_analysis.forecast_30_day).toBeDefined();
     });
 
@@ -394,7 +408,9 @@ describe("measure_adoption tool", () => {
       const result = measureAdoption(highAdoptionInput);
       // High adoption input should have reasonable engagement
       expect(result.engagement_analysis.engagement_score).toBeGreaterThan(20);
-      expect(["highly_engaged", "engaged", "passive"]).toContain(result.engagement_analysis.engagement_level);
+      expect(["highly_engaged", "engaged", "passive"]).toContain(
+        result.engagement_analysis.engagement_level
+      );
     });
 
     it("should show low engagement for low activity", () => {
@@ -411,8 +427,11 @@ describe("measure_adoption tool", () => {
     it("should calculate user segments summing to ~100%", () => {
       const result = measureAdoption(baseInput);
       const segments = result.engagement_analysis.user_segments;
-      const total = segments.power_users_percent + segments.regular_users_percent +
-        segments.occasional_users_percent + segments.inactive_users_percent;
+      const total =
+        segments.power_users_percent +
+        segments.regular_users_percent +
+        segments.occasional_users_percent +
+        segments.inactive_users_percent;
       expect(total).toBeCloseTo(100, 0);
     });
 
@@ -506,7 +525,9 @@ describe("measure_adoption tool", () => {
     it("should calculate adoption change from previous period", () => {
       const result = measureAdoption(highAdoptionInput);
       // 450 current vs 380 previous = (90% - 76%) = 14% change
-      expect(result.benchmark_comparison.vs_previous_period.adoption_change_percent).toBeGreaterThan(0);
+      expect(
+        result.benchmark_comparison.vs_previous_period.adoption_change_percent
+      ).toBeGreaterThan(0);
     });
 
     it("should handle missing benchmark data", () => {
@@ -555,9 +576,9 @@ describe("measure_adoption tool", () => {
         engagement_indicators: { support_tickets_per_week: 150 },
       };
       const result = measureAdoption(highTicketInput);
-      expect(result.adoption_risks.risk_factors.some(
-        (r) => r.factor.toLowerCase().includes("support")
-      )).toBe(true);
+      expect(
+        result.adoption_risks.risk_factors.some((r) => r.factor.toLowerCase().includes("support"))
+      ).toBe(true);
     });
   });
 
@@ -568,9 +589,9 @@ describe("measure_adoption tool", () => {
   describe("Recommendations Generation", () => {
     it("should provide immediate actions for low adoption", () => {
       const result = measureAdoption(lowAdoptionInput);
-      expect(result.recommendations.immediate_actions.some(
-        (a) => a.priority === "high"
-      )).toBe(true);
+      expect(result.recommendations.immediate_actions.some((a) => a.priority === "high")).toBe(
+        true
+      );
     });
 
     it("should provide engagement strategies", () => {
@@ -589,16 +610,20 @@ describe("measure_adoption tool", () => {
 
     it("should recommend change champions when few exist", () => {
       const result = measureAdoption(withChangeContextInput);
-      expect(result.recommendations.immediate_actions.some(
-        (a) => a.action.toLowerCase().includes("champion")
-      )).toBe(true);
+      expect(
+        result.recommendations.immediate_actions.some((a) =>
+          a.action.toLowerCase().includes("champion")
+        )
+      ).toBe(true);
     });
 
     it("should recommend executive communication for low engagement", () => {
       const result = measureAdoption(withChangeContextInput);
-      expect(result.recommendations.communication_recommendations.some(
-        (r) => r.toLowerCase().includes("executive") || r.toLowerCase().includes("success")
-      )).toBe(true);
+      expect(
+        result.recommendations.communication_recommendations.some(
+          (r) => r.toLowerCase().includes("executive") || r.toLowerCase().includes("success")
+        )
+      ).toBe(true);
     });
   });
 
@@ -634,7 +659,9 @@ describe("measure_adoption tool", () => {
   describe("Trend Analysis", () => {
     it("should determine adoption trajectory", () => {
       const result = measureAdoption(highAdoptionInput);
-      expect(["positive", "neutral", "negative"]).toContain(result.trend_analysis.adoption_trajectory);
+      expect(["positive", "neutral", "negative"]).toContain(
+        result.trend_analysis.adoption_trajectory
+      );
     });
 
     it("should provide 30-day forecast", () => {
@@ -662,7 +689,10 @@ describe("measure_adoption tool", () => {
     it("should calculate feature utilization", () => {
       const result = measureAdoption(baseInput);
       // 8 / 12 = 66.7%
-      expect(result.adoption_metrics.feature_adoption.feature_utilization_percent).toBeCloseTo(67, 0);
+      expect(result.adoption_metrics.feature_adoption.feature_utilization_percent).toBeCloseTo(
+        67,
+        0
+      );
     });
 
     it("should assess core features adoption", () => {
@@ -674,7 +704,9 @@ describe("measure_adoption tool", () => {
     it("should identify underutilized features", () => {
       const result = measureAdoption(lowAdoptionInput);
       // 3/12 = 25% -> should have underutilized features
-      expect(result.adoption_metrics.feature_adoption.underutilized_features.length).toBeGreaterThan(0);
+      expect(
+        result.adoption_metrics.feature_adoption.underutilized_features.length
+      ).toBeGreaterThan(0);
     });
   });
 
@@ -753,8 +785,12 @@ describe("measure_adoption tool", () => {
       const result1 = measureAdoption(baseInput);
       const result2 = measureAdoption(baseInput);
 
-      expect(result1.adoption_summary.overall_adoption_score).toBe(result2.adoption_summary.overall_adoption_score);
-      expect(result1.engagement_analysis.engagement_score).toBe(result2.engagement_analysis.engagement_score);
+      expect(result1.adoption_summary.overall_adoption_score).toBe(
+        result2.adoption_summary.overall_adoption_score
+      );
+      expect(result1.engagement_analysis.engagement_score).toBe(
+        result2.engagement_analysis.engagement_score
+      );
       expect(result1.adoption_risks.risk_level).toBe(result2.adoption_risks.risk_level);
     });
 
@@ -762,7 +798,9 @@ describe("measure_adoption tool", () => {
       const lowResult = measureAdoption(lowAdoptionInput);
       const highResult = measureAdoption(highAdoptionInput);
 
-      expect(lowResult.adoption_summary.overall_adoption_score).not.toBe(highResult.adoption_summary.overall_adoption_score);
+      expect(lowResult.adoption_summary.overall_adoption_score).not.toBe(
+        highResult.adoption_summary.overall_adoption_score
+      );
     });
   });
 

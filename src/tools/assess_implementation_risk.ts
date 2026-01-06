@@ -12,13 +12,7 @@ import { z } from "zod";
 export const AssessImplementationRiskInputSchema = z.object({
   project_name: z.string().min(1).max(200),
   company_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
 
   // Project characteristics
   project_type: z.enum([
@@ -38,12 +32,9 @@ export const AssessImplementationRiskInputSchema = z.object({
     data_quality_rating: z.number().min(0).max(10).default(5),
     legacy_system_involvement: z.boolean().default(false),
     custom_development_required: z.boolean().default(false),
-    ai_model_type: z.enum([
-      "off_the_shelf",
-      "fine_tuned",
-      "custom_trained",
-      "novel_research",
-    ]).default("off_the_shelf"),
+    ai_model_type: z
+      .enum(["off_the_shelf", "fine_tuned", "custom_trained", "novel_research"])
+      .default("off_the_shelf"),
   }),
 
   // Organizational factors
@@ -56,27 +47,38 @@ export const AssessImplementationRiskInputSchema = z.object({
   }),
 
   // External factors
-  external_factors: z.object({
-    regulatory_requirements: z.enum(["none", "standard", "strict", "critical"]).default("none"),
-    vendor_dependencies: z.number().min(0).max(20).default(0),
-    market_pressure: z.enum(["low", "medium", "high"]).default("medium"),
-    economic_uncertainty: z.enum(["low", "medium", "high"]).default("medium"),
-  }).optional(),
+  external_factors: z
+    .object({
+      regulatory_requirements: z.enum(["none", "standard", "strict", "critical"]).default("none"),
+      vendor_dependencies: z.number().min(0).max(20).default(0),
+      market_pressure: z.enum(["low", "medium", "high"]).default("medium"),
+      economic_uncertainty: z.enum(["low", "medium", "high"]).default("medium"),
+    })
+    .optional(),
 
   // Team factors
-  team_factors: z.object({
-    team_experience_level: z.enum(["expert", "experienced", "mixed", "junior"]).default("experienced"),
-    team_stability: z.enum(["stable", "moderate_turnover", "high_turnover"]).default("stable"),
-    skill_gaps_identified: z.array(z.string()).max(10).default([]),
-    remote_team_percentage: z.number().min(0).max(100).default(0),
-  }).optional(),
+  team_factors: z
+    .object({
+      team_experience_level: z
+        .enum(["expert", "experienced", "mixed", "junior"])
+        .default("experienced"),
+      team_stability: z.enum(["stable", "moderate_turnover", "high_turnover"]).default("stable"),
+      skill_gaps_identified: z.array(z.string()).max(10).default([]),
+      remote_team_percentage: z.number().min(0).max(100).default(0),
+    })
+    .optional(),
 
   // Known issues
-  known_issues: z.array(z.object({
-    issue: z.string().max(500),
-    severity: z.enum(["low", "medium", "high", "critical"]),
-    status: z.enum(["open", "in_progress", "mitigated"]),
-  })).max(20).optional(),
+  known_issues: z
+    .array(
+      z.object({
+        issue: z.string().max(500),
+        severity: z.enum(["low", "medium", "high", "critical"]),
+        status: z.enum(["open", "in_progress", "mitigated"]),
+      })
+    )
+    .max(20)
+    .optional(),
 });
 
 export type AssessImplementationRiskInput = z.infer<typeof AssessImplementationRiskInputSchema>;
@@ -254,7 +256,7 @@ function getRiskLevel(score: number): "low" | "medium" | "high" | "critical" {
 
 function calculateTechnicalRisk(
   factors: AssessImplementationRiskInput["technical_factors"],
-  projectType: string,
+  _projectType: string,
   durationWeeks: number
 ): ImplementationRiskAssessment["risk_categories"]["technical_risk"] {
   const riskFactors: { factor: string; impact: number; description: string }[] = [];
@@ -495,10 +497,26 @@ function calculateExternalRisk(
 
   // Industry-specific risks
   const industryRisks: Record<string, { factor: string; impact: number; description: string }> = {
-    healthcare: { factor: "Healthcare Compliance", impact: 2, description: "HIPAA and patient data requirements add complexity" },
-    insurance: { factor: "Insurance Regulations", impact: 2, description: "Regulatory oversight requires careful compliance" },
-    manufacturing: { factor: "Operational Continuity", impact: 1, description: "Production impacts require careful scheduling" },
-    aquaculture: { factor: "Environmental Factors", impact: 1, description: "Environmental conditions may affect implementation" },
+    healthcare: {
+      factor: "Healthcare Compliance",
+      impact: 2,
+      description: "HIPAA and patient data requirements add complexity",
+    },
+    insurance: {
+      factor: "Insurance Regulations",
+      impact: 2,
+      description: "Regulatory oversight requires careful compliance",
+    },
+    manufacturing: {
+      factor: "Operational Continuity",
+      impact: 1,
+      description: "Production impacts require careful scheduling",
+    },
+    aquaculture: {
+      factor: "Environmental Factors",
+      impact: 1,
+      description: "Environmental conditions may affect implementation",
+    },
     general: { factor: "General Market", impact: 0, description: "" },
   };
 
@@ -599,7 +617,9 @@ function calculateExecutionRisk(
 
   // Known issues
   const issues = knownIssues || [];
-  const criticalIssues = issues.filter((i) => i.severity === "critical" && i.status !== "mitigated").length;
+  const criticalIssues = issues.filter(
+    (i) => i.severity === "critical" && i.status !== "mitigated"
+  ).length;
   const highIssues = issues.filter((i) => i.severity === "high" && i.status !== "mitigated").length;
 
   if (criticalIssues > 0) {
@@ -649,7 +669,14 @@ function generateIdentifiedRisks(
   for (const { category, data } of categoryMappings) {
     for (const factor of data.factors) {
       const probability = factor.impact >= 3 ? "high" : factor.impact >= 2 ? "medium" : "low";
-      const impact = factor.impact >= 4 ? "critical" : factor.impact >= 3 ? "high" : factor.impact >= 2 ? "medium" : "low";
+      const impact =
+        factor.impact >= 4
+          ? "critical"
+          : factor.impact >= 3
+            ? "high"
+            : factor.impact >= 2
+              ? "medium"
+              : "low";
 
       risks.push({
         id: `RISK-${String(riskId).padStart(3, "0")}`,
@@ -674,19 +701,30 @@ function generateIdentifiedRisks(
 
 function generateMitigation(factor: string, category: string): string {
   const mitigations: Record<string, string> = {
-    "Technology Maturity": "Conduct thorough proof-of-concept, engage vendor support, maintain fallback options",
-    "Integration Complexity": "Plan detailed integration testing, allocate buffer time, create rollback procedures",
-    "Data Quality": "Implement data quality checks, clean data before training, establish data governance",
-    "Legacy Systems": "Document legacy interfaces, plan incremental integration, maintain parallel operations",
-    "Custom Development": "Use agile methodology, implement continuous testing, plan for iterations",
-    "AI Model Complexity": "Engage ML specialists, plan for model monitoring, document model decisions",
+    "Technology Maturity":
+      "Conduct thorough proof-of-concept, engage vendor support, maintain fallback options",
+    "Integration Complexity":
+      "Plan detailed integration testing, allocate buffer time, create rollback procedures",
+    "Data Quality":
+      "Implement data quality checks, clean data before training, establish data governance",
+    "Legacy Systems":
+      "Document legacy interfaces, plan incremental integration, maintain parallel operations",
+    "Custom Development":
+      "Use agile methodology, implement continuous testing, plan for iterations",
+    "AI Model Complexity":
+      "Engage ML specialists, plan for model monitoring, document model decisions",
     "Long Duration": "Implement phase gates, regular scope reviews, maintain change control",
-    "Executive Sponsorship": "Strengthen executive engagement, regular steering meetings, visible quick wins",
+    "Executive Sponsorship":
+      "Strengthen executive engagement, regular steering meetings, visible quick wins",
     "Change Readiness": "Increase change management, conduct training early, identify champions",
-    "AI Experience": "Provide AI education, pair with experienced consultants, build internal capability",
-    "Resource Allocation": "Secure dedicated resources, establish clear priorities, protect project time",
-    "Cross-functional Alignment": "Regular cross-team meetings, shared objectives, escalation process",
-    "Regulatory Requirements": "Early compliance review, engage regulatory experts, build compliance into design",
+    "AI Experience":
+      "Provide AI education, pair with experienced consultants, build internal capability",
+    "Resource Allocation":
+      "Secure dedicated resources, establish clear priorities, protect project time",
+    "Cross-functional Alignment":
+      "Regular cross-team meetings, shared objectives, escalation process",
+    "Regulatory Requirements":
+      "Early compliance review, engage regulatory experts, build compliance into design",
     "Vendor Dependencies": "Regular vendor coordination, SLA agreements, maintain alternatives",
     "Market Pressure": "Prioritize critical features, communicate trade-offs, manage expectations",
     "Economic Uncertainty": "Flexible scoping, value-based prioritization, demonstrate ROI early",
@@ -700,13 +738,16 @@ function generateMitigation(factor: string, category: string): string {
     "High Severity Issues": "Priority resolution, escalation path, impact monitoring",
   };
 
-  return mitigations[factor] || `Develop specific mitigation plan for ${factor} in ${category} category`;
+  return (
+    mitigations[factor] || `Develop specific mitigation plan for ${factor} in ${category} category`
+  );
 }
 
 function generateContingency(factor: string, _category: string): string {
   const contingencies: Record<string, string> = {
     "Technology Maturity": "Prepare alternative technology options, maintain vendor flexibility",
-    "Integration Complexity": "Have rollback plan ready, maintain parallel systems during transition",
+    "Integration Complexity":
+      "Have rollback plan ready, maintain parallel systems during transition",
     "Data Quality": "Prepare data remediation path, consider synthetic data for training",
     "Legacy Systems": "Plan for extended parallel operation, prepare manual workarounds",
     "Custom Development": "Define minimum viable scope, prepare to pivot approach",
@@ -716,7 +757,8 @@ function generateContingency(factor: string, _category: string): string {
     "Change Readiness": "Plan extended adoption timeline, prepare phased rollout",
     "AI Experience": "Engage external expertise, extend training timeline",
     "Resource Allocation": "Identify backup resources, prepare scope reduction options",
-    "Cross-functional Alignment": "Escalation to steering committee, prepare independent execution path",
+    "Cross-functional Alignment":
+      "Escalation to steering committee, prepare independent execution path",
     "Regulatory Requirements": "Prepare compliance remediation plan, consider phased compliance",
     "Vendor Dependencies": "Identify alternative vendors, prepare in-house alternatives",
     "Market Pressure": "Define minimum viable product, prepare accelerated timeline option",
@@ -746,15 +788,41 @@ function getOwnerRecommendation(category: string): string {
 
 function getEarlyWarnings(factor: string): string[] {
   const warnings: Record<string, string[]> = {
-    "Technology Maturity": ["Unexpected technical blockers", "Vendor support delays", "Documentation gaps"],
-    "Integration Complexity": ["Integration testing failures", "Unexpected data format issues", "Performance degradation"],
-    "Data Quality": ["Model accuracy below targets", "Missing data fields", "Inconsistent data formats"],
-    "Executive Sponsorship": ["Delayed approvals", "Reduced meeting attendance", "Budget questions"],
-    "Change Readiness": ["User resistance signals", "Training attendance drops", "Negative feedback themes"],
-    "Team Experience": ["Quality issues in deliverables", "Missed deadlines", "Excessive questions"],
+    "Technology Maturity": [
+      "Unexpected technical blockers",
+      "Vendor support delays",
+      "Documentation gaps",
+    ],
+    "Integration Complexity": [
+      "Integration testing failures",
+      "Unexpected data format issues",
+      "Performance degradation",
+    ],
+    "Data Quality": [
+      "Model accuracy below targets",
+      "Missing data fields",
+      "Inconsistent data formats",
+    ],
+    "Executive Sponsorship": [
+      "Delayed approvals",
+      "Reduced meeting attendance",
+      "Budget questions",
+    ],
+    "Change Readiness": [
+      "User resistance signals",
+      "Training attendance drops",
+      "Negative feedback themes",
+    ],
+    "Team Experience": [
+      "Quality issues in deliverables",
+      "Missed deadlines",
+      "Excessive questions",
+    ],
     "Team Stability": ["Departure announcements", "Reduced engagement", "Knowledge gaps emerging"],
   };
-  return warnings[factor] || ["Deviation from plan", "Stakeholder concerns raised", "KPI targets missed"];
+  return (
+    warnings[factor] || ["Deviation from plan", "Stakeholder concerns raised", "KPI targets missed"]
+  );
 }
 
 function generateRiskHeatmap(
@@ -768,10 +836,18 @@ function generateRiskHeatmap(
       .filter((r) => r.probability === "high" && (r.impact === "low" || r.impact === "medium"))
       .map((r) => r.title),
     low_probability_high_impact: risks
-      .filter((r) => (r.probability === "low" || r.probability === "medium") && (r.impact === "high" || r.impact === "critical"))
+      .filter(
+        (r) =>
+          (r.probability === "low" || r.probability === "medium") &&
+          (r.impact === "high" || r.impact === "critical")
+      )
       .map((r) => r.title),
     low_probability_low_impact: risks
-      .filter((r) => (r.probability === "low" || r.probability === "medium") && (r.impact === "low" || r.impact === "medium"))
+      .filter(
+        (r) =>
+          (r.probability === "low" || r.probability === "medium") &&
+          (r.impact === "low" || r.impact === "medium")
+      )
       .map((r) => r.title),
   };
 }
@@ -815,14 +891,17 @@ function generateScenarios(
 ): ImplementationRiskAssessment["scenarios"] {
   const highRiskCount = risks.filter((r) => r.risk_score >= 3).length;
 
-  const bestCaseProb = overallScore <= 3 ? 35 : overallScore <= 5 ? 25 : overallScore <= 7 ? 15 : 10;
-  const worstCaseProb = overallScore <= 3 ? 10 : overallScore <= 5 ? 20 : overallScore <= 7 ? 30 : 40;
+  const bestCaseProb =
+    overallScore <= 3 ? 35 : overallScore <= 5 ? 25 : overallScore <= 7 ? 15 : 10;
+  const worstCaseProb =
+    overallScore <= 3 ? 10 : overallScore <= 5 ? 20 : overallScore <= 7 ? 30 : 40;
   const expectedProb = 100 - bestCaseProb - worstCaseProb;
 
   return {
     best_case: {
       probability: bestCaseProb,
-      description: "Project completes ahead of schedule with full scope delivered and high stakeholder satisfaction",
+      description:
+        "Project completes ahead of schedule with full scope delivered and high stakeholder satisfaction",
       conditions: [
         "All high risks are effectively mitigated",
         "Strong executive support maintained throughout",
@@ -832,7 +911,8 @@ function generateScenarios(
     },
     expected_case: {
       probability: expectedProb,
-      description: "Project completes on schedule with core scope delivered, some risks materialize but are managed",
+      description:
+        "Project completes on schedule with core scope delivered, some risks materialize but are managed",
       conditions: [
         "Some risks materialize but are handled through contingency",
         "Minor scope adjustments needed",
@@ -842,7 +922,8 @@ function generateScenarios(
     },
     worst_case: {
       probability: worstCaseProb,
-      description: "Project faces significant delays or scope reduction due to multiple risks materializing",
+      description:
+        "Project faces significant delays or scope reduction due to multiple risks materializing",
       conditions: [
         `Multiple high-impact risks materialize (${highRiskCount} identified)`,
         "External factors create additional pressure",
@@ -861,7 +942,7 @@ function generateScenarios(
 
 function generateRecommendations(
   overallScore: number,
-  overallLevel: string,
+  _overallLevel: string,
   categories: ImplementationRiskAssessment["risk_categories"],
   risks: ImplementationRiskAssessment["identified_risks"]
 ): ImplementationRiskAssessment["recommendations"] {
@@ -870,21 +951,24 @@ function generateRecommendations(
 
   if (overallScore <= 3) {
     proceedRec = "proceed";
-    rationale = "Risk profile is manageable with standard project governance. No significant blockers identified.";
+    rationale =
+      "Risk profile is manageable with standard project governance. No significant blockers identified.";
   } else if (overallScore <= 5) {
     proceedRec = "proceed_with_caution";
-    rationale = "Moderate risks require active management. Proceed with enhanced monitoring and mitigation plans in place.";
+    rationale =
+      "Moderate risks require active management. Proceed with enhanced monitoring and mitigation plans in place.";
   } else if (overallScore <= 7) {
     proceedRec = "reassess";
-    rationale = "Significant risks identified that may impact project success. Recommend addressing key risks before proceeding.";
+    rationale =
+      "Significant risks identified that may impact project success. Recommend addressing key risks before proceeding.";
   } else {
     proceedRec = "do_not_proceed";
-    rationale = "Critical risk level indicates high probability of project failure. Recommend fundamental reassessment.";
+    rationale =
+      "Critical risk level indicates high probability of project failure. Recommend fundamental reassessment.";
   }
 
   const highRisks = risks.filter((r) => r.risk_score >= 3);
-  const criticalCategory = Object.entries(categories)
-    .sort(([, a], [, b]) => b.score - a.score)[0];
+  const criticalCategory = Object.entries(categories).sort(([, a], [, b]) => b.score - a.score)[0];
 
   return {
     proceed_recommendation: proceedRec,
@@ -924,12 +1008,14 @@ function generateGovernance(
       "Stakeholder satisfaction drops below threshold",
       "Critical path task at risk",
     ],
-    stakeholder_communication: projectType === "transformation"
-      ? "Weekly updates to executive team, monthly all-hands"
-      : "Weekly status reports, bi-weekly stakeholder meetings",
-    risk_reporting_cadence: overallLevel === "critical" || overallLevel === "high"
-      ? "Weekly risk report to steering committee"
-      : "Bi-weekly risk report to project sponsor",
+    stakeholder_communication:
+      projectType === "transformation"
+        ? "Weekly updates to executive team, monthly all-hands"
+        : "Weekly status reports, bi-weekly stakeholder meetings",
+    risk_reporting_cadence:
+      overallLevel === "critical" || overallLevel === "high"
+        ? "Weekly risk report to steering committee"
+        : "Bi-weekly risk report to project sponsor",
   };
 }
 
@@ -951,10 +1037,19 @@ export function assessImplementationRisk(
   } = input;
 
   // Calculate risk categories
-  const technicalRisk = calculateTechnicalRisk(technical_factors, project_type, estimated_duration_weeks);
+  const technicalRisk = calculateTechnicalRisk(
+    technical_factors,
+    project_type,
+    estimated_duration_weeks
+  );
   const organizationalRisk = calculateOrganizationalRisk(organizational_factors, project_type);
   const externalRisk = calculateExternalRisk(external_factors, industry);
-  const executionRisk = calculateExecutionRisk(team_factors, estimated_budget_usd, estimated_duration_weeks, known_issues);
+  const executionRisk = calculateExecutionRisk(
+    team_factors,
+    estimated_budget_usd,
+    estimated_duration_weeks,
+    known_issues
+  );
 
   const riskCategories = {
     technical_risk: technicalRisk,
@@ -985,7 +1080,12 @@ export function assessImplementationRisk(
   const riskHeatmap = generateRiskHeatmap(identifiedRisks);
   const mitigationPlan = generateMitigationPlan(identifiedRisks);
   const scenarios = generateScenarios(overallScore, identifiedRisks);
-  const recommendations = generateRecommendations(overallScore, overallLevel, riskCategories, identifiedRisks);
+  const recommendations = generateRecommendations(
+    overallScore,
+    overallLevel,
+    riskCategories,
+    identifiedRisks
+  );
   const governance = generateGovernance(overallLevel, project_type);
 
   return {
@@ -998,7 +1098,8 @@ export function assessImplementationRisk(
       overall_risk_level: overallLevel,
       risk_trend: "stable", // Would need historical data for actual trend
       confidence_in_success: overallScore <= 4 ? "high" : overallScore <= 6 ? "medium" : "low",
-      key_risk_drivers: keyDrivers.length > 0 ? keyDrivers : ["No critical risk drivers identified"],
+      key_risk_drivers:
+        keyDrivers.length > 0 ? keyDrivers : ["No critical risk drivers identified"],
     },
 
     risk_categories: riskCategories,

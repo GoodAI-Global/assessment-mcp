@@ -44,8 +44,7 @@ function redactSensitiveFields(obj, sensitiveFields) {
     const result = {};
     for (const [key, value] of Object.entries(obj)) {
         const lowerKey = key.toLowerCase();
-        const isSensitive = sensitiveFields.some((field) => lowerKey.includes(field.toLowerCase()) ||
-            field.toLowerCase().includes(lowerKey));
+        const isSensitive = sensitiveFields.some((field) => lowerKey.includes(field.toLowerCase()) || field.toLowerCase().includes(lowerKey));
         if (isSensitive && typeof value === "string") {
             result[key] = "[REDACTED]";
         }
@@ -264,9 +263,7 @@ export function getAuditEntriesByCorrelationId(correlationId) {
  * Get audit entries by tool name
  */
 export function getAuditEntriesByTool(toolName, limit = 100) {
-    return auditStore
-        .filter((entry) => entry.toolName === toolName)
-        .slice(-limit);
+    return auditStore.filter((entry) => entry.toolName === toolName).slice(-limit);
 }
 /**
  * Clear audit store (for testing)

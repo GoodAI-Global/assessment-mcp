@@ -132,10 +132,7 @@ describe("AuditTrail", () => {
   describe("recordValidationError", () => {
     it("should record validation errors", () => {
       const trail = createAuditTrail();
-      const validationErrors = [
-        "industry: Invalid enum value",
-        "employee_count: Required",
-      ];
+      const validationErrors = ["industry: Invalid enum value", "employee_count: Required"];
 
       trail.recordValidationError("test_tool", validationErrors, { bad: "input" });
 

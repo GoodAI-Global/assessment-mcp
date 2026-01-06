@@ -9,9 +9,7 @@ import {
 } from "../src/tools/qualify_lead.js";
 
 describe("qualifyLead", () => {
-  const createValidInput = (
-    overrides: Partial<QualifyLeadInput> = {}
-  ): QualifyLeadInput => ({
+  const createValidInput = (overrides: Partial<QualifyLeadInput> = {}): QualifyLeadInput => ({
     company_name: "Acme Manufacturing",
     industry: "manufacturing",
     employee_count: 500,
@@ -117,23 +115,15 @@ describe("qualifyLead", () => {
 
   describe("fit scoring", () => {
     it("should score higher for ideal company size", () => {
-      const idealSize = qualifyLead(
-        createValidInput({ employee_count: 500 })
-      );
-      const smallSize = qualifyLead(
-        createValidInput({ employee_count: 25 })
-      );
+      const idealSize = qualifyLead(createValidInput({ employee_count: 500 }));
+      const smallSize = qualifyLead(createValidInput({ employee_count: 25 }));
 
       expect(idealSize.scores.fit_score).toBeGreaterThan(smallSize.scores.fit_score);
     });
 
     it("should score higher for core industries", () => {
-      const coreIndustry = qualifyLead(
-        createValidInput({ industry: "manufacturing" })
-      );
-      const generalIndustry = qualifyLead(
-        createValidInput({ industry: "general" })
-      );
+      const coreIndustry = qualifyLead(createValidInput({ industry: "manufacturing" }));
+      const generalIndustry = qualifyLead(createValidInput({ industry: "general" }));
 
       expect(coreIndustry.scores.fit_score).toBeGreaterThan(generalIndustry.scores.fit_score);
     });
@@ -153,12 +143,8 @@ describe("qualifyLead", () => {
 
   describe("BANT scoring", () => {
     it("should score budget based on indication", () => {
-      const significant = qualifyLead(
-        createValidInput({ budget_indication: "significant" })
-      );
-      const limited = qualifyLead(
-        createValidInput({ budget_indication: "limited" })
-      );
+      const significant = qualifyLead(createValidInput({ budget_indication: "significant" }));
+      const limited = qualifyLead(createValidInput({ budget_indication: "limited" }));
 
       expect(significant.scores.budget_score).toBeGreaterThan(limited.scores.budget_score);
     });
@@ -182,20 +168,14 @@ describe("qualifyLead", () => {
           pain_points: ["Pain 1", "Pain 2", "Pain 3", "Pain 4", "Pain 5"],
         })
       );
-      const fewPains = qualifyLead(
-        createValidInput({ pain_points: ["One pain point"] })
-      );
+      const fewPains = qualifyLead(createValidInput({ pain_points: ["One pain point"] }));
 
       expect(manyPains.scores.need_score).toBeGreaterThan(fewPains.scores.need_score);
     });
 
     it("should score timing based on decision timeline", () => {
-      const immediate = qualifyLead(
-        createValidInput({ decision_timeline: "immediate" })
-      );
-      const exploring = qualifyLead(
-        createValidInput({ decision_timeline: "exploring" })
-      );
+      const immediate = qualifyLead(createValidInput({ decision_timeline: "immediate" }));
+      const exploring = qualifyLead(createValidInput({ decision_timeline: "exploring" }));
 
       expect(immediate.scores.timing_score).toBeGreaterThan(exploring.scores.timing_score);
     });
@@ -203,12 +183,8 @@ describe("qualifyLead", () => {
 
   describe("deal potential estimation", () => {
     it("should estimate larger deals for larger companies", () => {
-      const large = qualifyLead(
-        createValidInput({ employee_count: 5000 })
-      );
-      const small = qualifyLead(
-        createValidInput({ employee_count: 100 })
-      );
+      const large = qualifyLead(createValidInput({ employee_count: 5000 }));
+      const small = qualifyLead(createValidInput({ employee_count: 100 }));
 
       expect(large.deal_potential.estimated_deal_size_usd).toBeGreaterThan(
         small.deal_potential.estimated_deal_size_usd
@@ -216,12 +192,8 @@ describe("qualifyLead", () => {
     });
 
     it("should adjust for budget indication", () => {
-      const significant = qualifyLead(
-        createValidInput({ budget_indication: "significant" })
-      );
-      const limited = qualifyLead(
-        createValidInput({ budget_indication: "limited" })
-      );
+      const significant = qualifyLead(createValidInput({ budget_indication: "significant" }));
+      const limited = qualifyLead(createValidInput({ budget_indication: "limited" }));
 
       expect(significant.deal_potential.estimated_deal_size_usd).toBeGreaterThan(
         limited.deal_potential.estimated_deal_size_usd
@@ -329,9 +301,7 @@ describe("qualifyLead", () => {
       const result = qualifyLead(createValidInput());
 
       expect(result.qualification_rationale).toContain(result.company_name);
-      expect(result.qualification_rationale).toContain(
-        result.qualification_score.toString()
-      );
+      expect(result.qualification_rationale).toContain(result.qualification_score.toString());
     });
   });
 

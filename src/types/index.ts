@@ -4,12 +4,7 @@
  */
 
 // Industry types supported by the assessment
-export type Industry =
-  | "manufacturing"
-  | "insurance"
-  | "aquaculture"
-  | "healthcare"
-  | "general";
+export type Industry = "manufacturing" | "insurance" | "aquaculture" | "healthcare" | "general";
 
 // ============================================
 // assess_ai_readiness Types

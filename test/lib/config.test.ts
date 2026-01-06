@@ -72,11 +72,7 @@ describe("Configuration", () => {
       process.env.AUDIT_SENSITIVE_FIELDS = "custom_field,another_secret,api_key";
       const config = loadConfig();
 
-      expect(config.audit.sensitiveFields).toEqual([
-        "custom_field",
-        "another_secret",
-        "api_key",
-      ]);
+      expect(config.audit.sensitiveFields).toEqual(["custom_field", "another_secret", "api_key"]);
     });
 
     it("should handle invalid log level gracefully", () => {

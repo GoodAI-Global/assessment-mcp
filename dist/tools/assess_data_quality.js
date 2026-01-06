@@ -18,14 +18,9 @@ const DataSourceSchema = z.object({
         "third_party",
     ]),
     volume_records: z.number().min(0).optional(),
-    update_frequency: z.enum([
-        "real_time",
-        "hourly",
-        "daily",
-        "weekly",
-        "monthly",
-        "ad_hoc",
-    ]).optional(),
+    update_frequency: z
+        .enum(["real_time", "hourly", "daily", "weekly", "monthly", "ad_hoc"])
+        .optional(),
     estimated_completeness_percent: z.number().min(0).max(100).optional(),
     has_documentation: z.boolean().optional(),
     owner_identified: z.boolean().optional(),
@@ -33,13 +28,7 @@ const DataSourceSchema = z.object({
 });
 export const AssessDataQualityInputSchema = z.object({
     company_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     data_sources: z.array(DataSourceSchema).min(1).max(50),
     target_use_case: z.string().min(10).max(1000).optional(),
     data_governance_exists: z.boolean().optional(),
@@ -70,7 +59,15 @@ export const ASSESS_DATA_QUALITY_TOOL = {
                         name: { type: "string" },
                         type: {
                             type: "string",
-                            enum: ["database", "spreadsheet", "api", "files", "sensors", "manual_entry", "third_party"],
+                            enum: [
+                                "database",
+                                "spreadsheet",
+                                "api",
+                                "files",
+                                "sensors",
+                                "manual_entry",
+                                "third_party",
+                            ],
                         },
                         volume_records: { type: "number" },
                         update_frequency: {
@@ -445,9 +442,9 @@ export function assessDataQuality(input) {
     // Assess each data source
     const assessedSources = input.data_sources.map(assessDataSource);
     // Calculate aggregate metrics
-    const avgScore = assessedSources.reduce((sum, s) => sum + s.ai_readiness_score, 0) /
+    const avgScore = assessedSources.reduce((sum, s) => sum + s.ai_readiness_score, 0) / assessedSources.length;
+    const avgCompleteness = assessedSources.reduce((sum, s) => sum + s.quality_dimensions.completeness.score, 0) /
         assessedSources.length;
-    const avgCompleteness = assessedSources.reduce((sum, s) => sum + s.quality_dimensions.completeness.score, 0) / assessedSources.length;
     const sourcesReady = assessedSources.filter((s) => s.ai_readiness_score >= 7).length;
     const sourcesNeedsWork = assessedSources.filter((s) => s.ai_readiness_score >= 4 && s.ai_readiness_score < 7).length;
     const sourcesNotReady = assessedSources.filter((s) => s.ai_readiness_score < 4).length;

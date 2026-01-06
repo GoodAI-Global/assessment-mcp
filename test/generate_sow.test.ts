@@ -9,9 +9,7 @@ import {
 } from "../src/tools/generate_sow.js";
 
 describe("generateSOW", () => {
-  const createValidInput = (
-    overrides: Partial<GenerateSOWInput> = {}
-  ): GenerateSOWInput => ({
+  const createValidInput = (overrides: Partial<GenerateSOWInput> = {}): GenerateSOWInput => ({
     client_name: "Acme Manufacturing Corp",
     engagement_title: "AI-Powered Quality Control Pilot",
     engagement_type: "pilot",
@@ -185,12 +183,8 @@ describe("generateSOW", () => {
     });
 
     it("should generate more phases for transformation", () => {
-      const implementation = generateSOW(
-        createValidInput({ engagement_type: "implementation" })
-      );
-      const transformation = generateSOW(
-        createValidInput({ engagement_type: "transformation" })
-      );
+      const implementation = generateSOW(createValidInput({ engagement_type: "implementation" }));
+      const transformation = generateSOW(createValidInput({ engagement_type: "transformation" }));
 
       expect(transformation.timeline.phases.length).toBeGreaterThanOrEqual(
         implementation.timeline.phases.length - 1
@@ -337,9 +331,7 @@ describe("generateSOW", () => {
     });
 
     it("should include industry-specific assumptions", () => {
-      const healthcare = generateSOW(
-        createValidInput({ industry: "healthcare" })
-      );
+      const healthcare = generateSOW(createValidInput({ industry: "healthcare" }));
 
       const hasComplianceAssumption = healthcare.assumptions_dependencies.assumptions.some(
         (a) => a.toLowerCase().includes("hipaa") || a.toLowerCase().includes("compliance")
@@ -508,8 +500,14 @@ describe("generateSOW", () => {
       const result2 = generateSOW(input);
 
       // Exclude generated_date as it may vary
-      const comparable1 = { ...result1, document_info: { ...result1.document_info, generated_date: "" } };
-      const comparable2 = { ...result2, document_info: { ...result2.document_info, generated_date: "" } };
+      const comparable1 = {
+        ...result1,
+        document_info: { ...result1.document_info, generated_date: "" },
+      };
+      const comparable2 = {
+        ...result2,
+        document_info: { ...result2.document_info, generated_date: "" },
+      };
 
       expect(comparable1).toEqual(comparable2);
     });

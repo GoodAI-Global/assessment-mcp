@@ -51,7 +51,8 @@ function generateMilestones(
   milestones.push({
     week: 1,
     deliverable: "Discovery & Requirements",
-    success_criteria: "Stakeholder alignment, data requirements documented, success metrics defined",
+    success_criteria:
+      "Stakeholder alignment, data requirements documented, success metrics defined",
   });
 
   if (complexity === "low") {
@@ -233,9 +234,7 @@ function calculateDuration(
 // Main Function
 // ============================================
 
-export function generatePilotPlan(
-  input: GeneratePilotPlanInput
-): GeneratePilotPlanOutput {
+export function generatePilotPlan(input: GeneratePilotPlanInput): GeneratePilotPlanOutput {
   const { selected_bottleneck, constraints, company_context } = input;
   const { complexity, name, recommended_ai_approach } = selected_bottleneck;
 
@@ -244,10 +243,12 @@ export function generatePilotPlan(
 
   const pilotName = `${company_context.company_name} - ${name} Pilot`;
 
-  const objective = `Deploy ${recommended_ai_approach} to address ${name.toLowerCase()}, ` +
+  const objective =
+    `Deploy ${recommended_ai_approach} to address ${name.toLowerCase()}, ` +
     `demonstrating measurable improvement within ${durationWeeks} weeks.`;
 
-  const approach = `Following Good AI's non-invasive methodology, this pilot will:\n` +
+  const approach =
+    `Following Good AI's non-invasive methodology, this pilot will:\n` +
     `1. Operate alongside existing systems without disruption\n` +
     `2. Use existing data sources with minimal integration\n` +
     `3. Focus on augmenting human decision-making, not replacing it\n` +

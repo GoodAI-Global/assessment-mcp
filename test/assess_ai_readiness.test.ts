@@ -54,8 +54,8 @@ describe("assessAIReadiness", () => {
     it("should produce Computer Vision recommendation for high manual entry", () => {
       const result = assessAIReadiness(referenceInput);
 
-      const cvFinding = result.dimensions.data_readiness.findings.some(
-        (f) => f.toLowerCase().includes("computer vision")
+      const cvFinding = result.dimensions.data_readiness.findings.some((f) =>
+        f.toLowerCase().includes("computer vision")
       );
       expect(cvFinding).toBe(true);
     });
@@ -63,8 +63,8 @@ describe("assessAIReadiness", () => {
     it("should flag missing centralized data", () => {
       const result = assessAIReadiness(referenceInput);
 
-      const centralizedFinding = result.dimensions.data_readiness.findings.some(
-        (f) => f.toLowerCase().includes("centralized")
+      const centralizedFinding = result.dimensions.data_readiness.findings.some((f) =>
+        f.toLowerCase().includes("centralized")
       );
       expect(centralizedFinding).toBe(true);
     });
@@ -72,8 +72,8 @@ describe("assessAIReadiness", () => {
     it("should recognize low legacy complexity", () => {
       const result = assessAIReadiness(referenceInput);
 
-      const legacyFinding = result.dimensions.technical_capability.findings.some(
-        (f) => f.toLowerCase().includes("legacy")
+      const legacyFinding = result.dimensions.technical_capability.findings.some((f) =>
+        f.toLowerCase().includes("legacy")
       );
       expect(legacyFinding).toBe(true);
     });
@@ -213,8 +213,8 @@ describe("assessAIReadiness", () => {
 
       // If score is below 3, should have red flag
       if (result.overall_score < 3) {
-        const hasFoundationalFlag = result.red_flags.some(
-          (f) => f.toLowerCase().includes("foundational")
+        const hasFoundationalFlag = result.red_flags.some((f) =>
+          f.toLowerCase().includes("foundational")
         );
         expect(hasFoundationalFlag).toBe(true);
       }
@@ -238,8 +238,8 @@ describe("assessAIReadiness", () => {
 
       const result = assessAIReadiness(manualHeavy);
 
-      const hasDigitizationFlag = result.red_flags.some(
-        (f) => f.toLowerCase().includes("digitization")
+      const hasDigitizationFlag = result.red_flags.some((f) =>
+        f.toLowerCase().includes("digitization")
       );
       expect(hasDigitizationFlag).toBe(true);
     });

@@ -62,9 +62,7 @@ describe("identifyBottlenecks", () => {
 
       const result = identifyBottlenecks(input);
 
-      const hasQualityGap = result.bottlenecks.some(
-        (b) => b.name === "Quality Control Gaps"
-      );
+      const hasQualityGap = result.bottlenecks.some((b) => b.name === "Quality Control Gaps");
       expect(hasQualityGap).toBe(true);
     });
 
@@ -96,9 +94,7 @@ describe("identifyBottlenecks", () => {
 
       const result = identifyBottlenecks(input);
 
-      const hasDataEntry = result.bottlenecks.some(
-        (b) => b.name === "Data Entry Bottleneck"
-      );
+      const hasDataEntry = result.bottlenecks.some((b) => b.name === "Data Entry Bottleneck");
       expect(hasDataEntry).toBe(true);
     });
 
@@ -130,9 +126,7 @@ describe("identifyBottlenecks", () => {
 
       const result = identifyBottlenecks(input);
 
-      const hasFeedOptimization = result.bottlenecks.some(
-        (b) => b.name === "Feed Optimization"
-      );
+      const hasFeedOptimization = result.bottlenecks.some((b) => b.name === "Feed Optimization");
       expect(hasFeedOptimization).toBe(true);
     });
 

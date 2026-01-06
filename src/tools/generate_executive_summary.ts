@@ -12,13 +12,7 @@ import type { Industry } from "../types/index.js";
 
 export const GenerateExecutiveSummaryInputSchema = z.object({
   company_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
   assessment_date: z.string().max(50).optional(),
   readiness_assessment: z.object({
     overall_score: z.number().min(0).max(10),
@@ -34,26 +28,34 @@ export const GenerateExecutiveSummaryInputSchema = z.object({
     estimated_time_to_value_weeks: z.number(),
     red_flags: z.array(z.string()).max(10),
   }),
-  top_bottlenecks: z.array(z.object({
-    name: z.string().max(200),
-    estimated_annual_cost_usd: z.number(),
-    ai_solution_fit_score: z.number(),
-    recommended_ai_approach: z.string().max(500),
-    complexity: z.enum(["low", "medium", "high"]),
-  })).max(10),
-  pilot_plan: z.object({
-    pilot_name: z.string().max(300),
-    duration_weeks: z.number(),
-    estimated_cost_usd: z.number(),
-    success_metrics: z.array(z.string()).max(10),
-  }).optional(),
-  roi_projection: z.object({
-    expected_roi_percent: z.number(),
-    payback_period_months: z.number(),
-    net_present_value_usd: z.number(),
-    annual_savings_usd: z.number(),
-    confidence_level: z.enum(["low", "medium", "high"]),
-  }).optional(),
+  top_bottlenecks: z
+    .array(
+      z.object({
+        name: z.string().max(200),
+        estimated_annual_cost_usd: z.number(),
+        ai_solution_fit_score: z.number(),
+        recommended_ai_approach: z.string().max(500),
+        complexity: z.enum(["low", "medium", "high"]),
+      })
+    )
+    .max(10),
+  pilot_plan: z
+    .object({
+      pilot_name: z.string().max(300),
+      duration_weeks: z.number(),
+      estimated_cost_usd: z.number(),
+      success_metrics: z.array(z.string()).max(10),
+    })
+    .optional(),
+  roi_projection: z
+    .object({
+      expected_roi_percent: z.number(),
+      payback_period_months: z.number(),
+      net_present_value_usd: z.number(),
+      annual_savings_usd: z.number(),
+      confidence_level: z.enum(["low", "medium", "high"]),
+    })
+    .optional(),
   executive_sponsor: z.string().max(200).optional(),
   prepared_by: z.string().max(200).optional(),
 });
@@ -238,22 +240,13 @@ function generateOpportunities(
       "Predictive maintenance to reduce downtime",
       "Quality control automation using computer vision",
     ],
-    insurance: [
-      "Claims processing automation",
-      "Risk assessment using ML models",
-    ],
+    insurance: ["Claims processing automation", "Risk assessment using ML models"],
     aquaculture: [
       "Feed optimization through sensor data analysis",
       "Growth prediction and harvest timing",
     ],
-    healthcare: [
-      "Patient scheduling optimization",
-      "Documentation automation",
-    ],
-    general: [
-      "Process automation opportunities",
-      "Data-driven decision support",
-    ],
+    healthcare: ["Patient scheduling optimization", "Documentation automation"],
+    general: ["Process automation opportunities", "Data-driven decision support"],
   };
 
   const industryOps = industryOpportunities[industry];
@@ -280,9 +273,10 @@ function generateTimeline(
     phase_2: {
       name: "Development & Integration",
       duration: `Weeks ${phase1Weeks + 1}-${phase1Weeks + phase2Weeks}`,
-      outcome: complexity === "high"
-        ? "Core AI solution deployed, integrations complete, initial training"
-        : "AI solution deployed, integrated with existing workflows",
+      outcome:
+        complexity === "high"
+          ? "Core AI solution deployed, integrations complete, initial training"
+          : "AI solution deployed, integrated with existing workflows",
     },
     phase_3: {
       name: "Validation & Optimization",
@@ -356,9 +350,7 @@ function generateNextSteps(hasExecutiveSponsor: boolean): string[] {
   return steps.slice(0, 5);
 }
 
-export function generateExecutiveSummary(
-  input: GenerateExecutiveSummaryInput
-): ExecutiveSummary {
+export function generateExecutiveSummary(input: GenerateExecutiveSummaryInput): ExecutiveSummary {
   const {
     company_name,
     industry,
@@ -373,8 +365,10 @@ export function generateExecutiveSummary(
 
   const primaryBottleneck = top_bottlenecks[0];
   const complexity = primaryBottleneck?.complexity || "medium";
-  const durationWeeks = pilot_plan?.duration_weeks || readiness_assessment.estimated_time_to_value_weeks;
-  const investmentUsd = pilot_plan?.estimated_cost_usd ||
+  const durationWeeks =
+    pilot_plan?.duration_weeks || readiness_assessment.estimated_time_to_value_weeks;
+  const investmentUsd =
+    pilot_plan?.estimated_cost_usd ||
     (complexity === "high" ? 150000 : complexity === "medium" ? 80000 : 40000);
 
   const estimatedAnnualValue = top_bottlenecks.reduce(
@@ -382,12 +376,13 @@ export function generateExecutiveSummary(
     0
   );
 
-  const roiPercent = roi_projection?.expected_roi_percent ||
+  const roiPercent =
+    roi_projection?.expected_roi_percent ||
     Math.round(((estimatedAnnualValue - investmentUsd) / investmentUsd) * 100);
-  const paybackMonths = roi_projection?.payback_period_months ||
-    Math.ceil(investmentUsd / (estimatedAnnualValue / 12));
-  const annualSavingsUsd = roi_projection?.annual_savings_usd ||
-    Math.round(estimatedAnnualValue * 0.7); // Conservative estimate
+  const paybackMonths =
+    roi_projection?.payback_period_months || Math.ceil(investmentUsd / (estimatedAnnualValue / 12));
+  const annualSavingsUsd =
+    roi_projection?.annual_savings_usd || Math.round(estimatedAnnualValue * 0.7); // Conservative estimate
 
   return {
     header: {
@@ -432,7 +427,8 @@ export function generateExecutiveSummary(
       payback_period_months: Math.min(paybackMonths, 36),
       three_year_value_usd: Math.round(annualSavingsUsd * 3 - investmentUsd),
       roi_percent: roiPercent,
-      confidence: roi_projection?.confidence_level ||
+      confidence:
+        roi_projection?.confidence_level ||
         (readiness_assessment.overall_score >= 6 ? "medium" : "low"),
     },
 

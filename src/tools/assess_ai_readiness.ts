@@ -9,10 +9,7 @@ import type {
   AssessAIReadinessOutput,
   DimensionScore,
 } from "../types/index.js";
-import {
-  getIndustryRecommendation,
-  calculateTimeToValue,
-} from "../data/industry_benchmarks.js";
+import { getIndustryRecommendation, calculateTimeToValue } from "../data/industry_benchmarks.js";
 
 // ============================================
 // Input Schema (Zod validation)
@@ -20,15 +17,17 @@ import {
 
 export const AssessAIReadinessInputSchema = z.object({
   company_name: z.string().min(1, "Company name is required").max(200, "Company name too long"),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
-  employee_count: z.number().int().positive("Employee count must be positive").max(10_000_000, "Employee count unrealistic"),
-  annual_revenue_usd: z.number().positive().max(1_000_000_000_000, "Revenue unrealistic").optional(),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
+  employee_count: z
+    .number()
+    .int()
+    .positive("Employee count must be positive")
+    .max(10_000_000, "Employee count unrealistic"),
+  annual_revenue_usd: z
+    .number()
+    .positive()
+    .max(1_000_000_000_000, "Revenue unrealistic")
+    .optional(),
   data_infrastructure: z.object({
     centralized_data: z.boolean(),
     data_quality_score: z.number().min(1).max(10).optional(),
@@ -39,7 +38,10 @@ export const AssessAIReadinessInputSchema = z.object({
     crm: z.string().max(100, "CRM name too long").nullable(),
     legacy_systems_count: z.number().int().min(0).max(1000, "Legacy count unrealistic"),
   }),
-  previous_ai_attempts: z.array(z.string().max(500, "Attempt description too long")).max(50, "Too many attempts").optional(),
+  previous_ai_attempts: z
+    .array(z.string().max(500, "Attempt description too long"))
+    .max(50, "Too many attempts")
+    .optional(),
 });
 
 // ============================================
@@ -82,9 +84,7 @@ function calculateDataReadiness(input: AssessAIReadinessInput): DimensionScore {
   return { score, findings };
 }
 
-function calculateTechnicalCapability(
-  input: AssessAIReadinessInput
-): DimensionScore {
+function calculateTechnicalCapability(input: AssessAIReadinessInput): DimensionScore {
   let score = 2; // Base score (calibrated for realistic assessment)
   const findings: string[] = [];
 
@@ -116,9 +116,7 @@ function calculateTechnicalCapability(
   return { score, findings };
 }
 
-function calculateProcessMaturity(
-  input: AssessAIReadinessInput
-): DimensionScore {
+function calculateProcessMaturity(input: AssessAIReadinessInput): DimensionScore {
   let score = 3; // Base score (calibrated for realistic assessment)
   const findings: string[] = [];
 
@@ -148,9 +146,7 @@ function calculateProcessMaturity(
   return { score, findings };
 }
 
-function calculateOrganizationalReadiness(
-  input: AssessAIReadinessInput
-): DimensionScore {
+function calculateOrganizationalReadiness(input: AssessAIReadinessInput): DimensionScore {
   let score = 2; // Base score (calibrated for realistic assessment)
   const findings: string[] = [];
 
@@ -252,24 +248,16 @@ function identifyGaps(input: AssessAIReadinessInput): string[] {
   return gaps;
 }
 
-function determineRedFlags(
-  overallScore: number,
-  input: AssessAIReadinessInput
-): string[] {
+function determineRedFlags(overallScore: number, input: AssessAIReadinessInput): string[] {
   const redFlags: string[] = [];
 
   // overall_score < 3: add red flag
   if (overallScore < 3) {
-    redFlags.push(
-      "AI implementation not recommended without foundational improvements"
-    );
+    redFlags.push("AI implementation not recommended without foundational improvements");
   }
 
   // manual_data_entry_percent > 90 AND no ERP
-  if (
-    input.data_infrastructure.manual_data_entry_percent > 90 &&
-    !input.current_systems.erp
-  ) {
+  if (input.data_infrastructure.manual_data_entry_percent > 90 && !input.current_systems.erp) {
     redFlags.push("Consider basic digitization before AI");
   }
 
@@ -285,9 +273,7 @@ function determineRedFlags(
 // Main Assessment Function
 // ============================================
 
-export function assessAIReadiness(
-  input: AssessAIReadinessInput
-): AssessAIReadinessOutput {
+export function assessAIReadiness(input: AssessAIReadinessInput): AssessAIReadinessOutput {
   // Calculate dimension scores
   const dataReadiness = calculateDataReadiness(input);
   const technicalCapability = calculateTechnicalCapability(input);
@@ -306,11 +292,7 @@ export function assessAIReadiness(
   const roundedOverallScore = Math.round(overallScore * 10) / 10;
 
   // Identify strengths and gaps
-  const strengths = identifyStrengths(
-    input,
-    dataReadiness,
-    technicalCapability
-  );
+  const strengths = identifyStrengths(input, dataReadiness, technicalCapability);
   const gaps = identifyGaps(input);
 
   // Determine red flags

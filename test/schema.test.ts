@@ -110,13 +110,7 @@ describe("Input Schema Validation", () => {
     });
 
     it("should accept all valid industries", () => {
-      const industries = [
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-      ];
+      const industries = ["manufacturing", "insurance", "aquaculture", "healthcare", "general"];
 
       for (const industry of industries) {
         const input = {

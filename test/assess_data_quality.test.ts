@@ -355,9 +355,7 @@ describe("assessDataQuality", () => {
       });
 
       const result = assessDataQuality(input);
-      const govGap = result.data_gaps.find((g) =>
-        g.gap.toLowerCase().includes("governance")
-      );
+      const govGap = result.data_gaps.find((g) => g.gap.toLowerCase().includes("governance"));
       expect(govGap).toBeDefined();
       expect(govGap?.impact).toBe("high");
     });
@@ -411,9 +409,7 @@ describe("assessDataQuality", () => {
     it("should estimate effort based on source count and type", () => {
       const simple = assessDataQuality(
         createValidInput({
-          data_sources: [
-            { name: "Simple", type: "api", update_frequency: "daily" },
-          ],
+          data_sources: [{ name: "Simple", type: "api", update_frequency: "daily" }],
           integration_complexity: "low",
         })
       );
@@ -535,9 +531,7 @@ describe("assessDataQuality", () => {
         })
       );
 
-      expect(complex.estimated_data_prep_weeks).toBeGreaterThan(
-        simple.estimated_data_prep_weeks
-      );
+      expect(complex.estimated_data_prep_weeks).toBeGreaterThan(simple.estimated_data_prep_weeks);
     });
   });
 
@@ -569,9 +563,7 @@ describe("AssessDataQualityInputSchema", () => {
     const input = {
       company_name: "Test",
       industry: "manufacturing",
-      data_sources: [
-        { name: "Test", type: "invalid_type" },
-      ],
+      data_sources: [{ name: "Test", type: "invalid_type" }],
     };
 
     const result = AssessDataQualityInputSchema.safeParse(input);
@@ -582,9 +574,7 @@ describe("AssessDataQualityInputSchema", () => {
     const input = {
       company_name: "Test",
       industry: "manufacturing",
-      data_sources: [
-        { name: "Test", type: "database", estimated_completeness_percent: 150 },
-      ],
+      data_sources: [{ name: "Test", type: "database", estimated_completeness_percent: 150 }],
     };
 
     const result = AssessDataQualityInputSchema.safeParse(input);
@@ -595,9 +585,7 @@ describe("AssessDataQualityInputSchema", () => {
     const input = {
       company_name: "Test Corp",
       industry: "general",
-      data_sources: [
-        { name: "Main DB", type: "database" },
-      ],
+      data_sources: [{ name: "Main DB", type: "database" }],
     };
 
     const result = AssessDataQualityInputSchema.safeParse(input);

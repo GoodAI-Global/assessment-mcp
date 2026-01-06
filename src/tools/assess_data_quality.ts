@@ -21,14 +21,9 @@ const DataSourceSchema = z.object({
     "third_party",
   ]),
   volume_records: z.number().min(0).optional(),
-  update_frequency: z.enum([
-    "real_time",
-    "hourly",
-    "daily",
-    "weekly",
-    "monthly",
-    "ad_hoc",
-  ]).optional(),
+  update_frequency: z
+    .enum(["real_time", "hourly", "daily", "weekly", "monthly", "ad_hoc"])
+    .optional(),
   estimated_completeness_percent: z.number().min(0).max(100).optional(),
   has_documentation: z.boolean().optional(),
   owner_identified: z.boolean().optional(),
@@ -37,13 +32,7 @@ const DataSourceSchema = z.object({
 
 export const AssessDataQualityInputSchema = z.object({
   company_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
   data_sources: z.array(DataSourceSchema).min(1).max(50),
   target_use_case: z.string().min(10).max(1000).optional(),
   data_governance_exists: z.boolean().optional(),
@@ -131,7 +120,15 @@ export const ASSESS_DATA_QUALITY_TOOL = {
             name: { type: "string" },
             type: {
               type: "string",
-              enum: ["database", "spreadsheet", "api", "files", "sensors", "manual_entry", "third_party"],
+              enum: [
+                "database",
+                "spreadsheet",
+                "api",
+                "files",
+                "sensors",
+                "manual_entry",
+                "third_party",
+              ],
             },
             volume_records: { type: "number" },
             update_frequency: {
@@ -163,9 +160,10 @@ export const ASSESS_DATA_QUALITY_TOOL = {
 // Implementation
 // ============================================
 
-function assessCompleteness(
-  source: z.infer<typeof DataSourceSchema>
-): { score: number; finding: string } {
+function assessCompleteness(source: z.infer<typeof DataSourceSchema>): {
+  score: number;
+  finding: string;
+} {
   const completeness = source.estimated_completeness_percent;
 
   if (completeness === undefined) {
@@ -190,9 +188,10 @@ function assessCompleteness(
   return { score: 2, finding: "Critical completeness issues - major data collection needed" };
 }
 
-function assessFreshness(
-  source: z.infer<typeof DataSourceSchema>
-): { score: number; finding: string } {
+function assessFreshness(source: z.infer<typeof DataSourceSchema>): {
+  score: number;
+  finding: string;
+} {
   const frequency = source.update_frequency;
 
   if (!frequency) {
@@ -211,9 +210,10 @@ function assessFreshness(
   return scores[frequency] || { score: 5, finding: "Unknown update frequency" };
 }
 
-function assessAccessibility(
-  source: z.infer<typeof DataSourceSchema>
-): { score: number; finding: string } {
+function assessAccessibility(source: z.infer<typeof DataSourceSchema>): {
+  score: number;
+  finding: string;
+} {
   let score = 5;
   const findings: string[] = [];
 
@@ -253,9 +253,10 @@ function assessAccessibility(
   };
 }
 
-function assessConsistency(
-  source: z.infer<typeof DataSourceSchema>
-): { score: number; finding: string } {
+function assessConsistency(source: z.infer<typeof DataSourceSchema>): {
+  score: number;
+  finding: string;
+} {
   let score = 6;
   const findings: string[] = [];
 
@@ -341,9 +342,7 @@ function generateSourceRecommendations(
   return recommendations.slice(0, 3);
 }
 
-function assessDataSource(
-  source: z.infer<typeof DataSourceSchema>
-): DataSourceAssessment {
+function assessDataSource(source: z.infer<typeof DataSourceSchema>): DataSourceAssessment {
   const completeness = assessCompleteness(source);
   const freshness = assessFreshness(source);
   const accessibility = assessAccessibility(source);
@@ -376,9 +375,7 @@ function identifyDataGaps(
   const gaps: DataQualityAssessment["data_gaps"] = [];
 
   // Check for completeness gaps
-  const lowCompleteness = sources.filter(
-    (s) => s.quality_dimensions.completeness.score < 6
-  );
+  const lowCompleteness = sources.filter((s) => s.quality_dimensions.completeness.score < 6);
   if (lowCompleteness.length > 0) {
     gaps.push({
       gap: `${lowCompleteness.length} data source(s) have significant completeness issues`,
@@ -389,9 +386,7 @@ function identifyDataGaps(
   }
 
   // Check for freshness gaps
-  const staleSources = sources.filter(
-    (s) => s.quality_dimensions.freshness.score < 5
-  );
+  const staleSources = sources.filter((s) => s.quality_dimensions.freshness.score < 5);
   if (staleSources.length > 0) {
     gaps.push({
       gap: "Data freshness insufficient for real-time AI applications",
@@ -474,7 +469,9 @@ function assessGovernance(
     score += 1;
     findings.push("All data sources have identified owners");
   } else {
-    findings.push(`${input.data_sources.length - ownedSources.length} sources without clear ownership`);
+    findings.push(
+      `${input.data_sources.length - ownedSources.length} sources without clear ownership`
+    );
     recommendations.push("Assign data stewards to all critical sources");
   }
 
@@ -509,9 +506,7 @@ function assessIntegration(
     challenges.push("Multiple data sources increase integration complexity");
   }
 
-  const lowAccessibility = sources.filter(
-    (s) => s.quality_dimensions.accessibility.score < 5
-  );
+  const lowAccessibility = sources.filter((s) => s.quality_dimensions.accessibility.score < 5);
   if (lowAccessibility.length > 0) {
     challenges.push("Some sources have accessibility challenges");
   }
@@ -554,9 +549,7 @@ function identifyQuickWins(
   }
 
   // Real-time sources
-  const realTimeSources = input.data_sources.filter(
-    (s) => s.update_frequency === "real_time"
-  );
+  const realTimeSources = input.data_sources.filter((s) => s.update_frequency === "real_time");
   if (realTimeSources.length > 0) {
     quickWins.push("Real-time data available - enables responsive AI applications");
   }
@@ -583,9 +576,7 @@ function identifyCriticalActions(
   // Critical data quality issues
   const notReady = sources.filter((s) => s.ai_readiness_score < 4);
   if (notReady.length > 0) {
-    actions.push(
-      `Address critical quality issues in ${notReady.map((s) => s.name).join(", ")}`
-    );
+    actions.push(`Address critical quality issues in ${notReady.map((s) => s.name).join(", ")}`);
   }
 
   // High impact gaps
@@ -602,21 +593,16 @@ function identifyCriticalActions(
   return [...new Set(actions)].slice(0, 4);
 }
 
-export function assessDataQuality(
-  input: AssessDataQualityInput
-): DataQualityAssessment {
+export function assessDataQuality(input: AssessDataQualityInput): DataQualityAssessment {
   // Assess each data source
   const assessedSources = input.data_sources.map(assessDataSource);
 
   // Calculate aggregate metrics
   const avgScore =
-    assessedSources.reduce((sum, s) => sum + s.ai_readiness_score, 0) /
-    assessedSources.length;
+    assessedSources.reduce((sum, s) => sum + s.ai_readiness_score, 0) / assessedSources.length;
   const avgCompleteness =
-    assessedSources.reduce(
-      (sum, s) => sum + s.quality_dimensions.completeness.score,
-      0
-    ) / assessedSources.length;
+    assessedSources.reduce((sum, s) => sum + s.quality_dimensions.completeness.score, 0) /
+    assessedSources.length;
 
   const sourcesReady = assessedSources.filter((s) => s.ai_readiness_score >= 7).length;
   const sourcesNeedsWork = assessedSources.filter(

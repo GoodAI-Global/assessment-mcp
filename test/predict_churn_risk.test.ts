@@ -16,9 +16,7 @@ import {
 // Helper: Create Valid Test Input
 // ============================================
 
-function createValidInput(
-  overrides: Partial<PredictChurnRiskInput> = {}
-): PredictChurnRiskInput {
+function createValidInput(overrides: Partial<PredictChurnRiskInput> = {}): PredictChurnRiskInput {
   const futureDate = new Date();
   futureDate.setMonth(futureDate.getMonth() + 6);
   const pastDate = new Date();
@@ -217,13 +215,17 @@ describe("predictChurnRisk", () => {
 
     expect(result.risk_summary.churn_risk_score).toBeGreaterThanOrEqual(0);
     expect(result.risk_summary.churn_risk_score).toBeLessThanOrEqual(100);
-    expect(["low", "moderate", "elevated", "high", "critical"]).toContain(result.risk_summary.risk_level);
+    expect(["low", "moderate", "elevated", "high", "critical"]).toContain(
+      result.risk_summary.risk_level
+    );
     expect(["improving", "stable", "deteriorating"]).toContain(result.risk_summary.risk_trend);
     expect(["high", "medium", "low"]).toContain(result.risk_summary.confidence);
     expect(result.risk_summary.days_until_contract_end).toBeGreaterThanOrEqual(0);
     expect(result.risk_summary.renewal_probability_percent).toBeGreaterThanOrEqual(0);
     expect(result.risk_summary.renewal_probability_percent).toBeLessThanOrEqual(100);
-    expect(["immediate", "this_quarter", "this_half", "monitor"]).toContain(result.risk_summary.urgency);
+    expect(["immediate", "this_quarter", "this_half", "monitor"]).toContain(
+      result.risk_summary.urgency
+    );
   });
 
   it("should calculate category scores correctly", () => {
@@ -355,8 +357,8 @@ describe("Warning Signals", () => {
     });
     const result = predictChurnRisk(input);
 
-    const competitorSignal = result.warning_signals.find(
-      (s) => s.signal.toLowerCase().includes("competitor")
+    const competitorSignal = result.warning_signals.find((s) =>
+      s.signal.toLowerCase().includes("competitor")
     );
     expect(competitorSignal).toBeDefined();
     expect(competitorSignal?.severity).toBe("warning");
@@ -371,8 +373,8 @@ describe("Warning Signals", () => {
     });
     const result = predictChurnRisk(input);
 
-    const engagementSignal = result.warning_signals.find(
-      (s) => s.signal.toLowerCase().includes("executive")
+    const engagementSignal = result.warning_signals.find((s) =>
+      s.signal.toLowerCase().includes("executive")
     );
     expect(engagementSignal).toBeDefined();
   });
@@ -386,8 +388,8 @@ describe("Warning Signals", () => {
     });
     const result = predictChurnRisk(input);
 
-    const escalationSignal = result.warning_signals.find(
-      (s) => s.signal.toLowerCase().includes("escalation")
+    const escalationSignal = result.warning_signals.find((s) =>
+      s.signal.toLowerCase().includes("escalation")
     );
     expect(escalationSignal).toBeDefined();
     expect(escalationSignal?.severity).toBe("critical");
@@ -416,8 +418,8 @@ describe("Risk Factors", () => {
     });
     const result = predictChurnRisk(input);
 
-    const adoptionFactor = result.risk_factors.find(
-      (f) => f.factor.toLowerCase().includes("adoption")
+    const adoptionFactor = result.risk_factors.find((f) =>
+      f.factor.toLowerCase().includes("adoption")
     );
     expect(adoptionFactor).toBeDefined();
     expect(adoptionFactor?.category).toBe("Engagement");
@@ -432,9 +434,7 @@ describe("Risk Factors", () => {
     });
     const result = predictChurnRisk(input);
 
-    const npsFactor = result.risk_factors.find(
-      (f) => f.factor.toLowerCase().includes("nps")
-    );
+    const npsFactor = result.risk_factors.find((f) => f.factor.toLowerCase().includes("nps"));
     expect(npsFactor).toBeDefined();
     expect(npsFactor?.category).toBe("Satisfaction");
   });
@@ -448,9 +448,7 @@ describe("Risk Factors", () => {
     });
     const result = predictChurnRisk(input);
 
-    const budgetFactor = result.risk_factors.find(
-      (f) => f.factor.toLowerCase().includes("budget")
-    );
+    const budgetFactor = result.risk_factors.find((f) => f.factor.toLowerCase().includes("budget"));
     expect(budgetFactor).toBeDefined();
     expect(budgetFactor?.category).toBe("Value");
   });
@@ -464,9 +462,7 @@ describe("Risk Factors", () => {
     });
     const result = predictChurnRisk(input);
 
-    const maFactor = result.risk_factors.find(
-      (f) => f.factor.toLowerCase().includes("m&a")
-    );
+    const maFactor = result.risk_factors.find((f) => f.factor.toLowerCase().includes("m&a"));
     expect(maFactor).toBeDefined();
     expect(maFactor?.category).toBe("External");
   });
@@ -539,7 +535,8 @@ describe("Retention Strategy", () => {
     const result = predictChurnRisk(input);
 
     const emergencyAction = result.retention_strategy.priority_actions.find(
-      (a) => a.action.toLowerCase().includes("emergency") || a.timeline.toLowerCase().includes("week")
+      (a) =>
+        a.action.toLowerCase().includes("emergency") || a.timeline.toLowerCase().includes("week")
     );
     expect(emergencyAction).toBeDefined();
   });
@@ -553,8 +550,8 @@ describe("Retention Strategy", () => {
     });
     const result = predictChurnRisk(input);
 
-    const adoptionAction = result.retention_strategy.priority_actions.find(
-      (a) => a.action.toLowerCase().includes("adoption")
+    const adoptionAction = result.retention_strategy.priority_actions.find((a) =>
+      a.action.toLowerCase().includes("adoption")
     );
     expect(adoptionAction).toBeDefined();
   });
@@ -686,8 +683,8 @@ describe("Competitive Assessment", () => {
     });
     const result = predictChurnRisk(input);
 
-    const switchingVulnerability = result.competitive_assessment.vulnerability_areas.find(
-      (v) => v.toLowerCase().includes("switching")
+    const switchingVulnerability = result.competitive_assessment.vulnerability_areas.find((v) =>
+      v.toLowerCase().includes("switching")
     );
     expect(switchingVulnerability).toBeDefined();
   });
@@ -702,7 +699,9 @@ describe("Revenue Impact", () => {
     const input = createValidInput();
     const result = predictChurnRisk(input);
 
-    expect(result.revenue_impact.current_arr_usd).toBe(input.account_info.contract_value_annual_usd);
+    expect(result.revenue_impact.current_arr_usd).toBe(
+      input.account_info.contract_value_annual_usd
+    );
   });
 
   it("should calculate at-risk ARR based on churn score", () => {
@@ -828,8 +827,8 @@ describe("Success Indicators", () => {
     });
     const result = predictChurnRisk(input);
 
-    const referenceSignal = result.success_indicators.positive_signals.find(
-      (s) => s.toLowerCase().includes("reference")
+    const referenceSignal = result.success_indicators.positive_signals.find((s) =>
+      s.toLowerCase().includes("reference")
     );
     expect(referenceSignal).toBeDefined();
   });
@@ -843,8 +842,8 @@ describe("Success Indicators", () => {
     });
     const result = predictChurnRisk(input);
 
-    const expansionSignal = result.success_indicators.positive_signals.find(
-      (s) => s.toLowerCase().includes("expansion")
+    const expansionSignal = result.success_indicators.positive_signals.find((s) =>
+      s.toLowerCase().includes("expansion")
     );
     expect(expansionSignal).toBeDefined();
   });
@@ -868,8 +867,8 @@ describe("Success Indicators", () => {
     });
     const result = predictChurnRisk(input);
 
-    const projectMomentum = result.success_indicators.momentum_builders.find(
-      (s) => s.toLowerCase().includes("project")
+    const projectMomentum = result.success_indicators.momentum_builders.find((s) =>
+      s.toLowerCase().includes("project")
     );
     expect(projectMomentum).toBeDefined();
   });

@@ -8,13 +8,7 @@ import { z } from "zod";
 // ============================================
 export const GenerateExecutiveSummaryInputSchema = z.object({
     company_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     assessment_date: z.string().max(50).optional(),
     readiness_assessment: z.object({
         overall_score: z.number().min(0).max(10),
@@ -30,26 +24,32 @@ export const GenerateExecutiveSummaryInputSchema = z.object({
         estimated_time_to_value_weeks: z.number(),
         red_flags: z.array(z.string()).max(10),
     }),
-    top_bottlenecks: z.array(z.object({
+    top_bottlenecks: z
+        .array(z.object({
         name: z.string().max(200),
         estimated_annual_cost_usd: z.number(),
         ai_solution_fit_score: z.number(),
         recommended_ai_approach: z.string().max(500),
         complexity: z.enum(["low", "medium", "high"]),
-    })).max(10),
-    pilot_plan: z.object({
+    }))
+        .max(10),
+    pilot_plan: z
+        .object({
         pilot_name: z.string().max(300),
         duration_weeks: z.number(),
         estimated_cost_usd: z.number(),
         success_metrics: z.array(z.string()).max(10),
-    }).optional(),
-    roi_projection: z.object({
+    })
+        .optional(),
+    roi_projection: z
+        .object({
         expected_roi_percent: z.number(),
         payback_period_months: z.number(),
         net_present_value_usd: z.number(),
         annual_savings_usd: z.number(),
         confidence_level: z.enum(["low", "medium", "high"]),
-    }).optional(),
+    })
+        .optional(),
     executive_sponsor: z.string().max(200).optional(),
     prepared_by: z.string().max(200).optional(),
 });
@@ -148,22 +148,13 @@ function generateOpportunities(bottlenecks, industry) {
             "Predictive maintenance to reduce downtime",
             "Quality control automation using computer vision",
         ],
-        insurance: [
-            "Claims processing automation",
-            "Risk assessment using ML models",
-        ],
+        insurance: ["Claims processing automation", "Risk assessment using ML models"],
         aquaculture: [
             "Feed optimization through sensor data analysis",
             "Growth prediction and harvest timing",
         ],
-        healthcare: [
-            "Patient scheduling optimization",
-            "Documentation automation",
-        ],
-        general: [
-            "Process automation opportunities",
-            "Data-driven decision support",
-        ],
+        healthcare: ["Patient scheduling optimization", "Documentation automation"],
+        general: ["Process automation opportunities", "Data-driven decision support"],
     };
     const industryOps = industryOpportunities[industry];
     if (industryOps && opportunities.length < 3) {
@@ -255,10 +246,8 @@ export function generateExecutiveSummary(input) {
     const estimatedAnnualValue = top_bottlenecks.reduce((sum, b) => sum + b.estimated_annual_cost_usd * (b.ai_solution_fit_score / 10), 0);
     const roiPercent = roi_projection?.expected_roi_percent ||
         Math.round(((estimatedAnnualValue - investmentUsd) / investmentUsd) * 100);
-    const paybackMonths = roi_projection?.payback_period_months ||
-        Math.ceil(investmentUsd / (estimatedAnnualValue / 12));
-    const annualSavingsUsd = roi_projection?.annual_savings_usd ||
-        Math.round(estimatedAnnualValue * 0.7); // Conservative estimate
+    const paybackMonths = roi_projection?.payback_period_months || Math.ceil(investmentUsd / (estimatedAnnualValue / 12));
+    const annualSavingsUsd = roi_projection?.annual_savings_usd || Math.round(estimatedAnnualValue * 0.7); // Conservative estimate
     return {
         header: {
             title: "AI Transformation Executive Summary",

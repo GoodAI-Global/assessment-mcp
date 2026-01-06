@@ -8,13 +8,7 @@ import { z } from "zod";
 // ============================================
 export const EstimateDealSizeInputSchema = z.object({
     company_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     employee_count: z.number().min(1).max(1000000),
     annual_revenue_usd: z.number().min(0).optional(),
     engagement_type: z.enum([
@@ -32,31 +26,23 @@ export const EstimateDealSizeInputSchema = z.object({
         user_count: z.number().min(1).max(100000).default(10),
         custom_development_required: z.boolean().default(false),
     }),
-    complexity_factors: z.object({
+    complexity_factors: z
+        .object({
         regulatory_requirements: z.enum(["none", "standard", "strict", "critical"]).default("none"),
         legacy_system_integration: z.boolean().default(false),
         multi_language_support: z.boolean().default(false),
         real_time_requirements: z.boolean().default(false),
         high_availability_sla: z.boolean().default(false),
-    }).optional(),
-    timeline_preference: z.enum([
-        "accelerated",
-        "standard",
-        "extended",
-    ]).default("standard"),
-    client_ai_maturity: z.enum([
-        "none",
-        "experimenting",
-        "scaling",
-        "mature",
-    ]).default("experimenting"),
+    })
+        .optional(),
+    timeline_preference: z.enum(["accelerated", "standard", "extended"]).default("standard"),
+    client_ai_maturity: z
+        .enum(["none", "experimenting", "scaling", "mature"])
+        .default("experimenting"),
     existing_relationship: z.boolean().default(false),
-    competitive_situation: z.enum([
-        "sole_source",
-        "preferred",
-        "competitive",
-        "highly_competitive",
-    ]).default("competitive"),
+    competitive_situation: z
+        .enum(["sole_source", "preferred", "competitive", "highly_competitive"])
+        .default("competitive"),
 });
 // ============================================
 // Tool Definition
@@ -326,30 +312,110 @@ function generatePhases(totalValue, engagementType, timeline) {
     const timelineMultiplier = timeline === "accelerated" ? 0.7 : timeline === "extended" ? 1.3 : 1.0;
     const phaseTemplates = {
         assessment: [
-            { phase: "Discovery", weeksPct: 0.4, valuePct: 0.5, deliverables: ["Stakeholder interviews", "Data inventory", "Process mapping"] },
-            { phase: "Analysis & Recommendations", weeksPct: 0.6, valuePct: 0.5, deliverables: ["Assessment report", "Roadmap", "Business case"] },
+            {
+                phase: "Discovery",
+                weeksPct: 0.4,
+                valuePct: 0.5,
+                deliverables: ["Stakeholder interviews", "Data inventory", "Process mapping"],
+            },
+            {
+                phase: "Analysis & Recommendations",
+                weeksPct: 0.6,
+                valuePct: 0.5,
+                deliverables: ["Assessment report", "Roadmap", "Business case"],
+            },
         ],
         pilot: [
-            { phase: "Design & Setup", weeksPct: 0.25, valuePct: 0.3, deliverables: ["Technical design", "Environment setup", "Data preparation"] },
-            { phase: "Build & Configure", weeksPct: 0.5, valuePct: 0.5, deliverables: ["Working prototype", "Integration testing", "User acceptance"] },
-            { phase: "Validate & Handoff", weeksPct: 0.25, valuePct: 0.2, deliverables: ["Validation report", "Training", "Scale recommendations"] },
+            {
+                phase: "Design & Setup",
+                weeksPct: 0.25,
+                valuePct: 0.3,
+                deliverables: ["Technical design", "Environment setup", "Data preparation"],
+            },
+            {
+                phase: "Build & Configure",
+                weeksPct: 0.5,
+                valuePct: 0.5,
+                deliverables: ["Working prototype", "Integration testing", "User acceptance"],
+            },
+            {
+                phase: "Validate & Handoff",
+                weeksPct: 0.25,
+                valuePct: 0.2,
+                deliverables: ["Validation report", "Training", "Scale recommendations"],
+            },
         ],
         implementation: [
-            { phase: "Mobilization", weeksPct: 0.15, valuePct: 0.15, deliverables: ["Project plan", "Architecture", "Environment setup"] },
-            { phase: "Build", weeksPct: 0.45, valuePct: 0.5, deliverables: ["Core functionality", "Integrations", "Testing"] },
-            { phase: "Deploy & Stabilize", weeksPct: 0.25, valuePct: 0.25, deliverables: ["Production deployment", "Performance tuning", "User training"] },
-            { phase: "Transition", weeksPct: 0.15, valuePct: 0.1, deliverables: ["Documentation", "Knowledge transfer", "Support handoff"] },
+            {
+                phase: "Mobilization",
+                weeksPct: 0.15,
+                valuePct: 0.15,
+                deliverables: ["Project plan", "Architecture", "Environment setup"],
+            },
+            {
+                phase: "Build",
+                weeksPct: 0.45,
+                valuePct: 0.5,
+                deliverables: ["Core functionality", "Integrations", "Testing"],
+            },
+            {
+                phase: "Deploy & Stabilize",
+                weeksPct: 0.25,
+                valuePct: 0.25,
+                deliverables: ["Production deployment", "Performance tuning", "User training"],
+            },
+            {
+                phase: "Transition",
+                weeksPct: 0.15,
+                valuePct: 0.1,
+                deliverables: ["Documentation", "Knowledge transfer", "Support handoff"],
+            },
         ],
         transformation: [
-            { phase: "Foundation", weeksPct: 0.15, valuePct: 0.15, deliverables: ["Program setup", "Architecture", "Governance"] },
-            { phase: "Wave 1 - Quick Wins", weeksPct: 0.25, valuePct: 0.25, deliverables: ["Initial use cases", "Early value demonstration"] },
-            { phase: "Wave 2 - Scale", weeksPct: 0.35, valuePct: 0.35, deliverables: ["Enterprise rollout", "Advanced capabilities"] },
-            { phase: "Optimize & Sustain", weeksPct: 0.25, valuePct: 0.25, deliverables: ["Center of Excellence", "Continuous improvement"] },
+            {
+                phase: "Foundation",
+                weeksPct: 0.15,
+                valuePct: 0.15,
+                deliverables: ["Program setup", "Architecture", "Governance"],
+            },
+            {
+                phase: "Wave 1 - Quick Wins",
+                weeksPct: 0.25,
+                valuePct: 0.25,
+                deliverables: ["Initial use cases", "Early value demonstration"],
+            },
+            {
+                phase: "Wave 2 - Scale",
+                weeksPct: 0.35,
+                valuePct: 0.35,
+                deliverables: ["Enterprise rollout", "Advanced capabilities"],
+            },
+            {
+                phase: "Optimize & Sustain",
+                weeksPct: 0.25,
+                valuePct: 0.25,
+                deliverables: ["Center of Excellence", "Continuous improvement"],
+            },
         ],
         managed_service: [
-            { phase: "Onboarding", weeksPct: 0.1, valuePct: 0.15, deliverables: ["Service setup", "Baseline establishment", "SLA definition"] },
-            { phase: "Steady State Operations", weeksPct: 0.7, valuePct: 0.65, deliverables: ["Ongoing operations", "Support", "Reporting"] },
-            { phase: "Optimization Cycles", weeksPct: 0.2, valuePct: 0.2, deliverables: ["Performance improvements", "Feature enhancements"] },
+            {
+                phase: "Onboarding",
+                weeksPct: 0.1,
+                valuePct: 0.15,
+                deliverables: ["Service setup", "Baseline establishment", "SLA definition"],
+            },
+            {
+                phase: "Steady State Operations",
+                weeksPct: 0.7,
+                valuePct: 0.65,
+                deliverables: ["Ongoing operations", "Support", "Reporting"],
+            },
+            {
+                phase: "Optimization Cycles",
+                weeksPct: 0.2,
+                valuePct: 0.2,
+                deliverables: ["Performance improvements", "Feature enhancements"],
+            },
         ],
     };
     const baseDurations = {
@@ -374,11 +440,11 @@ function calculateMarginAnalysis(totalValue, engagementType, complexity) {
     const baseMargins = {
         assessment: 0.55,
         pilot: 0.45,
-        implementation: 0.40,
+        implementation: 0.4,
         transformation: 0.38,
         managed_service: 0.35,
     };
-    let marginPercent = baseMargins[engagementType] || 0.40;
+    let marginPercent = baseMargins[engagementType] || 0.4;
     const opportunities = [];
     // Complexity impacts margin negatively
     if (complexity) {
@@ -414,12 +480,12 @@ function calculateMarketRates(totalValue, industry, competitiveSituation) {
     // Market variance by industry
     const industryVariance = {
         manufacturing: 0.15,
-        insurance: 0.20,
+        insurance: 0.2,
         aquaculture: 0.25,
-        healthcare: 0.20,
-        general: 0.20,
+        healthcare: 0.2,
+        general: 0.2,
     };
-    const variance = industryVariance[industry] || 0.20;
+    const variance = industryVariance[industry] || 0.2;
     const marketMid = totalValue;
     const marketLow = Math.round(marketMid * (1 - variance));
     const marketHigh = Math.round(marketMid * (1 + variance));

@@ -201,8 +201,15 @@ describe("calculate_realized_value tool", () => {
     });
 
     it("should accept all valid solution types", () => {
-      const types = ["process_automation", "predictive_analytics", "document_processing",
-        "quality_control", "customer_service", "supply_chain", "general_ai"];
+      const types = [
+        "process_automation",
+        "predictive_analytics",
+        "document_processing",
+        "quality_control",
+        "customer_service",
+        "supply_chain",
+        "general_ai",
+      ];
       types.forEach((solution_type) => {
         expect(() =>
           CalculateRealizedValueInputSchema.parse({
@@ -237,8 +244,12 @@ describe("calculate_realized_value tool", () => {
 
     it("should include measurement period", () => {
       expect(result.measurement_period).toBeDefined();
-      expect(result.measurement_period.go_live_date).toBe(baseInput.implementation_info.go_live_date);
-      expect(result.measurement_period.measurement_date).toBe(baseInput.implementation_info.measurement_date);
+      expect(result.measurement_period.go_live_date).toBe(
+        baseInput.implementation_info.go_live_date
+      );
+      expect(result.measurement_period.measurement_date).toBe(
+        baseInput.implementation_info.measurement_date
+      );
       expect(result.measurement_period.months_since_go_live).toBeGreaterThan(0);
     });
 
@@ -246,7 +257,9 @@ describe("calculate_realized_value tool", () => {
       expect(result.value_summary).toBeDefined();
       expect(result.value_summary.total_realized_value_usd).toBeGreaterThanOrEqual(0);
       expect(result.value_summary.annualized_value_usd).toBeGreaterThanOrEqual(0);
-      expect(["exceeding", "on_track", "below", "significantly_below"]).toContain(result.value_summary.value_realization_status);
+      expect(["exceeding", "on_track", "below", "significantly_below"]).toContain(
+        result.value_summary.value_realization_status
+      );
       expect(result.value_summary.key_value_drivers.length).toBeGreaterThan(0);
     });
 
@@ -270,7 +283,9 @@ describe("calculate_realized_value tool", () => {
       expect(result.investment_analysis).toBeDefined();
       expect(result.investment_analysis.total_investment_usd).toBeDefined();
       expect(result.investment_analysis.net_value_usd).toBeDefined();
-      expect(["excellent", "good", "fair", "poor"]).toContain(result.investment_analysis.investment_efficiency_rating);
+      expect(["excellent", "good", "fair", "poor"]).toContain(
+        result.investment_analysis.investment_efficiency_rating
+      );
     });
 
     it("should include intangible value", () => {
@@ -365,7 +380,9 @@ describe("calculate_realized_value tool", () => {
 
     it("should identify below status for underperformance", () => {
       const result = calculateRealizedValue(belowProjectionsInput);
-      expect(["below", "significantly_below"]).toContain(result.value_summary.value_realization_status);
+      expect(["below", "significantly_below"]).toContain(
+        result.value_summary.value_realization_status
+      );
     });
   });
 
@@ -453,7 +470,9 @@ describe("calculate_realized_value tool", () => {
 
     it("should rate investment efficiency", () => {
       const result = calculateRealizedValue(baseInput);
-      expect(["excellent", "good", "fair", "poor"]).toContain(result.investment_analysis.investment_efficiency_rating);
+      expect(["excellent", "good", "fair", "poor"]).toContain(
+        result.investment_analysis.investment_efficiency_rating
+      );
     });
   });
 
@@ -484,7 +503,9 @@ describe("calculate_realized_value tool", () => {
 
     it("should provide employee impact assessment", () => {
       const result = calculateRealizedValue(withIntangiblesInput);
-      expect(result.intangible_value.employee_impact.toLowerCase()).toContain("significant positive");
+      expect(result.intangible_value.employee_impact.toLowerCase()).toContain(
+        "significant positive"
+      );
     });
   });
 
@@ -591,8 +612,12 @@ describe("calculate_realized_value tool", () => {
     it("should compare savings to projected", () => {
       const result = calculateRealizedValue(baseInput);
       expect(result.projection_comparison.savings_vs_projected.projected_annual_usd).toBe(300000);
-      expect(result.projection_comparison.savings_vs_projected.actual_annualized_usd).toBeGreaterThan(0);
-      expect(["ahead", "on_track", "behind"]).toContain(result.projection_comparison.savings_vs_projected.status);
+      expect(
+        result.projection_comparison.savings_vs_projected.actual_annualized_usd
+      ).toBeGreaterThan(0);
+      expect(["ahead", "on_track", "behind"]).toContain(
+        result.projection_comparison.savings_vs_projected.status
+      );
     });
 
     it("should compare revenue to projected", () => {
@@ -604,7 +629,9 @@ describe("calculate_realized_value tool", () => {
       const result = calculateRealizedValue(baseInput);
       expect(result.projection_comparison.benefits_achieved.length).toBe(3);
       result.projection_comparison.benefits_achieved.forEach((benefit) => {
-        expect(["achieved", "partially_achieved", "not_achieved", "exceeded"]).toContain(benefit.status);
+        expect(["achieved", "partially_achieved", "not_achieved", "exceeded"]).toContain(
+          benefit.status
+        );
       });
     });
   });
@@ -633,8 +660,8 @@ describe("calculate_realized_value tool", () => {
       // Should include some of the future context
       expect(
         allRecs.toLowerCase().includes("expand") ||
-        allRecs.toLowerCase().includes("use case") ||
-        allRecs.toLowerCase().includes("automate")
+          allRecs.toLowerCase().includes("use case") ||
+          allRecs.toLowerCase().includes("automate")
       ).toBe(true);
     });
 
@@ -678,16 +705,24 @@ describe("calculate_realized_value tool", () => {
       const result1 = calculateRealizedValue(baseInput);
       const result2 = calculateRealizedValue(baseInput);
 
-      expect(result1.value_summary.total_realized_value_usd).toBe(result2.value_summary.total_realized_value_usd);
-      expect(result1.value_summary.roi_realized_percent).toBe(result2.value_summary.roi_realized_percent);
-      expect(result1.investment_analysis.net_value_usd).toBe(result2.investment_analysis.net_value_usd);
+      expect(result1.value_summary.total_realized_value_usd).toBe(
+        result2.value_summary.total_realized_value_usd
+      );
+      expect(result1.value_summary.roi_realized_percent).toBe(
+        result2.value_summary.roi_realized_percent
+      );
+      expect(result1.investment_analysis.net_value_usd).toBe(
+        result2.investment_analysis.net_value_usd
+      );
     });
 
     it("should produce different results for different inputs", () => {
       const baseResult = calculateRealizedValue(baseInput);
       const lowResult = calculateRealizedValue(belowProjectionsInput);
 
-      expect(baseResult.value_summary.total_realized_value_usd).not.toBe(lowResult.value_summary.total_realized_value_usd);
+      expect(baseResult.value_summary.total_realized_value_usd).not.toBe(
+        lowResult.value_summary.total_realized_value_usd
+      );
     });
   });
 

@@ -33,22 +33,18 @@ const UseCaseSchema = z.object({
 
 export const PrioritizeUseCasesInputSchema = z.object({
   company_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
   use_cases: z.array(UseCaseSchema).min(1).max(20),
   budget_constraint_usd: z.number().min(0).max(100000000).optional(),
   timeline_constraint_weeks: z.number().min(1).max(156).optional(),
-  prioritization_weights: z.object({
-    business_value: z.number().min(0).max(1).optional(),
-    feasibility: z.number().min(0).max(1).optional(),
-    strategic_fit: z.number().min(0).max(1).optional(),
-    quick_wins: z.number().min(0).max(1).optional(),
-  }).optional(),
+  prioritization_weights: z
+    .object({
+      business_value: z.number().min(0).max(1).optional(),
+      feasibility: z.number().min(0).max(1).optional(),
+      strategic_fit: z.number().min(0).max(1).optional(),
+      quick_wins: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
   organizational_readiness_score: z.number().min(0).max(10).optional(),
 });
 
@@ -150,11 +146,21 @@ export const PRIORITIZE_USE_CASES_TOOL = {
             description: { type: "string" },
             category: {
               type: "string",
-              enum: ["automation", "prediction", "optimization", "classification", "generation", "analysis"],
+              enum: [
+                "automation",
+                "prediction",
+                "optimization",
+                "classification",
+                "generation",
+                "analysis",
+              ],
             },
             estimated_annual_value_usd: { type: "number" },
             estimated_implementation_cost_usd: { type: "number" },
-            data_availability: { type: "string", enum: ["none", "partial", "available", "excellent"] },
+            data_availability: {
+              type: "string",
+              enum: ["none", "partial", "available", "excellent"],
+            },
             stakeholder_support: { type: "string", enum: ["low", "medium", "high"] },
             technical_complexity: { type: "string", enum: ["low", "medium", "high"] },
             time_to_implement_weeks: { type: "number" },
@@ -178,8 +184,8 @@ export const PRIORITIZE_USE_CASES_TOOL = {
 
 const DEFAULT_WEIGHTS = {
   business_value: 0.35,
-  feasibility: 0.30,
-  strategic_fit: 0.20,
+  feasibility: 0.3,
+  strategic_fit: 0.2,
   quick_wins: 0.15,
 };
 
@@ -258,13 +264,11 @@ function estimateDefaultCost(category: string, complexity?: string): number {
   return Math.round(50000 * categoryBase * complexityMultiplier);
 }
 
-function calculateBusinessValue(
-  useCase: UseCase,
-  industry: Industry
-): number {
-  const annualValue = useCase.estimated_annual_value_usd ||
-    estimateDefaultValue(useCase.category, industry);
-  const cost = useCase.estimated_implementation_cost_usd ||
+function calculateBusinessValue(useCase: UseCase, industry: Industry): number {
+  const annualValue =
+    useCase.estimated_annual_value_usd || estimateDefaultValue(useCase.category, industry);
+  const cost =
+    useCase.estimated_implementation_cost_usd ||
     estimateDefaultCost(useCase.category, useCase.technical_complexity);
 
   // Value score based on ROI potential
@@ -294,10 +298,7 @@ function calculateBusinessValue(
   return 2;
 }
 
-function calculateFeasibility(
-  useCase: UseCase,
-  orgReadiness: number
-): number {
+function calculateFeasibility(useCase: UseCase, orgReadiness: number): number {
   let score = 5;
 
   // Data availability
@@ -364,7 +365,7 @@ function calculateQuickWinPotential(useCase: UseCase): number {
 }
 
 function generateRationale(
-  useCase: UseCase,
+  _useCase: UseCase,
   scores: ScoredUseCase["scores"],
   rank: number
 ): string {
@@ -518,9 +519,7 @@ function determineTier(overall: number): ScoredUseCase["priority_tier"] {
   return "low";
 }
 
-export function prioritizeUseCases(
-  input: PrioritizeUseCasesInput
-): UseCasePrioritization {
+export function prioritizeUseCases(input: PrioritizeUseCasesInput): UseCasePrioritization {
   const {
     company_name,
     industry,
@@ -539,9 +538,10 @@ export function prioritizeUseCases(
   // Score all use cases
   const scored = use_cases.map((uc) => {
     const scores = scoreUseCase(uc, industry, organizational_readiness_score, weights);
-    const annualValue = uc.estimated_annual_value_usd ||
-      estimateDefaultValue(uc.category, industry);
-    const cost = uc.estimated_implementation_cost_usd ||
+    const annualValue =
+      uc.estimated_annual_value_usd || estimateDefaultValue(uc.category, industry);
+    const cost =
+      uc.estimated_implementation_cost_usd ||
       estimateDefaultCost(uc.category, uc.technical_complexity);
 
     return {
@@ -587,10 +587,11 @@ export function prioritizeUseCases(
       const original = use_cases.find((u) => u.name === c.name)!;
       return {
         name: c.name,
-        cost: original.estimated_implementation_cost_usd ||
+        cost:
+          original.estimated_implementation_cost_usd ||
           estimateDefaultCost(original.category, original.technical_complexity),
-        value: original.estimated_annual_value_usd ||
-          estimateDefaultValue(original.category, industry),
+        value:
+          original.estimated_annual_value_usd || estimateDefaultValue(original.category, industry),
         weeks: original.time_to_implement_weeks || 12,
       };
     });
@@ -626,7 +627,9 @@ export function prioritizeUseCases(
     );
   }
   if (!fitsTimeline && timeline_constraint_weeks) {
-    adjustments.push(`Parallelize initiatives or reduce scope to meet ${timeline_constraint_weeks}-week timeline`);
+    adjustments.push(
+      `Parallelize initiatives or reduce scope to meet ${timeline_constraint_weeks}-week timeline`
+    );
   }
   if (quickWins === 0) {
     adjustments.push("Consider breaking larger initiatives into smaller quick wins");
@@ -643,7 +646,9 @@ export function prioritizeUseCases(
     recommendations.push(`${quickWins} quick win opportunities can demonstrate early value`);
   }
   if (totalValue / totalCost > 2) {
-    recommendations.push(`Portfolio shows ${Math.round((totalValue / totalCost) * 100)}% overall ROI potential`);
+    recommendations.push(
+      `Portfolio shows ${Math.round((totalValue / totalCost) * 100)}% overall ROI potential`
+    );
   }
   recommendations.push("Validate assumptions with pilot before full-scale implementation");
 

@@ -71,7 +71,7 @@ export class Logger {
      */
     shouldLog(level) {
         const config = getConfig();
-        return (LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[config.logging.level]);
+        return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[config.logging.level];
     }
     /**
      * Create a log entry
@@ -106,9 +106,7 @@ export class Logger {
      */
     output(entry) {
         const config = getConfig();
-        const formatted = config.logging.format === "json"
-            ? formatJson(entry)
-            : formatPretty(entry);
+        const formatted = config.logging.format === "json" ? formatJson(entry) : formatPretty(entry);
         // Use stderr to avoid interfering with MCP stdio transport
         if (entry.level === "error") {
             console.error(formatted);

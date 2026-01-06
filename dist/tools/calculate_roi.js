@@ -8,20 +8,26 @@ import { z } from "zod";
 // ============================================
 export const CalculateROIInputSchema = z.object({
     current_metrics: z.object({
-        process_cost_per_month_usd: z.number().positive("Process cost must be positive").max(1_000_000_000, "Cost unrealistic"),
+        process_cost_per_month_usd: z
+            .number()
+            .positive("Process cost must be positive")
+            .max(1_000_000_000, "Cost unrealistic"),
         error_rate_percent: z.number().min(0).max(100).optional(),
         cycle_time_hours: z.number().positive().max(100_000, "Cycle time unrealistic").optional(),
         manual_fte_count: z.number().min(0).max(100_000, "FTE count unrealistic").optional(),
     }),
     target_improvement_percent: z.number().min(1).max(100, "Improvement must be 1-100%"),
-    implementation_cost_usd: z.number().positive("Implementation cost must be positive").max(10_000_000_000, "Cost unrealistic"),
+    implementation_cost_usd: z
+        .number()
+        .positive("Implementation cost must be positive")
+        .max(10_000_000_000, "Cost unrealistic"),
     ongoing_monthly_cost_usd: z.number().min(0).max(1_000_000_000, "Cost unrealistic").optional(),
     time_horizon_months: z.number().int().min(6).max(120, "Horizon must be 6-120 months").optional(),
 });
 // ============================================
 // ROI Calculation Functions
 // ============================================
-const DISCOUNT_RATE = 0.10; // 10% annual discount rate for NPV
+const DISCOUNT_RATE = 0.1; // 10% annual discount rate for NPV
 function calculateMonthlySavings(currentMonthlyCost, improvementPercent) {
     return currentMonthlyCost * (improvementPercent / 100);
 }

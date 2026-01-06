@@ -39,7 +39,7 @@ describe("calculateROI", () => {
       const result = calculateROI(createValidInput());
 
       expect(result.sensitivity_analysis).toHaveLength(3);
-      expect(result.sensitivity_analysis.map(s => s.scenario)).toEqual([
+      expect(result.sensitivity_analysis.map((s) => s.scenario)).toEqual([
         "conservative",
         "expected",
         "optimistic",
@@ -184,7 +184,7 @@ describe("calculateROI", () => {
       });
 
       const result = calculateROI(input);
-      const conservative = result.sensitivity_analysis.find(s => s.scenario === "conservative");
+      const conservative = result.sensitivity_analysis.find((s) => s.scenario === "conservative");
 
       expect(conservative?.improvement_percent).toBe(30); // 60% of 50
     });
@@ -195,7 +195,7 @@ describe("calculateROI", () => {
       });
 
       const result = calculateROI(input);
-      const expected = result.sensitivity_analysis.find(s => s.scenario === "expected");
+      const expected = result.sensitivity_analysis.find((s) => s.scenario === "expected");
 
       expect(expected?.improvement_percent).toBe(40);
     });
@@ -206,7 +206,7 @@ describe("calculateROI", () => {
       });
 
       const result = calculateROI(input);
-      const optimistic = result.sensitivity_analysis.find(s => s.scenario === "optimistic");
+      const optimistic = result.sensitivity_analysis.find((s) => s.scenario === "optimistic");
 
       expect(optimistic?.improvement_percent).toBeLessThanOrEqual(95);
     });
@@ -214,9 +214,9 @@ describe("calculateROI", () => {
     it("should show higher ROI for optimistic scenario", () => {
       const result = calculateROI(createValidInput());
 
-      const conservative = result.sensitivity_analysis.find(s => s.scenario === "conservative");
-      const expected = result.sensitivity_analysis.find(s => s.scenario === "expected");
-      const optimistic = result.sensitivity_analysis.find(s => s.scenario === "optimistic");
+      const conservative = result.sensitivity_analysis.find((s) => s.scenario === "conservative");
+      const expected = result.sensitivity_analysis.find((s) => s.scenario === "expected");
+      const optimistic = result.sensitivity_analysis.find((s) => s.scenario === "optimistic");
 
       expect(optimistic!.roi_percent).toBeGreaterThan(expected!.roi_percent);
       expect(expected!.roi_percent).toBeGreaterThan(conservative!.roi_percent);
@@ -231,7 +231,7 @@ describe("calculateROI", () => {
 
       const result = calculateROI(input);
 
-      const hasCostAssumption = result.assumptions.some(a => a.includes("75,000"));
+      const hasCostAssumption = result.assumptions.some((a) => a.includes("75,000"));
       expect(hasCostAssumption).toBe(true);
     });
 
@@ -242,7 +242,7 @@ describe("calculateROI", () => {
 
       const result = calculateROI(input);
 
-      const hasImprovementAssumption = result.assumptions.some(a => a.includes("35%"));
+      const hasImprovementAssumption = result.assumptions.some((a) => a.includes("35%"));
       expect(hasImprovementAssumption).toBe(true);
     });
 
@@ -253,7 +253,7 @@ describe("calculateROI", () => {
 
       const result = calculateROI(input);
 
-      const hasOngoingCost = result.assumptions.some(a => a.includes("5,000"));
+      const hasOngoingCost = result.assumptions.some((a) => a.includes("5,000"));
       expect(hasOngoingCost).toBe(true);
     });
 
@@ -267,7 +267,7 @@ describe("calculateROI", () => {
 
       const result = calculateROI(input);
 
-      const hasFteAssumption = result.assumptions.some(a => a.includes("8"));
+      const hasFteAssumption = result.assumptions.some((a) => a.includes("8"));
       expect(hasFteAssumption).toBe(true);
     });
   });

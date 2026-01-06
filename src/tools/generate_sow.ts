@@ -25,50 +25,55 @@ export const GenerateSOWInputSchema = z.object({
     "transformation",
     "managed_service",
   ]),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
 
   // Scope Definition
   objectives: z.array(z.string().max(500)).min(1).max(10),
-  deliverables: z.array(z.object({
-    name: z.string().max(200),
-    description: z.string().max(1000),
-    acceptance_criteria: z.array(z.string().max(300)).optional(),
-  })).min(1).max(20),
+  deliverables: z
+    .array(
+      z.object({
+        name: z.string().max(200),
+        description: z.string().max(1000),
+        acceptance_criteria: z.array(z.string().max(300)).optional(),
+      })
+    )
+    .min(1)
+    .max(20),
   out_of_scope: z.array(z.string().max(300)).max(15).optional(),
 
   // Timeline
   start_date: z.string().max(20).optional(),
   duration_weeks: z.number().min(1).max(260),
-  milestones: z.array(z.object({
-    name: z.string().max(200),
-    week: z.number().min(1),
-    deliverables: z.array(z.string()).max(10).optional(),
-    payment_percent: z.number().min(0).max(100).optional(),
-  })).max(20).optional(),
+  milestones: z
+    .array(
+      z.object({
+        name: z.string().max(200),
+        week: z.number().min(1),
+        deliverables: z.array(z.string()).max(10).optional(),
+        payment_percent: z.number().min(0).max(100).optional(),
+      })
+    )
+    .max(20)
+    .optional(),
 
   // Pricing
   total_value_usd: z.number().min(0),
-  pricing_model: z.enum([
-    "fixed_fee",
-    "time_and_materials",
-    "milestone_based",
-    "retainer",
-    "hybrid",
-  ]).default("fixed_fee"),
+  pricing_model: z
+    .enum(["fixed_fee", "time_and_materials", "milestone_based", "retainer", "hybrid"])
+    .default("fixed_fee"),
   payment_terms: z.string().max(500).optional(),
 
   // Resources
-  team_composition: z.array(z.object({
-    role: z.string().max(100),
-    allocation_percent: z.number().min(0).max(100),
-    responsibilities: z.array(z.string()).max(10).optional(),
-  })).max(15).optional(),
+  team_composition: z
+    .array(
+      z.object({
+        role: z.string().max(100),
+        allocation_percent: z.number().min(0).max(100),
+        responsibilities: z.array(z.string()).max(10).optional(),
+      })
+    )
+    .max(15)
+    .optional(),
   client_responsibilities: z.array(z.string().max(300)).max(15).optional(),
 
   // Terms
@@ -297,34 +302,110 @@ function generatePhases(
 ): StatementOfWork["timeline"]["phases"] {
   const phaseTemplates: Record<string, { name: string; pct: number; description: string }[]> = {
     assessment: [
-      { name: "Discovery & Data Collection", pct: 0.4, description: "Stakeholder interviews, data inventory, and process mapping" },
-      { name: "Analysis & Findings", pct: 0.35, description: "Deep analysis of current state and opportunity identification" },
-      { name: "Recommendations & Roadmap", pct: 0.25, description: "Final report preparation and presentation" },
+      {
+        name: "Discovery & Data Collection",
+        pct: 0.4,
+        description: "Stakeholder interviews, data inventory, and process mapping",
+      },
+      {
+        name: "Analysis & Findings",
+        pct: 0.35,
+        description: "Deep analysis of current state and opportunity identification",
+      },
+      {
+        name: "Recommendations & Roadmap",
+        pct: 0.25,
+        description: "Final report preparation and presentation",
+      },
     ],
     pilot: [
-      { name: "Setup & Configuration", pct: 0.2, description: "Environment setup, data preparation, and initial configuration" },
-      { name: "Development & Integration", pct: 0.5, description: "Core solution development and integration work" },
-      { name: "Testing & Validation", pct: 0.2, description: "User acceptance testing and performance validation" },
-      { name: "Handoff & Documentation", pct: 0.1, description: "Knowledge transfer and documentation" },
+      {
+        name: "Setup & Configuration",
+        pct: 0.2,
+        description: "Environment setup, data preparation, and initial configuration",
+      },
+      {
+        name: "Development & Integration",
+        pct: 0.5,
+        description: "Core solution development and integration work",
+      },
+      {
+        name: "Testing & Validation",
+        pct: 0.2,
+        description: "User acceptance testing and performance validation",
+      },
+      {
+        name: "Handoff & Documentation",
+        pct: 0.1,
+        description: "Knowledge transfer and documentation",
+      },
     ],
     implementation: [
-      { name: "Mobilization", pct: 0.1, description: "Project kickoff, detailed planning, and resource allocation" },
-      { name: "Design & Architecture", pct: 0.15, description: "Solution design, technical architecture, and specifications" },
-      { name: "Build & Configure", pct: 0.4, description: "Development, configuration, and integration" },
-      { name: "Test & Validate", pct: 0.2, description: "Testing, user acceptance, and performance optimization" },
-      { name: "Deploy & Transition", pct: 0.15, description: "Production deployment, training, and handover" },
+      {
+        name: "Mobilization",
+        pct: 0.1,
+        description: "Project kickoff, detailed planning, and resource allocation",
+      },
+      {
+        name: "Design & Architecture",
+        pct: 0.15,
+        description: "Solution design, technical architecture, and specifications",
+      },
+      {
+        name: "Build & Configure",
+        pct: 0.4,
+        description: "Development, configuration, and integration",
+      },
+      {
+        name: "Test & Validate",
+        pct: 0.2,
+        description: "Testing, user acceptance, and performance optimization",
+      },
+      {
+        name: "Deploy & Transition",
+        pct: 0.15,
+        description: "Production deployment, training, and handover",
+      },
     ],
     transformation: [
       { name: "Foundation", pct: 0.1, description: "Program setup, governance, and architecture" },
-      { name: "Wave 1 - Quick Wins", pct: 0.25, description: "Initial use cases delivering early value" },
-      { name: "Wave 2 - Core Capabilities", pct: 0.35, description: "Enterprise capabilities and scaling" },
-      { name: "Wave 3 - Advanced Features", pct: 0.2, description: "Advanced capabilities and optimization" },
-      { name: "Sustain & Optimize", pct: 0.1, description: "Center of Excellence and continuous improvement" },
+      {
+        name: "Wave 1 - Quick Wins",
+        pct: 0.25,
+        description: "Initial use cases delivering early value",
+      },
+      {
+        name: "Wave 2 - Core Capabilities",
+        pct: 0.35,
+        description: "Enterprise capabilities and scaling",
+      },
+      {
+        name: "Wave 3 - Advanced Features",
+        pct: 0.2,
+        description: "Advanced capabilities and optimization",
+      },
+      {
+        name: "Sustain & Optimize",
+        pct: 0.1,
+        description: "Center of Excellence and continuous improvement",
+      },
     ],
     managed_service: [
-      { name: "Onboarding", pct: 0.1, description: "Service setup, baseline establishment, and SLA definition" },
-      { name: "Steady State Operations", pct: 0.7, description: "Ongoing operations, support, and reporting" },
-      { name: "Optimization", pct: 0.2, description: "Continuous improvement and feature enhancements" },
+      {
+        name: "Onboarding",
+        pct: 0.1,
+        description: "Service setup, baseline establishment, and SLA definition",
+      },
+      {
+        name: "Steady State Operations",
+        pct: 0.7,
+        description: "Ongoing operations, support, and reporting",
+      },
+      {
+        name: "Optimization",
+        pct: 0.2,
+        description: "Continuous improvement and feature enhancements",
+      },
     ],
   };
 
@@ -399,38 +480,119 @@ function generateDefaultMilestones(
 }
 
 /** Generate default team composition */
-function generateDefaultTeam(
-  engagementType: string
-): GenerateSOWInput["team_composition"] {
-  const templates: Record<string, { role: string; allocation_percent: number; responsibilities: string[] }[]> = {
+function generateDefaultTeam(engagementType: string): GenerateSOWInput["team_composition"] {
+  const templates: Record<
+    string,
+    { role: string; allocation_percent: number; responsibilities: string[] }[]
+  > = {
     assessment: [
-      { role: "Engagement Lead", allocation_percent: 50, responsibilities: ["Overall delivery", "Executive stakeholder management", "Final presentation"] },
-      { role: "AI Consultant", allocation_percent: 100, responsibilities: ["Data analysis", "Interviews", "Recommendation development"] },
+      {
+        role: "Engagement Lead",
+        allocation_percent: 50,
+        responsibilities: [
+          "Overall delivery",
+          "Executive stakeholder management",
+          "Final presentation",
+        ],
+      },
+      {
+        role: "AI Consultant",
+        allocation_percent: 100,
+        responsibilities: ["Data analysis", "Interviews", "Recommendation development"],
+      },
     ],
     pilot: [
-      { role: "Project Manager", allocation_percent: 50, responsibilities: ["Project coordination", "Status reporting", "Risk management"] },
-      { role: "Solution Architect", allocation_percent: 75, responsibilities: ["Technical design", "Architecture decisions", "Code review"] },
-      { role: "AI Engineer", allocation_percent: 100, responsibilities: ["Development", "Integration", "Testing"] },
+      {
+        role: "Project Manager",
+        allocation_percent: 50,
+        responsibilities: ["Project coordination", "Status reporting", "Risk management"],
+      },
+      {
+        role: "Solution Architect",
+        allocation_percent: 75,
+        responsibilities: ["Technical design", "Architecture decisions", "Code review"],
+      },
+      {
+        role: "AI Engineer",
+        allocation_percent: 100,
+        responsibilities: ["Development", "Integration", "Testing"],
+      },
     ],
     implementation: [
-      { role: "Program Manager", allocation_percent: 75, responsibilities: ["Program coordination", "Governance", "Executive reporting"] },
-      { role: "Solution Architect", allocation_percent: 50, responsibilities: ["Architecture oversight", "Technical decisions", "Quality assurance"] },
-      { role: "Technical Lead", allocation_percent: 100, responsibilities: ["Development leadership", "Technical design", "Team mentorship"] },
-      { role: "AI Engineers (2-3)", allocation_percent: 100, responsibilities: ["Development", "Integration", "Testing"] },
-      { role: "QA Engineer", allocation_percent: 50, responsibilities: ["Test planning", "Test execution", "Defect management"] },
+      {
+        role: "Program Manager",
+        allocation_percent: 75,
+        responsibilities: ["Program coordination", "Governance", "Executive reporting"],
+      },
+      {
+        role: "Solution Architect",
+        allocation_percent: 50,
+        responsibilities: ["Architecture oversight", "Technical decisions", "Quality assurance"],
+      },
+      {
+        role: "Technical Lead",
+        allocation_percent: 100,
+        responsibilities: ["Development leadership", "Technical design", "Team mentorship"],
+      },
+      {
+        role: "AI Engineers (2-3)",
+        allocation_percent: 100,
+        responsibilities: ["Development", "Integration", "Testing"],
+      },
+      {
+        role: "QA Engineer",
+        allocation_percent: 50,
+        responsibilities: ["Test planning", "Test execution", "Defect management"],
+      },
     ],
     transformation: [
-      { role: "Program Director", allocation_percent: 75, responsibilities: ["Strategic direction", "Executive management", "Program governance"] },
-      { role: "Program Manager", allocation_percent: 100, responsibilities: ["Day-to-day coordination", "Risk management", "Reporting"] },
-      { role: "Enterprise Architect", allocation_percent: 50, responsibilities: ["Architecture governance", "Standards", "Roadmap"] },
-      { role: "Delivery Leads", allocation_percent: 100, responsibilities: ["Workstream delivery", "Team management", "Quality"] },
-      { role: "AI Engineering Team", allocation_percent: 100, responsibilities: ["Development", "Integration", "Operations"] },
-      { role: "Change Management Lead", allocation_percent: 50, responsibilities: ["Training", "Communications", "Adoption"] },
+      {
+        role: "Program Director",
+        allocation_percent: 75,
+        responsibilities: ["Strategic direction", "Executive management", "Program governance"],
+      },
+      {
+        role: "Program Manager",
+        allocation_percent: 100,
+        responsibilities: ["Day-to-day coordination", "Risk management", "Reporting"],
+      },
+      {
+        role: "Enterprise Architect",
+        allocation_percent: 50,
+        responsibilities: ["Architecture governance", "Standards", "Roadmap"],
+      },
+      {
+        role: "Delivery Leads",
+        allocation_percent: 100,
+        responsibilities: ["Workstream delivery", "Team management", "Quality"],
+      },
+      {
+        role: "AI Engineering Team",
+        allocation_percent: 100,
+        responsibilities: ["Development", "Integration", "Operations"],
+      },
+      {
+        role: "Change Management Lead",
+        allocation_percent: 50,
+        responsibilities: ["Training", "Communications", "Adoption"],
+      },
     ],
     managed_service: [
-      { role: "Service Delivery Manager", allocation_percent: 50, responsibilities: ["SLA management", "Client relationship", "Service reviews"] },
-      { role: "Operations Lead", allocation_percent: 100, responsibilities: ["Day-to-day operations", "Incident management", "Process improvement"] },
-      { role: "Support Engineers", allocation_percent: 100, responsibilities: ["Technical support", "Issue resolution", "Monitoring"] },
+      {
+        role: "Service Delivery Manager",
+        allocation_percent: 50,
+        responsibilities: ["SLA management", "Client relationship", "Service reviews"],
+      },
+      {
+        role: "Operations Lead",
+        allocation_percent: 100,
+        responsibilities: ["Day-to-day operations", "Incident management", "Process improvement"],
+      },
+      {
+        role: "Support Engineers",
+        allocation_percent: 100,
+        responsibilities: ["Technical support", "Issue resolution", "Monitoring"],
+      },
     ],
   };
 
@@ -438,9 +600,7 @@ function generateDefaultTeam(
 }
 
 /** Generate default client responsibilities */
-function generateDefaultClientResponsibilities(
-  engagementType: string
-): string[] {
+function generateDefaultClientResponsibilities(engagementType: string): string[] {
   const base = [
     "Designate a project sponsor with decision-making authority",
     "Provide timely access to subject matter experts and stakeholders",
@@ -479,10 +639,7 @@ function generateDefaultClientResponsibilities(
 }
 
 /** Generate default assumptions */
-function generateDefaultAssumptions(
-  engagementType: string,
-  industry: string
-): string[] {
+function generateDefaultAssumptions(engagementType: string, industry: string): string[] {
   const base = [
     "Client will provide timely access to required resources and stakeholders",
     "All necessary approvals will be obtained within agreed timeframes",
@@ -519,11 +676,7 @@ function generateDefaultAssumptions(
     general: [],
   };
 
-  return [
-    ...base,
-    ...(additional[engagementType] || []),
-    ...(industrySpecific[industry] || []),
-  ];
+  return [...base, ...(additional[engagementType] || []), ...(industrySpecific[industry] || [])];
 }
 
 /** Generate default dependencies */
@@ -539,11 +692,16 @@ function generateDefaultDependencies(): string[] {
 /** Get pricing model description */
 function getPricingModelDescription(model: string): string {
   const descriptions: Record<string, string> = {
-    fixed_fee: "Fixed fee engagement with defined scope and deliverables. Any scope changes will be addressed through the change control process.",
-    time_and_materials: "Time and materials billing at agreed rates. Monthly invoicing based on actual hours worked plus approved expenses.",
-    milestone_based: "Payments tied to achievement of defined milestones. Each milestone has specific acceptance criteria that must be met.",
-    retainer: "Monthly retainer fee for ongoing services. Hours and services as defined in the service level agreement.",
-    hybrid: "Combination of fixed fee components for defined deliverables and time and materials for variable scope items.",
+    fixed_fee:
+      "Fixed fee engagement with defined scope and deliverables. Any scope changes will be addressed through the change control process.",
+    time_and_materials:
+      "Time and materials billing at agreed rates. Monthly invoicing based on actual hours worked plus approved expenses.",
+    milestone_based:
+      "Payments tied to achievement of defined milestones. Each milestone has specific acceptance criteria that must be met.",
+    retainer:
+      "Monthly retainer fee for ongoing services. Hours and services as defined in the service level agreement.",
+    hybrid:
+      "Combination of fixed fee components for defined deliverables and time and materials for variable scope items.",
   };
   return descriptions[model] || descriptions.fixed_fee;
 }
@@ -563,9 +721,7 @@ function generatePaymentSchedule(
 }
 
 /** Generate executive summary */
-function generateExecutiveSummary(
-  input: GenerateSOWInput
-): StatementOfWork["executive_summary"] {
+function generateExecutiveSummary(input: GenerateSOWInput): StatementOfWork["executive_summary"] {
   const typeDescriptions: Record<string, string> = {
     assessment: "comprehensive AI readiness assessment",
     pilot: "focused AI pilot project",
@@ -594,32 +750,48 @@ function generateExecutiveSummary(
 }
 
 /** Generate risk items */
-function generateRisks(
-  engagementType: string
-): { risk: string; mitigation: string }[] {
+function generateRisks(engagementType: string): { risk: string; mitigation: string }[] {
   const common = [
-    { risk: "Resource availability constraints", mitigation: "Early identification of key resources with backup planning" },
+    {
+      risk: "Resource availability constraints",
+      mitigation: "Early identification of key resources with backup planning",
+    },
     { risk: "Scope creep", mitigation: "Strict change control process with impact assessment" },
     { risk: "Data quality issues", mitigation: "Data assessment phase with remediation planning" },
   ];
 
   const typeSpecific: Record<string, { risk: string; mitigation: string }[]> = {
     assessment: [
-      { risk: "Stakeholder availability", mitigation: "Flexible scheduling with advance notice requirements" },
+      {
+        risk: "Stakeholder availability",
+        mitigation: "Flexible scheduling with advance notice requirements",
+      },
     ],
     pilot: [
-      { risk: "Technical integration challenges", mitigation: "Early technical spike and POC validation" },
+      {
+        risk: "Technical integration challenges",
+        mitigation: "Early technical spike and POC validation",
+      },
     ],
     implementation: [
-      { risk: "Production deployment issues", mitigation: "Comprehensive testing and rollback procedures" },
+      {
+        risk: "Production deployment issues",
+        mitigation: "Comprehensive testing and rollback procedures",
+      },
       { risk: "User adoption resistance", mitigation: "Change management program and training" },
     ],
     transformation: [
-      { risk: "Organizational change fatigue", mitigation: "Phased rollout with celebration of wins" },
+      {
+        risk: "Organizational change fatigue",
+        mitigation: "Phased rollout with celebration of wins",
+      },
       { risk: "Executive sponsor changes", mitigation: "Multi-level sponsorship and governance" },
     ],
     managed_service: [
-      { risk: "SLA compliance challenges", mitigation: "Proactive monitoring and capacity planning" },
+      {
+        risk: "SLA compliance challenges",
+        mitigation: "Proactive monitoring and capacity planning",
+      },
     ],
   };
 
@@ -653,7 +825,8 @@ export function generateSOW(input: GenerateSOWInput): StatementOfWork {
   const endDate = calculateEndDate(effectiveStartDate, duration_weeks);
 
   // Process milestones
-  const inputMilestones = input.milestones || generateDefaultMilestones(engagement_type, duration_weeks);
+  const inputMilestones =
+    input.milestones || generateDefaultMilestones(engagement_type, duration_weeks);
   const milestonesWithIds = inputMilestones.map((m, idx) => ({
     id: generateId("MS", idx),
     name: m.name,
@@ -717,20 +890,25 @@ export function generateSOW(input: GenerateSOWInput): StatementOfWork {
       pricing_model_description: getPricingModelDescription(pricing_model),
       payment_schedule: generatePaymentSchedule(total_value_usd, milestonesWithIds),
       payment_terms: payment_terms || "Net 30 days from invoice date",
-      expenses: "Reasonable travel and expenses, if required, will be billed at cost with prior approval.",
+      expenses:
+        "Reasonable travel and expenses, if required, will be billed at cost with prior approval.",
     },
 
     team: {
       provider_team: teamFormatted,
-      client_responsibilities: client_responsibilities || generateDefaultClientResponsibilities(engagement_type),
+      client_responsibilities:
+        client_responsibilities || generateDefaultClientResponsibilities(engagement_type),
       governance: {
-        meeting_cadence: engagement_type === "assessment"
-          ? "Weekly status calls"
-          : engagement_type === "transformation"
-            ? "Weekly working sessions, bi-weekly steering committee, monthly executive reviews"
-            : "Weekly status calls, bi-weekly steering committee meetings",
-        escalation_process: "Issues unresolved within 5 business days will be escalated to the executive sponsors for resolution.",
-        decision_authority: "Day-to-day decisions by project leads; scope/budget decisions require executive sponsor approval.",
+        meeting_cadence:
+          engagement_type === "assessment"
+            ? "Weekly status calls"
+            : engagement_type === "transformation"
+              ? "Weekly working sessions, bi-weekly steering committee, monthly executive reviews"
+              : "Weekly status calls, bi-weekly steering committee meetings",
+        escalation_process:
+          "Issues unresolved within 5 business days will be escalated to the executive sponsors for resolution.",
+        decision_authority:
+          "Day-to-day decisions by project leads; scope/budget decisions require executive sponsor approval.",
       },
     },
 
@@ -741,21 +919,31 @@ export function generateSOW(input: GenerateSOWInput): StatementOfWork {
     },
 
     change_management: {
-      process: change_control_process || "All change requests must be submitted in writing and will be assessed for impact on scope, timeline, and cost. Changes will be documented and require written approval from both parties before implementation.",
-      scope_change_handling: "Scope changes will be evaluated for impact and documented via a Change Request Form. Additional costs, if any, will be agreed upon before work commences.",
-      timeline_change_handling: "Timeline adjustments require mutual agreement and may impact costs. Critical path changes will be communicated immediately.",
+      process:
+        change_control_process ||
+        "All change requests must be submitted in writing and will be assessed for impact on scope, timeline, and cost. Changes will be documented and require written approval from both parties before implementation.",
+      scope_change_handling:
+        "Scope changes will be evaluated for impact and documented via a Change Request Form. Additional costs, if any, will be agreed upon before work commences.",
+      timeline_change_handling:
+        "Timeline adjustments require mutual agreement and may impact costs. Critical path changes will be communicated immediately.",
     },
 
     terms: {
-      confidentiality: "Both parties agree to maintain confidentiality of proprietary information shared during this engagement. Information disclosed shall be used solely for the purposes of this engagement.",
-      intellectual_property: "Client retains ownership of their existing intellectual property and data. Deliverables created specifically for Client become Client property upon full payment. Provider retains rights to methodologies, frameworks, and general knowledge.",
-      termination: "Either party may terminate this agreement with 30 days written notice. Upon termination, Client shall pay for work completed to date. Provider shall deliver all work product completed as of termination date.",
-      limitation_of_liability: "Provider's liability is limited to the total fees paid under this agreement. Neither party shall be liable for indirect, consequential, or punitive damages.",
-      warranties: "Provider warrants that services will be performed in a professional manner consistent with industry standards. Deliverables will materially conform to specifications. Warranty period is 30 days from delivery.",
+      confidentiality:
+        "Both parties agree to maintain confidentiality of proprietary information shared during this engagement. Information disclosed shall be used solely for the purposes of this engagement.",
+      intellectual_property:
+        "Client retains ownership of their existing intellectual property and data. Deliverables created specifically for Client become Client property upon full payment. Provider retains rights to methodologies, frameworks, and general knowledge.",
+      termination:
+        "Either party may terminate this agreement with 30 days written notice. Upon termination, Client shall pay for work completed to date. Provider shall deliver all work product completed as of termination date.",
+      limitation_of_liability:
+        "Provider's liability is limited to the total fees paid under this agreement. Neither party shall be liable for indirect, consequential, or punitive damages.",
+      warranties:
+        "Provider warrants that services will be performed in a professional manner consistent with industry standards. Deliverables will materially conform to specifications. Warranty period is 30 days from delivery.",
     },
 
     acceptance: {
-      acceptance_statement: "By signing below, both parties agree to the terms and conditions set forth in this Statement of Work.",
+      acceptance_statement:
+        "By signing below, both parties agree to the terms and conditions set forth in this Statement of Work.",
       validity_period_days: 30,
       signature_blocks: [
         {
@@ -776,20 +964,24 @@ export function generateSOW(input: GenerateSOWInput): StatementOfWork {
     appendices: [
       {
         title: "Appendix A: Detailed Deliverable Specifications",
-        content: "Detailed specifications for each deliverable will be documented during the Discovery phase and appended to this SOW upon mutual agreement.",
+        content:
+          "Detailed specifications for each deliverable will be documented during the Discovery phase and appended to this SOW upon mutual agreement.",
       },
       {
         title: "Appendix B: Rate Card (if applicable)",
-        content: pricing_model === "time_and_materials" || pricing_model === "hybrid"
-          ? "Hourly rates by role will be documented and attached to this SOW."
-          : "Not applicable for this engagement type.",
+        content:
+          pricing_model === "time_and_materials" || pricing_model === "hybrid"
+            ? "Hourly rates by role will be documented and attached to this SOW."
+            : "Not applicable for this engagement type.",
       },
       {
         title: "Appendix C: Technical Requirements",
-        content: "Detailed technical requirements and specifications will be documented during the Design phase.",
+        content:
+          "Detailed technical requirements and specifications will be documented during the Design phase.",
       },
     ],
 
-    methodology_note: "This engagement follows Good AI methodology: 'Leverage, not lore' (practical solutions over theoretical frameworks), 'Evidence over opinions' (data-driven decisions), 'Augment first' (enhance existing capabilities), and 'Non-invasive by default' (minimize disruption).",
+    methodology_note:
+      "This engagement follows Good AI methodology: 'Leverage, not lore' (practical solutions over theoretical frameworks), 'Evidence over opinions' (data-driven decisions), 'Augment first' (enhance existing capabilities), and 'Non-invasive by default' (minimize disruption).",
   };
 }

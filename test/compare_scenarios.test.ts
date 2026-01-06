@@ -99,18 +99,14 @@ describe("compareScenarios", () => {
     it("should recommend top-ranked scenario", () => {
       const result = compareScenarios(createValidInput());
 
-      expect(result.recommendation.recommended_scenario).toBe(
-        result.scored_scenarios[0].name
-      );
+      expect(result.recommendation.recommended_scenario).toBe(result.scored_scenarios[0].name);
     });
 
     it("should provide rationale for recommendation", () => {
       const result = compareScenarios(createValidInput());
 
       expect(result.recommendation.rationale.length).toBeGreaterThan(0);
-      expect(result.recommendation.rationale).toContain(
-        result.recommendation.recommended_scenario
-      );
+      expect(result.recommendation.rationale).toContain(result.recommendation.recommended_scenario);
     });
 
     it("should identify key differentiators", () => {
@@ -186,9 +182,7 @@ describe("compareScenarios", () => {
   describe("metrics calculation", () => {
     it("should calculate ROI percent correctly", () => {
       const result = compareScenarios(createValidInput());
-      const quickWin = result.scored_scenarios.find(
-        (s) => s.name === "Quick Win Automation"
-      );
+      const quickWin = result.scored_scenarios.find((s) => s.name === "Quick Win Automation");
 
       // (150000 - 50000) / 50000 * 100 = 200%
       expect(quickWin!.metrics.roi_percent).toBe(200);
@@ -204,9 +198,7 @@ describe("compareScenarios", () => {
 
     it("should calculate 3-year net value", () => {
       const result = compareScenarios(createValidInput());
-      const quickWin = result.scored_scenarios.find(
-        (s) => s.name === "Quick Win Automation"
-      );
+      const quickWin = result.scored_scenarios.find((s) => s.name === "Quick Win Automation");
 
       // (150000 * 3) - 50000 = 400000
       expect(quickWin!.metrics.net_value_3yr_usd).toBe(400000);

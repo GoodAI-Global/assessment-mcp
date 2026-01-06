@@ -54,21 +54,13 @@ import {
   CompareScenariosInputSchema,
   COMPARE_SCENARIOS_TOOL,
 } from "./tools/compare_scenarios.js";
-import {
-  qualifyLead,
-  QualifyLeadInputSchema,
-  QUALIFY_LEAD_TOOL,
-} from "./tools/qualify_lead.js";
+import { qualifyLead, QualifyLeadInputSchema, QUALIFY_LEAD_TOOL } from "./tools/qualify_lead.js";
 import {
   estimateDealSize,
   EstimateDealSizeInputSchema,
   ESTIMATE_DEAL_SIZE_TOOL,
 } from "./tools/estimate_deal_size.js";
-import {
-  generateSOW,
-  GenerateSOWInputSchema,
-  GENERATE_SOW_TOOL,
-} from "./tools/generate_sow.js";
+import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL } from "./tools/generate_sow.js";
 import {
   assessImplementationRisk,
   AssessImplementationRiskInputSchema,
@@ -94,16 +86,8 @@ import {
   PredictChurnRiskInputSchema,
   PREDICT_CHURN_RISK_TOOL,
 } from "./tools/predict_churn_risk.js";
-import {
-  ENTERPRISE_ASSESSMENT_PROMPT,
-  PILOT_RECOMMENDATION_PROMPT,
-} from "./prompts/index.js";
-import {
-  createAuditTrail,
-  logger,
-  getConfig,
-  type AuditTrail,
-} from "./lib/index.js";
+import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT } from "./prompts/index.js";
+import { createAuditTrail, logger, getConfig, type AuditTrail } from "./lib/index.js";
 
 // Server metadata
 const SERVER_NAME = "goodai-assessment";
@@ -168,11 +152,7 @@ const TOOL_REGISTRY: Record<string, ToolHandler> = {
 /**
  * Execute a tool with audit logging
  */
-function executeToolWithAudit(
-  name: string,
-  args: unknown,
-  audit: AuditTrail
-): unknown {
+function executeToolWithAudit(name: string, args: unknown, audit: AuditTrail): unknown {
   const handler = TOOL_REGISTRY[name];
 
   if (!handler) {
@@ -220,10 +200,7 @@ function executeToolWithAudit(
       durationMs
     );
 
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Error executing ${name}: ${errorMessage}`
-    );
+    throw new McpError(ErrorCode.InternalError, `Error executing ${name}: ${errorMessage}`);
   }
 }
 
@@ -414,10 +391,7 @@ export async function startServer(): Promise<void> {
 /**
  * Direct function call for testing (bypasses MCP protocol)
  */
-export function callTool(
-  toolName: string,
-  args: Record<string, unknown>
-): unknown {
+export function callTool(toolName: string, args: Record<string, unknown>): unknown {
   const audit = createAuditTrail();
   return executeToolWithAudit(toolName, args, audit);
 }

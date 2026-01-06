@@ -1,24 +1,42 @@
 # Dependencies
 node_modules/
 
-# Coverage
+# Build output
+dist/
+build/
+*.js.map
+
+# Test coverage
 coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.*.local
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Logs
+logs/
 *.log
 npm-debug.log*
 
-# Environment
-.env
-.env.local
-.env.*.local
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Temporary files
+tmp/
+temp/

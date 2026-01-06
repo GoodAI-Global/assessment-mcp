@@ -77,10 +77,7 @@ function deepClone<T>(obj: T): T {
 /**
  * Redact sensitive fields from an object
  */
-function redactSensitiveFields(
-  obj: unknown,
-  sensitiveFields: string[]
-): unknown {
+function redactSensitiveFields(obj: unknown, sensitiveFields: string[]): unknown {
   if (obj === null || typeof obj !== "object") {
     return obj;
   }
@@ -93,9 +90,7 @@ function redactSensitiveFields(
   for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
     const lowerKey = key.toLowerCase();
     const isSensitive = sensitiveFields.some(
-      (field) =>
-        lowerKey.includes(field.toLowerCase()) ||
-        field.toLowerCase().includes(lowerKey)
+      (field) => lowerKey.includes(field.toLowerCase()) || field.toLowerCase().includes(lowerKey)
     );
 
     if (isSensitive && typeof value === "string") {
@@ -113,10 +108,7 @@ function redactSensitiveFields(
 /**
  * Truncate payload to max size
  */
-function truncatePayload(
-  payload: unknown,
-  maxSize: number
-): { data: unknown; truncated: boolean } {
+function truncatePayload(payload: unknown, maxSize: number): { data: unknown; truncated: boolean } {
   const str = JSON.stringify(payload);
   if (str.length <= maxSize) {
     return { data: payload, truncated: false };
@@ -165,10 +157,7 @@ export class AuditTrail {
       processed = redactSensitiveFields(processed, config.audit.sensitiveFields);
     }
 
-    const { data, truncated } = truncatePayload(
-      processed,
-      config.audit.maxPayloadSize
-    );
+    const { data, truncated } = truncatePayload(processed, config.audit.maxPayloadSize);
 
     if (truncated) {
       this.logger.debug("Input payload truncated for audit", {
@@ -190,10 +179,7 @@ export class AuditTrail {
       return { logged: false, reason: "output_logging_disabled" };
     }
 
-    const { data, truncated } = truncatePayload(
-      output,
-      config.audit.maxPayloadSize
-    );
+    const { data, truncated } = truncatePayload(output, config.audit.maxPayloadSize);
 
     if (truncated) {
       this.logger.debug("Output payload truncated for audit", {
@@ -316,11 +302,7 @@ export class AuditTrail {
   /**
    * Record validation error
    */
-  recordValidationError(
-    toolName: string,
-    validationErrors: string[],
-    input: unknown
-  ): void {
+  recordValidationError(toolName: string, validationErrors: string[], input: unknown): void {
     const entry: AuditEntry = {
       id: generateAuditId(),
       correlationId: this.correlationId,
@@ -341,10 +323,7 @@ export class AuditTrail {
   /**
    * Record security violation
    */
-  recordSecurityViolation(
-    type: string,
-    details: Record<string, unknown>
-  ): void {
+  recordSecurityViolation(type: string, details: Record<string, unknown>): void {
     const entry: AuditEntry = {
       id: generateAuditId(),
       correlationId: this.correlationId,
@@ -366,18 +345,14 @@ export class AuditTrail {
 /**
  * Get recent audit entries
  */
-export function getRecentAuditEntries(
-  limit: number = 100
-): readonly AuditEntry[] {
+export function getRecentAuditEntries(limit: number = 100): readonly AuditEntry[] {
   return auditStore.slice(-limit);
 }
 
 /**
  * Get audit entries by correlation ID
  */
-export function getAuditEntriesByCorrelationId(
-  correlationId: string
-): readonly AuditEntry[] {
+export function getAuditEntriesByCorrelationId(correlationId: string): readonly AuditEntry[] {
   return auditStore.filter((entry) => entry.correlationId === correlationId);
 }
 
@@ -388,9 +363,7 @@ export function getAuditEntriesByTool(
   toolName: string,
   limit: number = 100
 ): readonly AuditEntry[] {
-  return auditStore
-    .filter((entry) => entry.toolName === toolName)
-    .slice(-limit);
+  return auditStore.filter((entry) => entry.toolName === toolName).slice(-limit);
 }
 
 /**

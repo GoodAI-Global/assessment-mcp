@@ -12,29 +12,13 @@ import type { Industry } from "../types/index.js";
 
 export const QualifyLeadInputSchema = z.object({
   company_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
   employee_count: z.number().min(1).max(1000000),
   annual_revenue_usd: z.number().min(0).max(100000000000).optional(),
   pain_points: z.array(z.string().max(500)).min(1).max(10),
   current_technology_maturity: z.enum(["low", "medium", "high"]).optional(),
-  decision_timeline: z.enum([
-    "immediate",
-    "this_quarter",
-    "this_year",
-    "exploring",
-  ]).optional(),
-  budget_indication: z.enum([
-    "undefined",
-    "limited",
-    "moderate",
-    "significant",
-  ]).optional(),
+  decision_timeline: z.enum(["immediate", "this_quarter", "this_year", "exploring"]).optional(),
+  budget_indication: z.enum(["undefined", "limited", "moderate", "significant"]).optional(),
   champion_identified: z.boolean().optional(),
   executive_sponsor: z.boolean().optional(),
   previous_ai_experience: z.enum(["none", "failed", "limited", "successful"]).optional(),
@@ -292,9 +276,7 @@ function calculateTimingScore(input: QualifyLeadInput): number {
   return Math.max(1, Math.min(10, score));
 }
 
-function determineQualificationTier(
-  overall: number
-): LeadQualification["qualification_tier"] {
+function determineQualificationTier(overall: number): LeadQualification["qualification_tier"] {
   if (overall >= 7.5) {
     return "hot";
   }
@@ -328,7 +310,9 @@ function assessCompanySizeFit(
   return "stretch";
 }
 
-function assessIndustryFit(industry: Industry): LeadQualification["fit_assessment"]["industry_fit"] {
+function assessIndustryFit(
+  industry: Industry
+): LeadQualification["fit_assessment"]["industry_fit"] {
   if (CORE_INDUSTRIES.includes(industry)) {
     return "core";
   }
@@ -469,7 +453,8 @@ function estimateDealSize(input: QualifyLeadInput): LeadQualification["deal_pote
   }
 
   // Confidence based on info completeness
-  const hasFullInfo = input.budget_indication && input.decision_timeline && input.annual_revenue_usd;
+  const hasFullInfo =
+    input.budget_indication && input.decision_timeline && input.annual_revenue_usd;
   const confidence: "low" | "medium" | "high" = hasFullInfo
     ? "high"
     : input.budget_indication
@@ -592,7 +577,8 @@ export function qualifyLead(input: QualifyLeadInput): LeadQualification {
     qualification_rationale: `${input.company_name} scores ${qualificationScore}/10 overall with ${tier} priority. ${scores.need_score >= 7 ? "Strong need identified." : "Need requires further validation."} ${scores.timing_score >= 7 ? "Active buying timeline." : "Timeline unclear or extended."}`,
     deal_potential: estimateDealSize(input),
     next_steps: generateNextSteps(tier, input),
-    disqualification_reasons: tier === "disqualify" ? generateDisqualificationReasons(scores, input) : [],
+    disqualification_reasons:
+      tier === "disqualify" ? generateDisqualificationReasons(scores, input) : [],
     methodology_note:
       "Lead qualification uses BANT framework (Budget, Authority, Need, Timeline) with industry-specific fit scoring following Good AI methodology.",
   };

@@ -9,18 +9,13 @@ import { z } from "zod";
 export const CalculateRealizedValueInputSchema = z.object({
     project_name: z.string().min(1).max(200),
     client_name: z.string().min(1).max(200),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
     // Implementation details
     implementation_info: z.object({
         go_live_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format"),
         measurement_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format"),
-        solution_type: z.enum([
+        solution_type: z
+            .enum([
             "process_automation",
             "predictive_analytics",
             "document_processing",
@@ -28,7 +23,8 @@ export const CalculateRealizedValueInputSchema = z.object({
             "customer_service",
             "supply_chain",
             "general_ai",
-        ]).default("general_ai"),
+        ])
+            .default("general_ai"),
         implementation_cost_usd: z.number().min(0),
         ongoing_monthly_cost_usd: z.number().min(0).default(0),
     }),
@@ -62,28 +58,40 @@ export const CalculateRealizedValueInputSchema = z.object({
         customer_satisfaction_improvement: z.number().min(-100).max(100).default(0),
     }),
     // Intangible benefits (qualitative)
-    intangible_benefits: z.object({
-        employee_satisfaction_impact: z.enum(["significant_positive", "positive", "neutral", "negative"]).optional(),
-        strategic_capability_value: z.enum(["transformational", "high", "moderate", "low"]).optional(),
-        competitive_advantage_impact: z.enum(["significant", "moderate", "minimal", "none"]).optional(),
+    intangible_benefits: z
+        .object({
+        employee_satisfaction_impact: z
+            .enum(["significant_positive", "positive", "neutral", "negative"])
+            .optional(),
+        strategic_capability_value: z
+            .enum(["transformational", "high", "moderate", "low"])
+            .optional(),
+        competitive_advantage_impact: z
+            .enum(["significant", "moderate", "minimal", "none"])
+            .optional(),
         risk_reduction_value: z.enum(["high", "moderate", "low", "none"]).optional(),
         scalability_benefit: z.enum(["high", "moderate", "low"]).optional(),
         data_insights_value: z.enum(["high", "moderate", "low"]).optional(),
-    }).optional(),
+    })
+        .optional(),
     // Challenges and issues
-    challenges: z.object({
+    challenges: z
+        .object({
         implementation_delays_weeks: z.number().min(0).default(0),
         scope_changes_count: z.number().min(0).default(0),
         adoption_challenges: z.array(z.string()).max(10).default([]),
         unexpected_costs_usd: z.number().min(0).default(0),
         technical_issues_count: z.number().min(0).default(0),
-    }).optional(),
+    })
+        .optional(),
     // Future projections
-    future_context: z.object({
+    future_context: z
+        .object({
         planned_expansions: z.array(z.string()).max(10).default([]),
         additional_use_cases_identified: z.number().min(0).default(0),
         optimization_opportunities: z.array(z.string()).max(10).default([]),
-    }).optional(),
+    })
+        .optional(),
 });
 // ============================================
 // Tool Definition
@@ -101,7 +109,10 @@ export const CALCULATE_REALIZED_VALUE_TOOL = {
                 enum: ["manufacturing", "insurance", "aquaculture", "healthcare", "general"],
             },
             implementation_info: { type: "object", description: "Implementation details and costs" },
-            projected_values: { type: "object", description: "Original projected values from business case" },
+            projected_values: {
+                type: "object",
+                description: "Original projected values from business case",
+            },
             actual_values: { type: "object", description: "Actual measured values" },
             intangible_benefits: { type: "object", description: "Qualitative benefits assessment" },
             challenges: { type: "object", description: "Implementation challenges" },
@@ -255,9 +266,7 @@ function calculateInvestmentAnalysis(implementation, totalMonthlyValue, monthsSi
     const totalValueGenerated = totalMonthlyValue * monthsSinceGoLive;
     const netValue = totalValueGenerated - totalCostToDate;
     const monthlyNetValue = totalMonthlyValue - implementation.ongoing_monthly_cost_usd;
-    const costPerValueDollar = totalValueGenerated > 0
-        ? Math.round((totalCostToDate / totalValueGenerated) * 100) / 100
-        : 999;
+    const costPerValueDollar = totalValueGenerated > 0 ? Math.round((totalCostToDate / totalValueGenerated) * 100) / 100 : 999;
     let efficiencyRating;
     if (costPerValueDollar <= 0.3) {
         efficiencyRating = "excellent";
@@ -356,7 +365,7 @@ function assessChallenges(challenges, monthlyValue, monthsSinceGoLive) {
     const scopeImpact = challenges.scope_changes_count * 5000; // Estimate per scope change
     const unexpectedCosts = challenges.unexpected_costs_usd;
     const totalImpact = delayImpact + scopeImpact + unexpectedCosts;
-    const netValueAfter = (monthlyValue * monthsSinceGoLive) - totalImpact;
+    const netValueAfter = monthlyValue * monthsSinceGoLive - totalImpact;
     const lessons = [];
     if (challenges.implementation_delays_weeks > 0) {
         lessons.push(`Implementation delays of ${challenges.implementation_delays_weeks} weeks impacted time-to-value`);
@@ -399,7 +408,7 @@ function calculateValueTrajectory(monthlyValue, totalInvestment, ongoingMonthlyC
     }
     // Calculate break-even
     const valueToDate = monthlyValue * monthsSinceGoLive;
-    const costToDate = totalInvestment + (ongoingMonthlyCost * monthsSinceGoLive);
+    const costToDate = totalInvestment + ongoingMonthlyCost * monthsSinceGoLive;
     let breakEvenDate = null;
     if (valueToDate >= costToDate) {
         breakEvenDate = "Already achieved";
@@ -435,9 +444,13 @@ function generateExecutiveMetrics(summary, breakdown, investment) {
     const efficiencyFormatted = breakdown.productivity_gains.hours_saved_annually > 0
         ? `${Math.round(breakdown.productivity_gains.hours_saved_annually).toLocaleString()} hours saved annually`
         : `${breakdown.productivity_gains.throughput_improvement_percent}% throughput increase`;
-    const statusEmoji = summary.value_realization_status === "exceeding" ? "📈"
-        : summary.value_realization_status === "on_track" ? "✅"
-            : summary.value_realization_status === "below" ? "⚠️" : "🔴";
+    const statusEmoji = summary.value_realization_status === "exceeding"
+        ? "📈"
+        : summary.value_realization_status === "on_track"
+            ? "✅"
+            : summary.value_realization_status === "below"
+                ? "⚠️"
+                : "🔴";
     return {
         headline_roi: roiFormatted,
         headline_savings: savingsFormatted,
@@ -482,7 +495,8 @@ function generateRecommendations(summary, comparison, challenges, futureContext)
         celebration.push("Value creation exceeding projections - excellent execution");
         expansion.push("Consider accelerating expansion plans given strong performance");
     }
-    else if (summary.value_realization_status === "below" || summary.value_realization_status === "significantly_below") {
+    else if (summary.value_realization_status === "below" ||
+        summary.value_realization_status === "significantly_below") {
         optimization.push("Conduct value realization review to identify gaps");
         optimization.push("Increase adoption focus to drive more value");
         riskMitigation.push("Document and address factors limiting value creation");
@@ -501,7 +515,9 @@ function generateRecommendations(summary, comparison, challenges, futureContext)
     // From future context
     if (futureContext) {
         if (futureContext.planned_expansions.length > 0) {
-            expansion.push(...futureContext.planned_expansions.slice(0, 2).map((e) => `Execute planned expansion: ${e}`));
+            expansion.push(...futureContext.planned_expansions
+                .slice(0, 2)
+                .map((e) => `Execute planned expansion: ${e}`));
         }
         if (futureContext.additional_use_cases_identified > 0) {
             expansion.push(`Evaluate ${futureContext.additional_use_cases_identified} identified additional use cases`);
@@ -541,16 +557,15 @@ export function calculateRealizedValue(input) {
     // Calculate total monthly value
     const totalMonthlyValue = valueBreakdown.cost_savings.total_monthly_usd +
         valueBreakdown.revenue_impact.total_monthly_usd +
-        (valueBreakdown.productivity_gains.productivity_value_usd / 12);
+        valueBreakdown.productivity_gains.productivity_value_usd / 12;
     // Calculate annualized value
     const annualizedValue = totalMonthlyValue * 12;
     // Calculate projection comparison
     const projectionComparison = calculateProjectionComparison(projected_values, valueBreakdown, monthsSinceGoLive);
     // Calculate value vs projection
-    const projectedTotal = projected_values.projected_annual_savings_usd + projected_values.projected_annual_revenue_increase_usd;
-    const valueVsProjection = projectedTotal > 0
-        ? Math.round((annualizedValue / projectedTotal) * 100)
-        : 100;
+    const projectedTotal = projected_values.projected_annual_savings_usd +
+        projected_values.projected_annual_revenue_increase_usd;
+    const valueVsProjection = projectedTotal > 0 ? Math.round((annualizedValue / projectedTotal) * 100) : 100;
     // Determine status
     let valueStatus;
     if (valueVsProjection >= 110) {
@@ -570,7 +585,7 @@ export function calculateRealizedValue(input) {
     // Calculate ROI
     const totalValueToDate = totalMonthlyValue * monthsSinceGoLive;
     const totalCostToDate = implementation_info.implementation_cost_usd +
-        (implementation_info.ongoing_monthly_cost_usd * monthsSinceGoLive);
+        implementation_info.ongoing_monthly_cost_usd * monthsSinceGoLive;
     const roiRealized = totalCostToDate > 0
         ? Math.round(((totalValueToDate - totalCostToDate) / totalCostToDate) * 100)
         : 0;
@@ -587,7 +602,8 @@ export function calculateRealizedValue(input) {
     // Update ROI comparison
     projectionComparison.roi_comparison.actual_roi_percent = roiRealized;
     if (projected_values.projected_roi_percent !== undefined) {
-        projectionComparison.roi_comparison.roi_variance = roiRealized - projected_values.projected_roi_percent;
+        projectionComparison.roi_comparison.roi_variance =
+            roiRealized - projected_values.projected_roi_percent;
     }
     // Key value drivers
     const drivers = [];

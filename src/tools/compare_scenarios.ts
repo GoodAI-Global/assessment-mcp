@@ -27,12 +27,14 @@ export const CompareScenariosInputSchema = z.object({
   company_name: z.string().min(1).max(200),
   comparison_purpose: z.string().min(10).max(1000),
   scenarios: z.array(ScenarioSchema).min(2).max(5),
-  evaluation_criteria: z.object({
-    roi_weight: z.number().min(0).max(1).optional(),
-    time_to_value_weight: z.number().min(0).max(1).optional(),
-    risk_weight: z.number().min(0).max(1).optional(),
-    strategic_weight: z.number().min(0).max(1).optional(),
-  }).optional(),
+  evaluation_criteria: z
+    .object({
+      roi_weight: z.number().min(0).max(1).optional(),
+      time_to_value_weight: z.number().min(0).max(1).optional(),
+      risk_weight: z.number().min(0).max(1).optional(),
+      strategic_weight: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
   budget_limit_usd: z.number().min(0).max(100000000).optional(),
   timeline_limit_weeks: z.number().min(1).max(156).optional(),
   risk_tolerance: z.enum(["conservative", "moderate", "aggressive"]).optional(),
@@ -109,7 +111,10 @@ export const COMPARE_SCENARIOS_TOOL = {
     type: "object",
     properties: {
       company_name: { type: "string" },
-      comparison_purpose: { type: "string", description: "What decision is this comparison supporting?" },
+      comparison_purpose: {
+        type: "string",
+        description: "What decision is this comparison supporting?",
+      },
       scenarios: {
         type: "array",
         description: "2-5 scenarios to compare",
@@ -126,7 +131,15 @@ export const COMPARE_SCENARIOS_TOOL = {
             strategic_alignment: { type: "string", enum: ["low", "medium", "high"] },
             confidence_level: { type: "string", enum: ["low", "medium", "high"] },
           },
-          required: ["name", "description", "investment_usd", "expected_annual_value_usd", "implementation_weeks", "risk_level", "complexity"],
+          required: [
+            "name",
+            "description",
+            "investment_usd",
+            "expected_annual_value_usd",
+            "implementation_weeks",
+            "risk_level",
+            "complexity",
+          ],
         },
       },
       evaluation_criteria: { type: "object" },
@@ -151,8 +164,8 @@ const DEFAULT_WEIGHTS = {
 
 const RISK_DISCOUNT_FACTORS: Record<string, number> = {
   low: 0.95,
-  medium: 0.80,
-  high: 0.60,
+  medium: 0.8,
+  high: 0.6,
 };
 
 const CONFIDENCE_FACTORS: Record<string, number> = {
@@ -162,7 +175,9 @@ const CONFIDENCE_FACTORS: Record<string, number> = {
 };
 
 function calculateROIScore(scenario: Scenario): number {
-  const roi = ((scenario.expected_annual_value_usd - scenario.investment_usd) / scenario.investment_usd) * 100;
+  const roi =
+    ((scenario.expected_annual_value_usd - scenario.investment_usd) / scenario.investment_usd) *
+    100;
 
   if (roi >= 300) {
     return 10;
@@ -413,15 +428,31 @@ function scoreScenario(
 }
 
 function buildComparisonMatrix(
-  scenarios: Scenario[],
+  _scenarios: Scenario[],
   scored: ScoredScenario[],
   weights: typeof DEFAULT_WEIGHTS
 ): ScenarioComparison["comparison_matrix"] {
   const criteria = [
-    { name: "ROI Potential", weight: weights.roi_weight, getter: (s: ScoredScenario) => s.scores.roi_score },
-    { name: "Time to Value", weight: weights.time_to_value_weight, getter: (s: ScoredScenario) => s.scores.time_to_value_score },
-    { name: "Risk Profile", weight: weights.risk_weight, getter: (s: ScoredScenario) => s.scores.risk_score },
-    { name: "Strategic Fit", weight: weights.strategic_weight, getter: (s: ScoredScenario) => s.scores.strategic_score },
+    {
+      name: "ROI Potential",
+      weight: weights.roi_weight,
+      getter: (s: ScoredScenario) => s.scores.roi_score,
+    },
+    {
+      name: "Time to Value",
+      weight: weights.time_to_value_weight,
+      getter: (s: ScoredScenario) => s.scores.time_to_value_score,
+    },
+    {
+      name: "Risk Profile",
+      weight: weights.risk_weight,
+      getter: (s: ScoredScenario) => s.scores.risk_score,
+    },
+    {
+      name: "Strategic Fit",
+      weight: weights.strategic_weight,
+      getter: (s: ScoredScenario) => s.scores.strategic_score,
+    },
   ];
 
   return criteria.map((c) => {
@@ -486,11 +517,13 @@ function generateTradeOffs(scored: ScoredScenario[]): string[] {
   const tradeoffs: string[] = [];
 
   const sortedByROI = [...scored].sort((a, b) => b.metrics.roi_percent - a.metrics.roi_percent);
-  const sortedByTime = [...scored].sort(
-    (a, b) =>
-      scored.find((s) => s.name === a.name)!.scores.time_to_value_score -
-      scored.find((s) => s.name === b.name)!.scores.time_to_value_score
-  ).reverse();
+  const sortedByTime = [...scored]
+    .sort(
+      (a, b) =>
+        scored.find((s) => s.name === a.name)!.scores.time_to_value_score -
+        scored.find((s) => s.name === b.name)!.scores.time_to_value_score
+    )
+    .reverse();
 
   if (sortedByROI[0].name !== sortedByTime[0].name) {
     tradeoffs.push(
@@ -506,7 +539,12 @@ function generateTradeOffs(scored: ScoredScenario[]): string[] {
 
   const constraintMet = scored.filter((s) => s.meets_constraints);
   const constraintMissed = scored.filter((s) => !s.meets_constraints);
-  if (constraintMissed.length > 0 && constraintMissed.some((m) => m.scores.overall_score > (constraintMet[0]?.scores.overall_score || 0))) {
+  if (
+    constraintMissed.length > 0 &&
+    constraintMissed.some(
+      (m) => m.scores.overall_score > (constraintMet[0]?.scores.overall_score || 0)
+    )
+  ) {
     tradeoffs.push("Some high-scoring scenarios exceed budget/timeline constraints");
   }
 
@@ -516,7 +554,8 @@ function generateTradeOffs(scored: ScoredScenario[]): string[] {
 function generateSensitivityInsights(scored: ScoredScenario[]): string[] {
   const insights: string[] = [];
 
-  const scoreRange = Math.max(...scored.map((s) => s.scores.overall_score)) -
+  const scoreRange =
+    Math.max(...scored.map((s) => s.scores.overall_score)) -
     Math.min(...scored.map((s) => s.scores.overall_score));
 
   if (scoreRange < 1) {
@@ -525,15 +564,16 @@ function generateSensitivityInsights(scored: ScoredScenario[]): string[] {
     insights.push("Clear differentiation between scenarios supports confident decision");
   }
 
-  const roiVariance = Math.max(...scored.map((s) => s.metrics.roi_percent)) -
+  const roiVariance =
+    Math.max(...scored.map((s) => s.metrics.roi_percent)) -
     Math.min(...scored.map((s) => s.metrics.roi_percent));
   if (roiVariance > 100) {
-    insights.push(`ROI varies significantly (${roiVariance}% spread) — validate assumptions carefully`);
+    insights.push(
+      `ROI varies significantly (${roiVariance}% spread) — validate assumptions carefully`
+    );
   }
 
-  const allHighConfidence = scored.every(
-    (s) => s.pros.some((p) => p.includes("High confidence"))
-  );
+  const allHighConfidence = scored.every((s) => s.pros.some((p) => p.includes("High confidence")));
   if (!allHighConfidence) {
     insights.push("Consider confidence levels when comparing estimates");
   }
@@ -541,10 +581,7 @@ function generateSensitivityInsights(scored: ScoredScenario[]): string[] {
   return insights.slice(0, 3);
 }
 
-function generateDecisionFactors(
-  scored: ScoredScenario[],
-  riskTolerance: string
-): string[] {
+function generateDecisionFactors(scored: ScoredScenario[], riskTolerance: string): string[] {
   const factors: string[] = [];
 
   factors.push(`Risk tolerance is ${riskTolerance} — weight risk scores accordingly`);
@@ -593,7 +630,9 @@ export function compareScenarios(input: CompareScenariosInput): ScenarioComparis
 
   const differentiators: string[] = [];
   if (winner.metrics.roi_percent > runnerUp.metrics.roi_percent) {
-    differentiators.push(`Higher ROI (${winner.metrics.roi_percent}% vs ${runnerUp.metrics.roi_percent}%)`);
+    differentiators.push(
+      `Higher ROI (${winner.metrics.roi_percent}% vs ${runnerUp.metrics.roi_percent}%)`
+    );
   }
   if (winner.scores.risk_score > runnerUp.scores.risk_score) {
     differentiators.push("Better risk profile");

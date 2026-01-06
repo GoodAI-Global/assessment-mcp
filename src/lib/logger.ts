@@ -88,10 +88,7 @@ export class Logger {
   private correlationId?: string;
   private defaultContext: Record<string, unknown>;
 
-  constructor(
-    correlationId?: string,
-    defaultContext: Record<string, unknown> = {}
-  ) {
+  constructor(correlationId?: string, defaultContext: Record<string, unknown> = {}) {
     this.correlationId = correlationId;
     this.defaultContext = defaultContext;
   }
@@ -101,9 +98,7 @@ export class Logger {
    */
   private shouldLog(level: LogLevel): boolean {
     const config = getConfig();
-    return (
-      LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[config.logging.level]
-    );
+    return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[config.logging.level];
   }
 
   /**
@@ -151,10 +146,7 @@ export class Logger {
   private output(entry: LogEntry): void {
     const config = getConfig();
 
-    const formatted =
-      config.logging.format === "json"
-        ? formatJson(entry)
-        : formatPretty(entry);
+    const formatted = config.logging.format === "json" ? formatJson(entry) : formatPretty(entry);
 
     // Use stderr to avoid interfering with MCP stdio transport
     if (entry.level === "error") {
@@ -194,11 +186,7 @@ export class Logger {
   /**
    * Log at error level
    */
-  error(
-    message: string,
-    error?: Error,
-    context?: Record<string, unknown>
-  ): void {
+  error(message: string, error?: Error, context?: Record<string, unknown>): void {
     if (this.shouldLog("error")) {
       this.output(this.createEntry("error", message, context, error));
     }
@@ -237,9 +225,7 @@ export function generateCorrelationId(): string {
 /**
  * Create a logger with a new correlation ID
  */
-export function createRequestLogger(
-  context?: Record<string, unknown>
-): Logger {
+export function createRequestLogger(context?: Record<string, unknown>): Logger {
   const correlationId = generateCorrelationId();
   return new Logger(correlationId, context);
 }

@@ -59,9 +59,7 @@ function parseLogLevel(value: string | undefined): LogLevel {
 /**
  * Parse environment from string
  */
-function parseEnvironment(
-  value: string | undefined
-): "development" | "staging" | "production" {
+function parseEnvironment(value: string | undefined): "development" | "staging" | "production" {
   const envs = ["development", "staging", "production"] as const;
   const normalized = value?.toLowerCase() as (typeof envs)[number];
   return envs.includes(normalized) ? normalized : "development";
@@ -114,10 +112,7 @@ export function loadConfig(): ServerConfig {
       level: parseLogLevel(env.LOG_LEVEL || (isProduction ? "info" : "debug")),
       timestamps: parseBoolean(env.LOG_TIMESTAMPS, true),
       format: isProduction ? "json" : "pretty",
-      includeStackTraces: parseBoolean(
-        env.LOG_STACK_TRACES,
-        !isProduction
-      ),
+      includeStackTraces: parseBoolean(env.LOG_STACK_TRACES, !isProduction),
     },
     audit: {
       enabled: parseBoolean(env.AUDIT_ENABLED, true),

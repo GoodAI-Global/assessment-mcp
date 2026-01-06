@@ -3,21 +3,23 @@
  * "Evidence over opinions" — Assessments based on measurable criteria
  */
 import { z } from "zod";
-import { getIndustryRecommendation, calculateTimeToValue, } from "../data/industry_benchmarks.js";
+import { getIndustryRecommendation, calculateTimeToValue } from "../data/industry_benchmarks.js";
 // ============================================
 // Input Schema (Zod validation)
 // ============================================
 export const AssessAIReadinessInputSchema = z.object({
     company_name: z.string().min(1, "Company name is required").max(200, "Company name too long"),
-    industry: z.enum([
-        "manufacturing",
-        "insurance",
-        "aquaculture",
-        "healthcare",
-        "general",
-    ]),
-    employee_count: z.number().int().positive("Employee count must be positive").max(10_000_000, "Employee count unrealistic"),
-    annual_revenue_usd: z.number().positive().max(1_000_000_000_000, "Revenue unrealistic").optional(),
+    industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
+    employee_count: z
+        .number()
+        .int()
+        .positive("Employee count must be positive")
+        .max(10_000_000, "Employee count unrealistic"),
+    annual_revenue_usd: z
+        .number()
+        .positive()
+        .max(1_000_000_000_000, "Revenue unrealistic")
+        .optional(),
     data_infrastructure: z.object({
         centralized_data: z.boolean(),
         data_quality_score: z.number().min(1).max(10).optional(),
@@ -28,7 +30,10 @@ export const AssessAIReadinessInputSchema = z.object({
         crm: z.string().max(100, "CRM name too long").nullable(),
         legacy_systems_count: z.number().int().min(0).max(1000, "Legacy count unrealistic"),
     }),
-    previous_ai_attempts: z.array(z.string().max(500, "Attempt description too long")).max(50, "Too many attempts").optional(),
+    previous_ai_attempts: z
+        .array(z.string().max(500, "Attempt description too long"))
+        .max(50, "Too many attempts")
+        .optional(),
 });
 // ============================================
 // Scoring Functions
@@ -192,8 +197,7 @@ function determineRedFlags(overallScore, input) {
         redFlags.push("AI implementation not recommended without foundational improvements");
     }
     // manual_data_entry_percent > 90 AND no ERP
-    if (input.data_infrastructure.manual_data_entry_percent > 90 &&
-        !input.current_systems.erp) {
+    if (input.data_infrastructure.manual_data_entry_percent > 90 && !input.current_systems.erp) {
         redFlags.push("Consider basic digitization before AI");
     }
     // Previous failed attempts without clear learnings

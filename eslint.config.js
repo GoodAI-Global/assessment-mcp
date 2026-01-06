@@ -22,10 +22,7 @@ export default tseslint.config(
       ],
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports" },
-      ],
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
 
       // General code quality
       "no-console": ["warn", { allow: ["error", "warn"] }],

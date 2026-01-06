@@ -12,13 +12,7 @@ import { z } from "zod";
 export const RecommendTeamCompositionInputSchema = z.object({
   project_name: z.string().min(1).max(200),
   client_name: z.string().min(1).max(200),
-  industry: z.enum([
-    "manufacturing",
-    "insurance",
-    "aquaculture",
-    "healthcare",
-    "general",
-  ]),
+  industry: z.enum(["manufacturing", "insurance", "aquaculture", "healthcare", "general"]),
 
   // Engagement details
   engagement_type: z.enum([
@@ -34,17 +28,23 @@ export const RecommendTeamCompositionInputSchema = z.object({
   // Project complexity
   complexity: z.object({
     technical_complexity: z.enum(["low", "medium", "high"]).default("medium"),
-    integration_scope: z.enum(["single_system", "multiple_systems", "enterprise_wide"]).default("single_system"),
-    ai_components: z.array(z.enum([
-      "ml_models",
-      "nlp",
-      "computer_vision",
-      "predictive_analytics",
-      "generative_ai",
-      "robotic_process_automation",
-      "data_engineering",
-      "business_intelligence",
-    ])).default([]),
+    integration_scope: z
+      .enum(["single_system", "multiple_systems", "enterprise_wide"])
+      .default("single_system"),
+    ai_components: z
+      .array(
+        z.enum([
+          "ml_models",
+          "nlp",
+          "computer_vision",
+          "predictive_analytics",
+          "generative_ai",
+          "robotic_process_automation",
+          "data_engineering",
+          "business_intelligence",
+        ])
+      )
+      .default([]),
     custom_development_required: z.boolean().default(false),
     data_complexity: z.enum(["low", "medium", "high"]).default("medium"),
   }),
@@ -59,21 +59,25 @@ export const RecommendTeamCompositionInputSchema = z.object({
   }),
 
   // Resource preferences
-  preferences: z.object({
-    prefer_onsite: z.boolean().default(false),
-    client_timezone: z.string().optional(),
-    language_requirements: z.array(z.string()).max(5).default([]),
-    specific_certifications: z.array(z.string()).max(10).default([]),
-    prefer_senior_heavy: z.boolean().default(false),
-  }).optional(),
+  preferences: z
+    .object({
+      prefer_onsite: z.boolean().default(false),
+      client_timezone: z.string().optional(),
+      language_requirements: z.array(z.string()).max(5).default([]),
+      specific_certifications: z.array(z.string()).max(10).default([]),
+      prefer_senior_heavy: z.boolean().default(false),
+    })
+    .optional(),
 
   // Existing constraints
-  constraints: z.object({
-    max_team_size: z.number().min(1).max(50).optional(),
-    must_include_roles: z.array(z.string()).max(10).default([]),
-    exclude_roles: z.array(z.string()).max(10).default([]),
-    blended_rate_target_usd: z.number().min(0).optional(),
-  }).optional(),
+  constraints: z
+    .object({
+      max_team_size: z.number().min(1).max(50).optional(),
+      must_include_roles: z.array(z.string()).max(10).default([]),
+      exclude_roles: z.array(z.string()).max(10).default([]),
+      blended_rate_target_usd: z.number().min(0).optional(),
+    })
+    .optional(),
 });
 
 export type RecommendTeamCompositionInput = z.infer<typeof RecommendTeamCompositionInputSchema>;
@@ -126,8 +130,16 @@ export interface TeamCompositionRecommendation {
 
   /** Skill coverage analysis */
   skill_coverage: {
-    required_skills: { skill: string; covered_by: string[]; coverage_strength: "strong" | "adequate" | "gap" }[];
-    skill_gaps: { skill: string; gap_severity: "critical" | "moderate" | "minor"; mitigation: string }[];
+    required_skills: {
+      skill: string;
+      covered_by: string[];
+      coverage_strength: "strong" | "adequate" | "gap";
+    }[];
+    skill_gaps: {
+      skill: string;
+      gap_severity: "critical" | "moderate" | "minor";
+      mitigation: string;
+    }[];
     skill_overlaps: { skill: string; covered_by: string[]; benefit: string }[];
   };
 
@@ -228,15 +240,30 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 450,
     skills: ["Strategic leadership", "Client management", "AI strategy", "Executive communication"],
     optionalSkills: ["Industry expertise", "Board presentations"],
-    responsibilities: ["Executive sponsorship", "Strategic direction", "Escalation management", "Quality assurance"],
+    responsibilities: [
+      "Executive sponsorship",
+      "Strategic direction",
+      "Escalation management",
+      "Quality assurance",
+    ],
   },
   {
     role: "Program Director",
     seniority: "principal",
     hourlyRate: 400,
-    skills: ["Program management", "Stakeholder management", "Risk management", "Portfolio management"],
+    skills: [
+      "Program management",
+      "Stakeholder management",
+      "Risk management",
+      "Portfolio management",
+    ],
     optionalSkills: ["PMP certification", "Transformation experience"],
-    responsibilities: ["Overall program delivery", "Cross-workstream coordination", "Executive reporting", "Resource allocation"],
+    responsibilities: [
+      "Overall program delivery",
+      "Cross-workstream coordination",
+      "Executive reporting",
+      "Resource allocation",
+    ],
   },
   {
     role: "Solution Architect",
@@ -244,7 +271,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 350,
     skills: ["Enterprise architecture", "System design", "Cloud platforms", "Integration patterns"],
     optionalSkills: ["TOGAF", "AWS/Azure/GCP certification"],
-    responsibilities: ["Technical architecture", "Solution design", "Technical standards", "Integration strategy"],
+    responsibilities: [
+      "Technical architecture",
+      "Solution design",
+      "Technical standards",
+      "Integration strategy",
+    ],
   },
   {
     role: "AI/ML Lead",
@@ -261,7 +293,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 275,
     skills: ["Project management", "Agile/Scrum", "Stakeholder communication", "Risk management"],
     optionalSkills: ["PMP", "CSM", "Industry experience"],
-    responsibilities: ["Day-to-day project delivery", "Status reporting", "Issue management", "Timeline management"],
+    responsibilities: [
+      "Day-to-day project delivery",
+      "Status reporting",
+      "Issue management",
+      "Timeline management",
+    ],
   },
   {
     role: "Data Engineer",
@@ -269,7 +306,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 300,
     skills: ["Data pipelines", "ETL/ELT", "Data warehousing", "SQL", "Python"],
     optionalSkills: ["Spark", "Airflow", "dbt", "Cloud data services"],
-    responsibilities: ["Data pipeline development", "Data quality", "Data integration", "Performance optimization"],
+    responsibilities: [
+      "Data pipeline development",
+      "Data quality",
+      "Data integration",
+      "Performance optimization",
+    ],
   },
   {
     role: "Data Scientist",
@@ -277,7 +319,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 325,
     skills: ["Statistical modeling", "Machine learning", "Python/R", "Feature engineering"],
     optionalSkills: ["Deep learning", "NLP", "Computer vision", "MLOps"],
-    responsibilities: ["Model development", "Feature engineering", "Model validation", "Experimentation"],
+    responsibilities: [
+      "Model development",
+      "Feature engineering",
+      "Model validation",
+      "Experimentation",
+    ],
   },
   {
     role: "ML Engineer",
@@ -285,7 +332,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 325,
     skills: ["ML deployment", "MLOps", "Python", "Cloud ML services", "Docker/Kubernetes"],
     optionalSkills: ["Model optimization", "Edge deployment", "Model monitoring"],
-    responsibilities: ["Model deployment", "ML infrastructure", "Model serving", "Performance monitoring"],
+    responsibilities: [
+      "Model deployment",
+      "ML infrastructure",
+      "Model serving",
+      "Performance monitoring",
+    ],
   },
   {
     role: "Full Stack Developer",
@@ -293,7 +345,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 225,
     skills: ["Frontend development", "Backend development", "API design", "Database management"],
     optionalSkills: ["React", "Node.js", "Python", "Cloud services"],
-    responsibilities: ["Application development", "API integration", "UI/UX implementation", "Testing"],
+    responsibilities: [
+      "Application development",
+      "API integration",
+      "UI/UX implementation",
+      "Testing",
+    ],
   },
   {
     role: "DevOps Engineer",
@@ -301,7 +358,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 275,
     skills: ["CI/CD", "Infrastructure as Code", "Cloud platforms", "Container orchestration"],
     optionalSkills: ["Kubernetes", "Terraform", "Security", "Monitoring"],
-    responsibilities: ["Pipeline automation", "Infrastructure management", "Deployment automation", "Monitoring setup"],
+    responsibilities: [
+      "Pipeline automation",
+      "Infrastructure management",
+      "Deployment automation",
+      "Monitoring setup",
+    ],
   },
   // Specialized roles
   {
@@ -310,7 +372,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 250,
     skills: ["Change management", "Stakeholder engagement", "Training design", "Communication"],
     optionalSkills: ["Prosci certification", "Organizational development"],
-    responsibilities: ["Change strategy", "Stakeholder analysis", "Training programs", "Adoption tracking"],
+    responsibilities: [
+      "Change strategy",
+      "Stakeholder analysis",
+      "Training programs",
+      "Adoption tracking",
+    ],
   },
   {
     role: "Business Analyst",
@@ -318,7 +385,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 200,
     skills: ["Requirements analysis", "Process mapping", "Documentation", "User story development"],
     optionalSkills: ["Domain expertise", "Data analysis", "Agile BA"],
-    responsibilities: ["Requirements gathering", "Process documentation", "User acceptance criteria", "Stakeholder liaison"],
+    responsibilities: [
+      "Requirements gathering",
+      "Process documentation",
+      "User acceptance criteria",
+      "Stakeholder liaison",
+    ],
   },
   {
     role: "QA Engineer",
@@ -334,7 +406,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 185,
     skills: ["Data analysis", "SQL", "Visualization", "Reporting"],
     optionalSkills: ["Python", "Tableau/PowerBI", "Statistics"],
-    responsibilities: ["Data exploration", "Report development", "Insight generation", "Dashboard creation"],
+    responsibilities: [
+      "Data exploration",
+      "Report development",
+      "Insight generation",
+      "Dashboard creation",
+    ],
   },
   // Junior roles
   {
@@ -360,7 +437,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 400,
     skills: ["Industry expertise", "Domain knowledge", "Regulatory knowledge", "Best practices"],
     optionalSkills: ["Executive relationships", "Thought leadership"],
-    responsibilities: ["Industry guidance", "Regulatory compliance", "Best practice application", "Stakeholder credibility"],
+    responsibilities: [
+      "Industry guidance",
+      "Regulatory compliance",
+      "Best practice application",
+      "Stakeholder credibility",
+    ],
   },
   {
     role: "Data Privacy Specialist",
@@ -368,7 +450,12 @@ const ROLE_CATALOG: RoleDefinition[] = [
     hourlyRate: 300,
     skills: ["Data privacy regulations", "GDPR/CCPA", "Privacy by design", "Risk assessment"],
     optionalSkills: ["CIPP certification", "Security expertise"],
-    responsibilities: ["Privacy compliance", "Data governance", "Risk assessment", "Policy development"],
+    responsibilities: [
+      "Privacy compliance",
+      "Data governance",
+      "Risk assessment",
+      "Policy development",
+    ],
   },
 ];
 
@@ -382,81 +469,292 @@ function getBaseTeamForEngagement(
   durationWeeks: number
 ): { role: string; fteAllocation: number; startWeek: number; endWeek: number }[] {
   const team: { role: string; fteAllocation: number; startWeek: number; endWeek: number }[] = [];
-  const isComplex = complexity.technical_complexity === "high" || complexity.integration_scope === "enterprise_wide";
-  const hasML = complexity.ai_components.some((c) => ["ml_models", "nlp", "computer_vision", "predictive_analytics", "generative_ai"].includes(c));
-  const hasData = complexity.ai_components.some((c) => ["data_engineering", "business_intelligence"].includes(c));
+  const isComplex =
+    complexity.technical_complexity === "high" ||
+    complexity.integration_scope === "enterprise_wide";
+  const hasML = complexity.ai_components.some((c) =>
+    ["ml_models", "nlp", "computer_vision", "predictive_analytics", "generative_ai"].includes(c)
+  );
+  const hasData = complexity.ai_components.some((c) =>
+    ["data_engineering", "business_intelligence"].includes(c)
+  );
 
   switch (engagementType) {
     case "assessment":
-      team.push({ role: "Engagement Partner", fteAllocation: 0.1, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Solution Architect", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Business Analyst", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
+      team.push({
+        role: "Engagement Partner",
+        fteAllocation: 0.1,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Solution Architect",
+        fteAllocation: 0.5,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Business Analyst",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
       if (hasML) {
-        team.push({ role: "AI/ML Lead", fteAllocation: 0.25, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "AI/ML Lead",
+          fteAllocation: 0.25,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
       if (isComplex) {
-        team.push({ role: "Data Analyst", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "Data Analyst",
+          fteAllocation: 0.5,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
       break;
 
     case "pilot":
-      team.push({ role: "Engagement Partner", fteAllocation: 0.1, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Project Manager", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Solution Architect", fteAllocation: 0.5, startWeek: 1, endWeek: Math.ceil(durationWeeks * 0.6) });
+      team.push({
+        role: "Engagement Partner",
+        fteAllocation: 0.1,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Project Manager",
+        fteAllocation: 0.5,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Solution Architect",
+        fteAllocation: 0.5,
+        startWeek: 1,
+        endWeek: Math.ceil(durationWeeks * 0.6),
+      });
       if (hasML) {
         team.push({ role: "AI/ML Lead", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
-        team.push({ role: "Data Scientist", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "Data Scientist",
+          fteAllocation: 1.0,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
       if (hasData) {
-        team.push({ role: "Data Engineer", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "Data Engineer",
+          fteAllocation: 0.75,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
-      team.push({ role: "Full Stack Developer", fteAllocation: 0.5, startWeek: Math.ceil(durationWeeks * 0.3), endWeek: durationWeeks });
+      team.push({
+        role: "Full Stack Developer",
+        fteAllocation: 0.5,
+        startWeek: Math.ceil(durationWeeks * 0.3),
+        endWeek: durationWeeks,
+      });
       break;
 
     case "implementation":
-      team.push({ role: "Engagement Partner", fteAllocation: 0.15, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Project Manager", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Solution Architect", fteAllocation: 0.75, startWeek: 1, endWeek: Math.ceil(durationWeeks * 0.7) });
+      team.push({
+        role: "Engagement Partner",
+        fteAllocation: 0.15,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Project Manager",
+        fteAllocation: 1.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Solution Architect",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: Math.ceil(durationWeeks * 0.7),
+      });
       if (hasML) {
-        team.push({ role: "AI/ML Lead", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
-        team.push({ role: "Data Scientist", fteAllocation: 1.5, startWeek: 1, endWeek: durationWeeks });
-        team.push({ role: "ML Engineer", fteAllocation: 1.0, startWeek: Math.ceil(durationWeeks * 0.3), endWeek: durationWeeks });
+        team.push({
+          role: "AI/ML Lead",
+          fteAllocation: 0.75,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
+        team.push({
+          role: "Data Scientist",
+          fteAllocation: 1.5,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
+        team.push({
+          role: "ML Engineer",
+          fteAllocation: 1.0,
+          startWeek: Math.ceil(durationWeeks * 0.3),
+          endWeek: durationWeeks,
+        });
       }
       if (hasData || hasML) {
-        team.push({ role: "Data Engineer", fteAllocation: 1.5, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "Data Engineer",
+          fteAllocation: 1.5,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
-      team.push({ role: "Full Stack Developer", fteAllocation: 1.5, startWeek: Math.ceil(durationWeeks * 0.2), endWeek: durationWeeks });
-      team.push({ role: "DevOps Engineer", fteAllocation: 0.5, startWeek: Math.ceil(durationWeeks * 0.4), endWeek: durationWeeks });
-      team.push({ role: "QA Engineer", fteAllocation: 0.75, startWeek: Math.ceil(durationWeeks * 0.3), endWeek: durationWeeks });
-      team.push({ role: "Business Analyst", fteAllocation: 0.75, startWeek: 1, endWeek: Math.ceil(durationWeeks * 0.6) });
+      team.push({
+        role: "Full Stack Developer",
+        fteAllocation: 1.5,
+        startWeek: Math.ceil(durationWeeks * 0.2),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "DevOps Engineer",
+        fteAllocation: 0.5,
+        startWeek: Math.ceil(durationWeeks * 0.4),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "QA Engineer",
+        fteAllocation: 0.75,
+        startWeek: Math.ceil(durationWeeks * 0.3),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Business Analyst",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: Math.ceil(durationWeeks * 0.6),
+      });
       break;
 
     case "transformation":
-      team.push({ role: "Engagement Partner", fteAllocation: 0.25, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Program Director", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Project Manager", fteAllocation: 2.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Solution Architect", fteAllocation: 1.5, startWeek: 1, endWeek: durationWeeks });
+      team.push({
+        role: "Engagement Partner",
+        fteAllocation: 0.25,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Program Director",
+        fteAllocation: 1.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Project Manager",
+        fteAllocation: 2.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Solution Architect",
+        fteAllocation: 1.5,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
       team.push({ role: "AI/ML Lead", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Data Scientist", fteAllocation: 3.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "ML Engineer", fteAllocation: 2.0, startWeek: Math.ceil(durationWeeks * 0.2), endWeek: durationWeeks });
-      team.push({ role: "Data Engineer", fteAllocation: 3.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Full Stack Developer", fteAllocation: 3.0, startWeek: Math.ceil(durationWeeks * 0.15), endWeek: durationWeeks });
-      team.push({ role: "DevOps Engineer", fteAllocation: 1.5, startWeek: Math.ceil(durationWeeks * 0.2), endWeek: durationWeeks });
-      team.push({ role: "QA Engineer", fteAllocation: 1.5, startWeek: Math.ceil(durationWeeks * 0.2), endWeek: durationWeeks });
-      team.push({ role: "Change Manager", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Business Analyst", fteAllocation: 2.0, startWeek: 1, endWeek: Math.ceil(durationWeeks * 0.5) });
+      team.push({
+        role: "Data Scientist",
+        fteAllocation: 3.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "ML Engineer",
+        fteAllocation: 2.0,
+        startWeek: Math.ceil(durationWeeks * 0.2),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Data Engineer",
+        fteAllocation: 3.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Full Stack Developer",
+        fteAllocation: 3.0,
+        startWeek: Math.ceil(durationWeeks * 0.15),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "DevOps Engineer",
+        fteAllocation: 1.5,
+        startWeek: Math.ceil(durationWeeks * 0.2),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "QA Engineer",
+        fteAllocation: 1.5,
+        startWeek: Math.ceil(durationWeeks * 0.2),
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Change Manager",
+        fteAllocation: 1.0,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Business Analyst",
+        fteAllocation: 2.0,
+        startWeek: 1,
+        endWeek: Math.ceil(durationWeeks * 0.5),
+      });
       break;
 
     case "managed_service":
-      team.push({ role: "Engagement Partner", fteAllocation: 0.1, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Project Manager", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
+      team.push({
+        role: "Engagement Partner",
+        fteAllocation: 0.1,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Project Manager",
+        fteAllocation: 0.5,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
       if (hasML) {
-        team.push({ role: "ML Engineer", fteAllocation: 1.0, startWeek: 1, endWeek: durationWeeks });
-        team.push({ role: "Data Scientist", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
+        team.push({
+          role: "ML Engineer",
+          fteAllocation: 1.0,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
+        team.push({
+          role: "Data Scientist",
+          fteAllocation: 0.5,
+          startWeek: 1,
+          endWeek: durationWeeks,
+        });
       }
-      team.push({ role: "DevOps Engineer", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Data Engineer", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
-      team.push({ role: "Full Stack Developer", fteAllocation: 0.5, startWeek: 1, endWeek: durationWeeks });
+      team.push({
+        role: "DevOps Engineer",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Data Engineer",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
+      team.push({
+        role: "Full Stack Developer",
+        fteAllocation: 0.5,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
       break;
   }
 
@@ -471,13 +769,30 @@ function addSpecializedRoles(
   const durationWeeks = input.duration_weeks;
 
   // Add change management for significant needs
-  if (client_context.change_management_needs === "significant" && !team.some((t) => t.role === "Change Manager")) {
-    team.push({ role: "Change Manager", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
+  if (
+    client_context.change_management_needs === "significant" &&
+    !team.some((t) => t.role === "Change Manager")
+  ) {
+    team.push({
+      role: "Change Manager",
+      fteAllocation: 0.75,
+      startWeek: 1,
+      endWeek: durationWeeks,
+    });
   }
 
   // Add privacy specialist for regulated industries
-  if (client_context.regulatory_requirements === "strict" || industry === "healthcare" || industry === "insurance") {
-    team.push({ role: "Data Privacy Specialist", fteAllocation: 0.25, startWeek: 1, endWeek: Math.ceil(durationWeeks * 0.5) });
+  if (
+    client_context.regulatory_requirements === "strict" ||
+    industry === "healthcare" ||
+    industry === "insurance"
+  ) {
+    team.push({
+      role: "Data Privacy Specialist",
+      fteAllocation: 0.25,
+      startWeek: 1,
+      endWeek: Math.ceil(durationWeeks * 0.5),
+    });
   }
 
   // Add industry SME for specialized industries
@@ -491,12 +806,20 @@ function addSpecializedRoles(
     if (existingDataEng) {
       existingDataEng.fteAllocation += 0.5;
     } else {
-      team.push({ role: "Data Engineer", fteAllocation: 0.75, startWeek: 1, endWeek: durationWeeks });
+      team.push({
+        role: "Data Engineer",
+        fteAllocation: 0.75,
+        startWeek: 1,
+        endWeek: durationWeeks,
+      });
     }
   }
 
   // Add NLP specialist for NLP/generative AI
-  if (complexity.ai_components.includes("nlp") || complexity.ai_components.includes("generative_ai")) {
+  if (
+    complexity.ai_components.includes("nlp") ||
+    complexity.ai_components.includes("generative_ai")
+  ) {
     const existingDS = team.find((t) => t.role === "Data Scientist");
     if (existingDS) {
       existingDS.fteAllocation += 0.5;
@@ -601,16 +924,28 @@ function buildRecommendedTeam(
 function getSubstitutionOptions(role: string): string[] {
   const substitutions: Record<string, string[]> = {
     "Engagement Partner": ["Program Director (with executive access)", "Senior Solution Architect"],
-    "Program Director": ["Senior Project Manager (with expanded scope)", "Engagement Partner (reduced allocation)"],
+    "Program Director": [
+      "Senior Project Manager (with expanded scope)",
+      "Engagement Partner (reduced allocation)",
+    ],
     "Solution Architect": ["Senior ML Engineer + Senior Data Engineer", "Technical Lead"],
-    "AI/ML Lead": ["Senior Data Scientist (with architecture experience)", "Solution Architect (with ML background)"],
+    "AI/ML Lead": [
+      "Senior Data Scientist (with architecture experience)",
+      "Solution Architect (with ML background)",
+    ],
     "Project Manager": ["Engagement Manager", "Delivery Lead", "Scrum Master (for agile projects)"],
     "Data Scientist": ["ML Engineer (with modeling skills)", "2x Junior Data Scientists"],
     "ML Engineer": ["Data Scientist (with engineering skills)", "Senior DevOps + Data Scientist"],
-    "Data Engineer": ["Backend Developer (with data experience)", "Database Administrator + ETL Specialist"],
+    "Data Engineer": [
+      "Backend Developer (with data experience)",
+      "Database Administrator + ETL Specialist",
+    ],
     "Full Stack Developer": ["Frontend + Backend Developer split", "2x Junior Developers"],
     "DevOps Engineer": ["Cloud Engineer", "Infrastructure Engineer", "Site Reliability Engineer"],
-    "Change Manager": ["Business Analyst (with change experience)", "Training Lead + Communications Specialist"],
+    "Change Manager": [
+      "Business Analyst (with change experience)",
+      "Training Lead + Communications Specialist",
+    ],
     "Business Analyst": ["Product Owner", "Requirements Analyst", "Process Consultant"],
     "QA Engineer": ["Test Automation Engineer", "Quality Analyst", "2x Manual Testers"],
     "Data Analyst": ["Junior Data Scientist", "BI Developer", "Reporting Analyst"],
@@ -630,47 +965,147 @@ function calculatePhasedStaffing(
   switch (engagementType) {
     case "assessment":
       phases = [
-        { name: "Discovery", startPercent: 0, endPercent: 40, objectives: ["Stakeholder interviews", "Data collection", "Current state analysis"] },
-        { name: "Analysis", startPercent: 40, endPercent: 80, objectives: ["Gap analysis", "Opportunity identification", "Roadmap development"] },
-        { name: "Recommendations", startPercent: 80, endPercent: 100, objectives: ["Report finalization", "Presentation", "Q&A sessions"] },
+        {
+          name: "Discovery",
+          startPercent: 0,
+          endPercent: 40,
+          objectives: ["Stakeholder interviews", "Data collection", "Current state analysis"],
+        },
+        {
+          name: "Analysis",
+          startPercent: 40,
+          endPercent: 80,
+          objectives: ["Gap analysis", "Opportunity identification", "Roadmap development"],
+        },
+        {
+          name: "Recommendations",
+          startPercent: 80,
+          endPercent: 100,
+          objectives: ["Report finalization", "Presentation", "Q&A sessions"],
+        },
       ];
       break;
     case "pilot":
       phases = [
-        { name: "Setup", startPercent: 0, endPercent: 20, objectives: ["Environment setup", "Data preparation", "Requirements refinement"] },
-        { name: "Development", startPercent: 20, endPercent: 70, objectives: ["Model development", "Integration build", "Testing"] },
-        { name: "Validation", startPercent: 70, endPercent: 100, objectives: ["User testing", "Performance validation", "Go/no-go decision"] },
+        {
+          name: "Setup",
+          startPercent: 0,
+          endPercent: 20,
+          objectives: ["Environment setup", "Data preparation", "Requirements refinement"],
+        },
+        {
+          name: "Development",
+          startPercent: 20,
+          endPercent: 70,
+          objectives: ["Model development", "Integration build", "Testing"],
+        },
+        {
+          name: "Validation",
+          startPercent: 70,
+          endPercent: 100,
+          objectives: ["User testing", "Performance validation", "Go/no-go decision"],
+        },
       ];
       break;
     case "implementation":
       phases = [
-        { name: "Foundation", startPercent: 0, endPercent: 15, objectives: ["Architecture finalization", "Environment setup", "Team onboarding"] },
-        { name: "Build", startPercent: 15, endPercent: 60, objectives: ["Core development", "Integration", "Unit testing"] },
-        { name: "Stabilize", startPercent: 60, endPercent: 85, objectives: ["System testing", "Performance tuning", "Bug fixing"] },
-        { name: "Deploy", startPercent: 85, endPercent: 100, objectives: ["Production deployment", "Training", "Handover"] },
+        {
+          name: "Foundation",
+          startPercent: 0,
+          endPercent: 15,
+          objectives: ["Architecture finalization", "Environment setup", "Team onboarding"],
+        },
+        {
+          name: "Build",
+          startPercent: 15,
+          endPercent: 60,
+          objectives: ["Core development", "Integration", "Unit testing"],
+        },
+        {
+          name: "Stabilize",
+          startPercent: 60,
+          endPercent: 85,
+          objectives: ["System testing", "Performance tuning", "Bug fixing"],
+        },
+        {
+          name: "Deploy",
+          startPercent: 85,
+          endPercent: 100,
+          objectives: ["Production deployment", "Training", "Handover"],
+        },
       ];
       break;
     case "transformation":
       phases = [
-        { name: "Mobilize", startPercent: 0, endPercent: 10, objectives: ["Governance setup", "Team formation", "Detailed planning"] },
-        { name: "Foundation", startPercent: 10, endPercent: 25, objectives: ["Platform setup", "Data infrastructure", "Core frameworks"] },
-        { name: "Build Waves", startPercent: 25, endPercent: 70, objectives: ["Feature development", "Integration", "Continuous delivery"] },
-        { name: "Operate", startPercent: 70, endPercent: 90, objectives: ["Transition to operations", "Knowledge transfer", "Support model"] },
-        { name: "Optimize", startPercent: 90, endPercent: 100, objectives: ["Performance optimization", "Continuous improvement", "Value realization"] },
+        {
+          name: "Mobilize",
+          startPercent: 0,
+          endPercent: 10,
+          objectives: ["Governance setup", "Team formation", "Detailed planning"],
+        },
+        {
+          name: "Foundation",
+          startPercent: 10,
+          endPercent: 25,
+          objectives: ["Platform setup", "Data infrastructure", "Core frameworks"],
+        },
+        {
+          name: "Build Waves",
+          startPercent: 25,
+          endPercent: 70,
+          objectives: ["Feature development", "Integration", "Continuous delivery"],
+        },
+        {
+          name: "Operate",
+          startPercent: 70,
+          endPercent: 90,
+          objectives: ["Transition to operations", "Knowledge transfer", "Support model"],
+        },
+        {
+          name: "Optimize",
+          startPercent: 90,
+          endPercent: 100,
+          objectives: ["Performance optimization", "Continuous improvement", "Value realization"],
+        },
       ];
       break;
     case "managed_service":
       phases = [
-        { name: "Transition", startPercent: 0, endPercent: 15, objectives: ["Service setup", "Knowledge transfer", "SLA establishment"] },
-        { name: "Steady State", startPercent: 15, endPercent: 85, objectives: ["Service delivery", "Monitoring", "Incident management"] },
-        { name: "Continuous Improvement", startPercent: 85, endPercent: 100, objectives: ["Optimization", "Automation", "Service evolution"] },
+        {
+          name: "Transition",
+          startPercent: 0,
+          endPercent: 15,
+          objectives: ["Service setup", "Knowledge transfer", "SLA establishment"],
+        },
+        {
+          name: "Steady State",
+          startPercent: 15,
+          endPercent: 85,
+          objectives: ["Service delivery", "Monitoring", "Incident management"],
+        },
+        {
+          name: "Continuous Improvement",
+          startPercent: 85,
+          endPercent: 100,
+          objectives: ["Optimization", "Automation", "Service evolution"],
+        },
       ];
       break;
     default:
       phases = [
-        { name: "Initiation", startPercent: 0, endPercent: 20, objectives: ["Project setup", "Planning"] },
+        {
+          name: "Initiation",
+          startPercent: 0,
+          endPercent: 20,
+          objectives: ["Project setup", "Planning"],
+        },
         { name: "Execution", startPercent: 20, endPercent: 80, objectives: ["Core delivery"] },
-        { name: "Closure", startPercent: 80, endPercent: 100, objectives: ["Finalization", "Handover"] },
+        {
+          name: "Closure",
+          startPercent: 80,
+          endPercent: 100,
+          objectives: ["Finalization", "Handover"],
+        },
       ];
   }
 
@@ -720,7 +1155,10 @@ function analyzeSkillCoverage(
   });
 
   // Always need project management and architecture for complex projects
-  if (complexity.technical_complexity === "high" || complexity.integration_scope !== "single_system") {
+  if (
+    complexity.technical_complexity === "high" ||
+    complexity.integration_scope !== "single_system"
+  ) {
     neededSkills.add("Project management");
     neededSkills.add("Enterprise architecture");
     neededSkills.add("Integration patterns");
@@ -738,7 +1176,11 @@ function analyzeSkillCoverage(
     if (coveredBy.length === 0) {
       skillGaps.push({
         skill,
-        gap_severity: ["Machine learning", "Enterprise architecture", "Data pipelines"].includes(skill) ? "critical" : "moderate",
+        gap_severity: ["Machine learning", "Enterprise architecture", "Data pipelines"].includes(
+          skill
+        )
+          ? "critical"
+          : "moderate",
         mitigation: `Consider adding specialist or upskilling existing team in ${skill}`,
       });
       requiredSkills.push({ skill, covered_by: [], coverage_strength: "gap" });
@@ -785,11 +1227,14 @@ function buildTeamDynamics(
 
   let leadershipStructure: string;
   if (hasDirector) {
-    leadershipStructure = "Program Director leads overall delivery with Project Manager(s) managing day-to-day execution";
+    leadershipStructure =
+      "Program Director leads overall delivery with Project Manager(s) managing day-to-day execution";
   } else if (hasPartner && hasPM) {
-    leadershipStructure = "Engagement Partner provides strategic oversight, Project Manager handles operational delivery";
+    leadershipStructure =
+      "Engagement Partner provides strategic oversight, Project Manager handles operational delivery";
   } else if (hasPM) {
-    leadershipStructure = "Project Manager leads delivery with technical leads for specialized areas";
+    leadershipStructure =
+      "Project Manager leads delivery with technical leads for specialized areas";
   } else {
     leadershipStructure = "Technical lead-driven model with shared leadership responsibilities";
   }
@@ -798,7 +1243,9 @@ function buildTeamDynamics(
   const hierarchy: { role: string; reports_to: string }[] = [];
   const principalRole = team.find((t) => t.seniority_level === "principal");
   const seniorRoles = team.filter((t) => t.seniority_level === "senior");
-  const otherRoles = team.filter((t) => t.seniority_level === "mid" || t.seniority_level === "junior");
+  const otherRoles = team.filter(
+    (t) => t.seniority_level === "mid" || t.seniority_level === "junior"
+  );
 
   if (principalRole) {
     hierarchy.push({ role: principalRole.role, reports_to: "Client Executive Sponsor" });
@@ -808,27 +1255,46 @@ function buildTeamDynamics(
   }
 
   otherRoles.forEach((r) => {
-    const reportTo = seniorRoles.find((sr) =>
-      sr.role.includes("Manager") || sr.role.includes("Lead") || sr.role.includes("Architect")
+    const reportTo = seniorRoles.find(
+      (sr) =>
+        sr.role.includes("Manager") || sr.role.includes("Lead") || sr.role.includes("Architect")
     );
-    hierarchy.push({ role: r.role, reports_to: reportTo?.role || principalRole?.role || "Project Manager" });
+    hierarchy.push({
+      role: r.role,
+      reports_to: reportTo?.role || principalRole?.role || "Project Manager",
+    });
   });
 
   // Decision authority
   const decisionAuthority = [
     { area: "Strategic direction", authority: principalRole?.role || "Engagement Partner" },
-    { area: "Technical decisions", authority: team.find((t) => t.role.includes("Architect") || t.role.includes("Lead"))?.role || "Technical Lead" },
-    { area: "Day-to-day operations", authority: team.find((t) => t.role.includes("Manager"))?.role || "Project Manager" },
-    { area: "Resource allocation", authority: hasDirector ? "Program Director" : "Project Manager" },
+    {
+      area: "Technical decisions",
+      authority:
+        team.find((t) => t.role.includes("Architect") || t.role.includes("Lead"))?.role ||
+        "Technical Lead",
+    },
+    {
+      area: "Day-to-day operations",
+      authority: team.find((t) => t.role.includes("Manager"))?.role || "Project Manager",
+    },
+    {
+      area: "Resource allocation",
+      authority: hasDirector ? "Program Director" : "Project Manager",
+    },
   ];
 
   return {
     leadership_structure: leadershipStructure,
     reporting_hierarchy: hierarchy.slice(0, 10),
-    collaboration_model: engagementType === "transformation" ? "Workstream-based with cross-functional squads" : "Integrated team with daily standups",
-    communication_cadence: engagementType === "transformation"
-      ? "Daily standups, weekly status, bi-weekly steering, monthly executive review"
-      : "Daily standups, weekly status updates, bi-weekly client check-ins",
+    collaboration_model:
+      engagementType === "transformation"
+        ? "Workstream-based with cross-functional squads"
+        : "Integrated team with daily standups",
+    communication_cadence:
+      engagementType === "transformation"
+        ? "Daily standups, weekly status, bi-weekly steering, monthly executive review"
+        : "Daily standups, weekly status updates, bi-weekly client check-ins",
     decision_authority: decisionAuthority,
   };
 }
@@ -863,7 +1329,9 @@ function identifyStaffingRisks(
   }
 
   // High reliance on junior resources
-  const juniorFTE = team.filter((t) => t.seniority_level === "junior").reduce((sum, t) => sum + t.fte_allocation, 0);
+  const juniorFTE = team
+    .filter((t) => t.seniority_level === "junior")
+    .reduce((sum, t) => sum + t.fte_allocation, 0);
   const totalFTE = team.reduce((sum, t) => sum + t.fte_allocation, 0);
   if (juniorFTE / totalFTE > 0.3) {
     risks.push({
@@ -918,7 +1386,8 @@ function generateAlternatives(
       description: "More junior resources with senior oversight",
       trade_offs: "Lower cost, requires more oversight, may impact quality without proper guidance",
       cost_difference_percent: -20,
-      recommended_when: "Cost-sensitive engagement, strong internal standards, adequate senior oversight",
+      recommended_when:
+        "Cost-sensitive engagement, strong internal standards, adequate senior oversight",
     },
     {
       name: "Specialist Focus",
@@ -1023,7 +1492,8 @@ export function recommendTeamComposition(
   const totalFTE = recommendedTeam.reduce((sum, m) => sum + m.fte_allocation, 0);
   const totalMonthlyCost = recommendedTeam.reduce((sum, m) => sum + m.monthly_cost_usd, 0);
   const avgHourlyRate = Math.round(
-    recommendedTeam.reduce((sum, m) => sum + m.billable_rate_usd_per_hour * m.fte_allocation, 0) / totalFTE
+    recommendedTeam.reduce((sum, m) => sum + m.billable_rate_usd_per_hour * m.fte_allocation, 0) /
+      totalFTE
   );
 
   const seniorFTE = recommendedTeam
@@ -1058,7 +1528,8 @@ export function recommendTeamComposition(
       estimated_monthly_cost_usd: totalMonthlyCost,
       blended_rate_usd_per_hour: avgHourlyRate,
       team_experience_level: teamLevel,
-      key_staffing_rationale: `Team composed for ${engagement_type} engagement with ${complexity.technical_complexity} technical complexity. ` +
+      key_staffing_rationale:
+        `Team composed for ${engagement_type} engagement with ${complexity.technical_complexity} technical complexity. ` +
         `${complexity.ai_components.length > 0 ? `Includes specialists for ${complexity.ai_components.slice(0, 2).join(", ")}. ` : ""}` +
         `Structured for ${duration_weeks}-week delivery with ${teamLevel} experience distribution.`,
     },

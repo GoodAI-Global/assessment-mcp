@@ -13,16 +13,16 @@ import { generateExecutiveSummary, GenerateExecutiveSummaryInputSchema, GENERATE
 import { assessDataQuality, AssessDataQualityInputSchema, ASSESS_DATA_QUALITY_TOOL, } from "./tools/assess_data_quality.js";
 import { prioritizeUseCases, PrioritizeUseCasesInputSchema, PRIORITIZE_USE_CASES_TOOL, } from "./tools/prioritize_use_cases.js";
 import { compareScenarios, CompareScenariosInputSchema, COMPARE_SCENARIOS_TOOL, } from "./tools/compare_scenarios.js";
-import { qualifyLead, QualifyLeadInputSchema, QUALIFY_LEAD_TOOL, } from "./tools/qualify_lead.js";
+import { qualifyLead, QualifyLeadInputSchema, QUALIFY_LEAD_TOOL } from "./tools/qualify_lead.js";
 import { estimateDealSize, EstimateDealSizeInputSchema, ESTIMATE_DEAL_SIZE_TOOL, } from "./tools/estimate_deal_size.js";
-import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL, } from "./tools/generate_sow.js";
+import { generateSOW, GenerateSOWInputSchema, GENERATE_SOW_TOOL } from "./tools/generate_sow.js";
 import { assessImplementationRisk, AssessImplementationRiskInputSchema, ASSESS_IMPLEMENTATION_RISK_TOOL, } from "./tools/assess_implementation_risk.js";
 import { recommendTeamComposition, RecommendTeamCompositionInputSchema, RECOMMEND_TEAM_COMPOSITION_TOOL, } from "./tools/recommend_team_composition.js";
 import { measureAdoption, MeasureAdoptionInputSchema, MEASURE_ADOPTION_TOOL, } from "./tools/measure_adoption.js";
 import { calculateRealizedValue, CalculateRealizedValueInputSchema, CALCULATE_REALIZED_VALUE_TOOL, } from "./tools/calculate_realized_value.js";
 import { predictChurnRisk, PredictChurnRiskInputSchema, PREDICT_CHURN_RISK_TOOL, } from "./tools/predict_churn_risk.js";
-import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT, } from "./prompts/index.js";
-import { createAuditTrail, logger, getConfig, } from "./lib/index.js";
+import { ENTERPRISE_ASSESSMENT_PROMPT, PILOT_RECOMMENDATION_PROMPT } from "./prompts/index.js";
+import { createAuditTrail, logger, getConfig } from "./lib/index.js";
 // Server metadata
 const SERVER_NAME = "goodai-assessment";
 const SERVER_VERSION = "1.0.0";
