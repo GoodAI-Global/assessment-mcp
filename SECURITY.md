@@ -57,3 +57,19 @@ This MCP server processes business data for AI assessments. Key security measure
 - Dependencies are monitored via GitHub Dependabot
 - Security updates are applied promptly
 - Run `npm audit` to check for known vulnerabilities
+
+## Known Vulnerabilities
+
+### @modelcontextprotocol/sdk ReDoS (GHSA-8r9q-7v3j-jr4g)
+
+- **Severity**: High
+- **Type**: Regular Expression Denial of Service (ReDoS)
+- **Status**: No fix available (affects all versions ≤1.25.1)
+- **Impact**: Potential DoS via crafted input to SDK regex patterns
+- **Mitigation**:
+  - This server is designed for trusted internal use, not public-facing
+  - Input validation via Zod schemas limits attack surface
+  - Monitor for SDK updates and upgrade when fix is released
+- **Tracking**: https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
+
+*Last reviewed: 2026-01-07*
